@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <Assemblies>
+    <add>build\debug\fitnesse.dll</add>
+    <add>build\debug\sample.dll</add>
+  </Assemblies>
+  
+<!--
+  <Namespaces>
+     <add>My.Namespace</add>
+  </Namespaces>
+  <fitnesse.slim.Service>
+     <add>MyCustomConverter</add>
+  </fitnesse.slim.Service>
+-->
+
+</config>

@@ -5,3 +5,5 @@ desktop.ini
 build/
 bin/
 obj/
+TestResult.xml
+*.cache

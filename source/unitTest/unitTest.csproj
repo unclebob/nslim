@@ -49,6 +49,7 @@
     <Compile Include="engine\SampleClass.cs" />
     <Compile Include="model\IdentifierNameTest.cs" />
     <Compile Include="model\LanguageNameTest.cs" />
+    <Compile Include="operators\ConverterTest.cs" />
     <Compile Include="operators\DefaultMemoryTest.cs" />
     <Compile Include="operators\DefaultParseTest.cs" />
     <Compile Include="operators\DefaultRuntimeTest.cs" />

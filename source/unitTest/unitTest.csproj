@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{84D31A53-B674-4520-82F7-84BCBB55DD5C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>fitnesse.unitTest</RootNamespace>
+    <AssemblyName>unitTest</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="application\ConfigurationTest.cs" />
+    <Compile Include="application\ShellTest.cs" />
+    <Compile Include="engine\AssembliesTest.cs" />
+    <Compile Include="engine\RuntimeTypeTest.cs" />
+    <Compile Include="engine\InterpreterTest.cs" />
+    <Compile Include="engine\NamespacesTest.cs" />
+    <Compile Include="engine\ProcessorTest.cs" />
+    <Compile Include="engine\SampleClass.cs" />
+    <Compile Include="model\IdentifierNameTest.cs" />
+    <Compile Include="model\LanguageNameTest.cs" />
+    <Compile Include="operators\DefaultMemoryTest.cs" />
+    <Compile Include="operators\DefaultParseTest.cs" />
+    <Compile Include="operators\DefaultRuntimeTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="slim\ComposeOperatorsTest.cs" />
+    <Compile Include="slim\ServiceTest.cs" />
+    <Compile Include="slim\ExecuteOperatorsTest.cs" />
+    <Compile Include="slim\ParseOperatorsTest.cs" />
+    <Compile Include="slim\SampleClass.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\fitnesse\fitnesse.csproj">
+      <Project>{790A49DB-332D-465E-91D6-2D760CD21AB2}</Project>
+      <Name>fitnesse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mtee\mtee.csproj">
+      <Project>{C0269B16-4931-4450-8615-AAB744EBC623}</Project>
+      <Name>mtee</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetPath)*" "$(SolutionDir)build\$(ConfigurationName)\" &amp;
+ copy "$(TargetDir)nunit.framework.dll" "$(SolutionDir)build\$(ConfigurationName)\"
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

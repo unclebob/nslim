@@ -1,0 +1,7 @@
+*.suo
+*.user
+_ReSharper*/
+desktop.ini
+build/
+bin/
+obj/

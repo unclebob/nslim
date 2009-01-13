@@ -1,6 +1,6 @@
 ﻿using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Operators;
+using fitnesse.mtee.operators;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.operators {

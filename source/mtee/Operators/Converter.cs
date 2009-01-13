@@ -1,6 +1,6 @@
 ﻿using fitnesse.mtee.engine;
 
-namespace fitnesse.mtee.Operators {
+namespace fitnesse.mtee.operators {
     public abstract class Converter<T>: ParseOperator, ComposeOperator {
         public bool IsMatch(Processor processor, State state) {
             return state.Type == typeof(T);

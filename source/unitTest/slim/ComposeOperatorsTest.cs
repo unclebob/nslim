@@ -23,7 +23,7 @@ namespace fitnesse.unitTest.slim {
         }
         
         [Test] public void VoidIsComposed() {
-            CheckCompose(new ComposeDefault(), new State(typeof(void), typeof (object)), "/__VOID__/");
+            CheckCompose(new ComposeDefault(), new State(null, typeof (void)), "/__VOID__/");
         }
         
         [Test] public void DefaultComposeIsString() {

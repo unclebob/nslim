@@ -18,7 +18,8 @@ namespace fitnesse.unitTest.engine {
             RuntimeMember method = new RuntimeType(instance.GetType()).GetInstance("voidmethod", 0);
             Assert.IsNotNull(method);
             object result = method.Invoke(instance, new object[] {});
-            Assert.AreEqual(typeof(void), result);
+            Assert.AreEqual(null, result);
+            Assert.AreEqual(typeof(void), method.ReturnType);
         }
 
         [Test] public void MethodWithReturnIsInvoked() {
@@ -26,6 +27,7 @@ namespace fitnesse.unitTest.engine {
             Assert.IsNotNull(method);
             object result = method.Invoke(instance, new object[] {});
             Assert.AreEqual("samplereturn", result.ToString());
+            Assert.AreEqual(typeof(string), method.ReturnType);
         }
 
         [Test] public void MethodWithUnderscoresIsInvoked() {

@@ -15,8 +15,8 @@ namespace fitnesse.slim.operators {
         }
 
         public object Compose(Processor processor, State state) {
-            return state.Instance == null ? nullResult
-                : state.Instance == typeof(void) ? voidResult 
+            return state.Type == typeof(void) ? voidResult 
+                : state.Instance == null ? nullResult
                 : state.Instance.ToString();
         }
     }

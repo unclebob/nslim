@@ -17,7 +17,7 @@ namespace fitnesse.slim.operators {
             var list = state.Instance as List<object> ?? new List<object>();
             var tree = new TreeList<object>();
             foreach (object value in list) {
-                object composeValue = processor.Compose(value);
+                object composeValue = processor.Compose(value, value != null ? value.GetType() : typeof(object));
                 tree.Branches.Add(composeValue as Tree<object> ?? new TreeLeaf<object>(composeValue));
             }
             return tree;

@@ -5,15 +5,16 @@
 
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 
 namespace fitnesse.slim.operators {
     public class ExecuteCallAndAssign: ExecuteBase {
         public ExecuteCallAndAssign(): base("callAndAssign") {}
 
         protected override Tree<object> ExecuteOperation(Processor processor, State state) {
-            object result = InvokeMember(processor, state, 3);
-            processor.Store("$" + state.ParameterString(2), result); //todo: should we store the composed result?
-            return Result(state, processor.Compose(result));
+            TypedValue result = InvokeMember(processor, state, 3);
+            processor.Store("$" + state.ParameterString(2), result.Value); //todo: should we store the composed result?
+            return Result(state, processor.Compose(result.Value, result.Type));
         }
     }
 }

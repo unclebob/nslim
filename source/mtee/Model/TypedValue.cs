@@ -3,17 +3,16 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
-using fitnesse.mtee.engine;
-using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
+using System;
 
-namespace fitnesse.slim.operators {
-    class ExecuteCall: ExecuteBase {
-        public ExecuteCall() : base("call") {}
+namespace fitnesse.mtee.Model {
+    public struct TypedValue {
+        public object Value { get; private set; }
+        public Type Type { get; private set; }
 
-        protected override Tree<object> ExecuteOperation(Processor processor, State state) {
-            TypedValue result = InvokeMember(processor, state, 2);
-            return Result(state, processor.Compose(result.Value, result.Type));
+        public TypedValue(object value, Type type) : this() {
+            Value = value;
+            Type = type;
         }
     }
 }

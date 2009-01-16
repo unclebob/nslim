@@ -6,6 +6,7 @@
 using System;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 
 namespace fitnesse.slim.operators {
     public abstract class ExecuteBase: ExecuteOperator {
@@ -52,7 +53,7 @@ namespace fitnesse.slim.operators {
             return result;
         }
 
-        protected static object InvokeMember(Processor processor, State state, int memberIndex) {
+        protected static TypedValue InvokeMember(Processor processor, State state, int memberIndex) {
             object target = processor.Load(state.ParameterString(memberIndex));
             return processor.Invoke(target, state.ParameterString(memberIndex + 1), ParameterTree(state.Parameters, memberIndex + 2));
         }

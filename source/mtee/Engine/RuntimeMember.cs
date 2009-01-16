@@ -32,7 +32,7 @@ namespace fitnesse.mtee.engine {
                                               | BindingFlags.InvokeMethod | BindingFlags.Static,
                                               null, instance, parameters);
 
-            return info.ReturnType == typeof (void) ? typeof (void) : result;
+            return result;
         }
 
         public Type ReturnType { get { return info.ReturnType; } }

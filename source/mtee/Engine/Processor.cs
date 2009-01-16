@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 using fitnesse.mtee.operators;
 
 namespace fitnesse.mtee.engine {
@@ -38,12 +39,12 @@ namespace fitnesse.mtee.engine {
             return Invoke("parse", new State(type, input));
         }
 
-        public object Compose(object result) {
-            return Invoke("compose", new State(result, result != null ? result.GetType() : typeof(object)));
+        public object Compose(object result, Type type) {
+            return Invoke("compose", new State(result, type));
         }
 
-        public object Invoke(object instance, string member, Tree<object> parameters) {
-            return Invoke("invoke", new State(instance, instance.GetType(), member, parameters));
+        public TypedValue Invoke(object instance, string member, Tree<object> parameters) {
+            return (TypedValue)Invoke("invoke", new State(instance, instance.GetType(), member, parameters));
         }
 
         public object Create(string typeName, Tree<object> parameters) {

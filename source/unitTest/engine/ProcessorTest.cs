@@ -6,6 +6,7 @@
 using System;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.engine {
@@ -52,14 +53,14 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void MethodIsInvoked() {
             var instance = new SampleClass();
-            object result = new Processor().Invoke(instance, "methodnoparms", new TreeList<object>());
-            Assert.AreEqual("samplereturn", result);
+            TypedValue result = new Processor().Invoke(instance, "methodnoparms", new TreeList<object>());
+            Assert.AreEqual("samplereturn", result.Value);
         }
 
         [Test] public void MethodWithParameterIsInvoked() {
             var instance = new SampleClass();
-            object result = new Processor().Invoke(instance, "MethodWithParms", new TreeList<object>().AddBranch("stringparm0"));
-            Assert.AreEqual("samplestringparm0", result);
+            TypedValue result = new Processor().Invoke(instance, "MethodWithParms", new TreeList<object>().AddBranch("stringparm0"));
+            Assert.AreEqual("samplestringparm0", result.Value);
         }
 
         private class DefaultTest: ExecuteOperator {

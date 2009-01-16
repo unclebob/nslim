@@ -5,6 +5,7 @@
 
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 using fitnesse.mtee.operators;
 using fitnesse.unitTest.engine;
 using NUnit.Framework;
@@ -24,7 +25,11 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void MethodIsInvoked() {
-            Assert.AreEqual("samplestuff", runtime.Invoke(processor, new State(new SampleClass(), typeof(SampleClass), "methodwithparms", new TreeList<object>().AddBranch("stuff"))));
+            TypedValue result = runtime.Invoke(processor,
+                                               new State(new SampleClass(), typeof (SampleClass), "methodwithparms",
+                                                         new TreeList<object>().AddBranch("stuff")));
+            Assert.AreEqual(typeof(string), result.Type);
+            Assert.AreEqual("samplestuff", result.Value);
         }
     }
 }

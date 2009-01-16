@@ -3,6 +3,8 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using fitnesse.mtee.Model;
+
 namespace fitnesse.mtee.engine {
     public interface Operator {
         bool IsMatch(Processor processor, State state);
@@ -22,7 +24,7 @@ namespace fitnesse.mtee.engine {
 
     public interface RuntimeOperator: Operator {
         object Create(Processor processor, State state);
-        object Invoke(Processor processor, State state);
+        TypedValue Invoke(Processor processor, State state);
     }
 
     public interface MemoryOperator: Operator {

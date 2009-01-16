@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.operators {
     public class DefaultRuntime: RuntimeOperator {
@@ -17,9 +18,11 @@ namespace fitnesse.mtee.operators {
             return member.Invoke(runtimeType.Type, GetParameterList(state.Parameters, processor, member));
         }
 
-        public object Invoke(Processor processor, State state) {
+        public TypedValue Invoke(Processor processor, State state) {
             RuntimeMember member = new RuntimeType(state.Type).GetInstance(state.Member, state.ParameterCount);
-            return member.Invoke(state.Instance, GetParameterList(state.Parameters, processor, member));
+            return new TypedValue(
+                member.Invoke(state.Instance, GetParameterList(state.Parameters, processor, member)),
+                member.ReturnType);
         }
 
         private static object[] GetParameterList(Tree<object> parameters, Processor processor, RuntimeMember member) {

@@ -50,6 +50,7 @@
     <Compile Include="Model\LanguageName.cs" />
     <Compile Include="Model\NameMatcher.cs" />
     <Compile Include="Model\Tree.cs" />
+    <Compile Include="Model\TypedValue.cs" />
     <Compile Include="Operators\Converter.cs" />
     <Compile Include="Operators\DefaultRuntime.cs" />
     <Compile Include="Operators\DefaultMemory.cs" />

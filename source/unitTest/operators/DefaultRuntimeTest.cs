@@ -24,6 +24,11 @@ namespace fitnesse.unitTest.operators {
                 runtime.Create(processor, new State("fitnesse.unitTest.engine.SampleClass", new TreeList<object>())) is SampleClass);
         }
 
+        [Test] public void StandardInstanceIsCreated() {
+            Assert.IsTrue(
+                runtime.Create(processor, new State("System.Boolean", new TreeList<object>())) is bool);
+        }
+
         [Test] public void MethodIsInvoked() {
             TypedValue result = runtime.Invoke(processor,
                                                new State(new SampleClass(), typeof (SampleClass), "methodwithparms",

@@ -36,6 +36,10 @@ namespace fitnesse.mtee.engine {
             return runtimeMember;
         }
 
+        public object CreateInstance() {
+            return Type.Assembly.CreateInstance(Type.FullName);
+        }
+
         private RuntimeMember Find(string memberName, int parameterCount, BindingFlags bindingFlags, Type[] parameterTypes) {
             var memberMatcher = new IdentifierName(memberName);
             foreach (MemberInfo memberInfo in Type.GetMembers(bindingFlags | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {

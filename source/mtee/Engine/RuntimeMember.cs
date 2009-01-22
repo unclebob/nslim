@@ -5,13 +5,14 @@
 
 using System;
 using System.Reflection;
+using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.engine {
     public interface RuntimeMember {
-        object Invoke(object instance, object[] parameters);
-        int ParameterCount {get;}
+        TypedValue Invoke(object instance, object[] parameters);
+        bool MatchesParameterCount(int count);
         Type GetParameterType(int index);
-        Type ReturnType { get; }
+        Type ReturnType { get; } //todo: can probably eliminate this
     }
 
     class MethodMember: RuntimeMember {
@@ -19,23 +20,48 @@ namespace fitnesse.mtee.engine {
 
         public MethodMember(MemberInfo memberInfo) { info = (MethodInfo) memberInfo; }
 
+        public bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
+
         public Type GetParameterType(int index) {
             return info.GetParameters()[index].ParameterType;
         }
 
-        public int ParameterCount { get { return info.GetParameters().Length; } }
-
-        public object Invoke(object instance, object[] parameters) {
+        public TypedValue Invoke(object instance, object[] parameters) {
             Type type = info.DeclaringType;
             object result = type.InvokeMember(info.Name,
                                               BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
                                               | BindingFlags.InvokeMethod | BindingFlags.Static,
                                               null, instance, parameters);
 
-            return result;
+            return new TypedValue(result, info.ReturnType);
         }
 
         public Type ReturnType { get { return info.ReturnType; } }
+    }
+
+    class PropertyMember: RuntimeMember {
+        private readonly PropertyInfo info;
+
+        public PropertyMember(MemberInfo memberInfo) { info = (PropertyInfo) memberInfo; }
+
+        public Type GetParameterType(int index) {
+            return info.PropertyType;
+        }
+
+        public bool MatchesParameterCount(int count) { return count == 0 && info.CanRead || count == 1 && info.CanWrite; }
+
+        public TypedValue Invoke(object instance, object[] parameters) {
+            Type type = info.DeclaringType;
+            object result = type.InvokeMember(info.Name,
+                                              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                              | (parameters.Length == 0 ? BindingFlags.GetProperty : BindingFlags.SetProperty)
+                                              | BindingFlags.Static,
+                                              null, instance, parameters);
+
+            return new TypedValue(result, parameters.Length == 0 ? info.PropertyType : typeof(void));
+        }
+
+        public Type ReturnType { get { return info.PropertyType; } }
     }
 
     class ConstructorMember: RuntimeMember {
@@ -47,14 +73,15 @@ namespace fitnesse.mtee.engine {
             return info.GetParameters()[index].ParameterType;
         }
 
-        public int ParameterCount { get { return info.GetParameters().Length; } }
+        public bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
 
-        public object Invoke(object instance, object[] parameters) {
+        public TypedValue Invoke(object instance, object[] parameters) {
             Type type = info.DeclaringType;
-            return type.InvokeMember(info.Name,
+            object result = type.InvokeMember(info.Name,
                                      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
                                      | BindingFlags.CreateInstance,
                                      null, null, parameters);
+            return new TypedValue(result, type);
         }
 
         public Type ReturnType { get { return info.DeclaringType; } }

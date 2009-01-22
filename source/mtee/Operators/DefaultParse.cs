@@ -17,7 +17,7 @@ namespace fitnesse.mtee.operators {
 
             RuntimeMember parse = new RuntimeType(state.Type).FindStatic("parse", new [] {typeof(string)});
             if (parse != null && parse.ReturnType == state.Type) {
-                return parse.Invoke(null, new object[] {state.ParameterValueString});
+                return parse.Invoke(null, new object[] {state.ParameterValueString}).Value;
             }
             throw new InvalidOperationException(string.Format("Can't parse {0} because it doesn't have a static Parse method", state.Type.FullName));
         }

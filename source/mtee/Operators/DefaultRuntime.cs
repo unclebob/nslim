@@ -16,14 +16,12 @@ namespace fitnesse.mtee.operators {
             RuntimeType runtimeType = processor.SystemUnderTest.FindType(state.Member);
             if (state.ParameterCount == 0) return runtimeType.CreateInstance();
             RuntimeMember member = runtimeType.GetConstructor(state.ParameterCount);
-            return member.Invoke(runtimeType.Type, GetParameterList(state.Parameters, processor, member));
+            return member.Invoke(runtimeType.Type, GetParameterList(state.Parameters, processor, member)).Value;
         }
 
         public TypedValue Invoke(Processor processor, State state) {
             RuntimeMember member = new RuntimeType(state.Type).GetInstance(state.Member, state.ParameterCount);
-            return new TypedValue(
-                member.Invoke(state.Instance, GetParameterList(state.Parameters, processor, member)),
-                member.ReturnType);
+            return member.Invoke(state.Instance, GetParameterList(state.Parameters, processor, member));
         }
 
         private static object[] GetParameterList(Tree<object> parameters, Processor processor, RuntimeMember member) {

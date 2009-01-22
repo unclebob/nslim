@@ -22,5 +22,7 @@ namespace fitnesse.unitTest.engine {
         public string MethodWithParms(string input) {
             return "sample" + input;
         }
+
+        public string Property { get; set; }
     }
 }

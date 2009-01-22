@@ -4,6 +4,7 @@
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
 using fitnesse.mtee.engine;
+using fitnesse.mtee.Model;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.engine {
@@ -17,45 +18,60 @@ namespace fitnesse.unitTest.engine {
         [Test] public void VoidMethodIsInvoked() {
             RuntimeMember method = new RuntimeType(instance.GetType()).GetInstance("voidmethod", 0);
             Assert.IsNotNull(method);
-            object result = method.Invoke(instance, new object[] {});
-            Assert.AreEqual(null, result);
-            Assert.AreEqual(typeof(void), method.ReturnType);
+            TypedValue result = method.Invoke(instance, new object[] {});
+            Assert.AreEqual(null, result.Value);
+            Assert.AreEqual(typeof(void), result.Type);
         }
 
         [Test] public void MethodWithReturnIsInvoked() {
             RuntimeMember method = new RuntimeType(instance.GetType()).GetInstance("methodnoparms", 0);
             Assert.IsNotNull(method);
-            object result = method.Invoke(instance, new object[] {});
-            Assert.AreEqual("samplereturn", result.ToString());
-            Assert.AreEqual(typeof(string), method.ReturnType);
+            TypedValue result = method.Invoke(instance, new object[] {});
+            Assert.AreEqual("samplereturn", result.Value.ToString());
+            Assert.AreEqual(typeof(string), result.Type);
         }
 
         [Test] public void MethodWithUnderscoresIsInvoked() {
             RuntimeMember method = new RuntimeType(instance.GetType()).GetInstance("methodwithunderscores", 0);
             Assert.IsNotNull(method);
-            object result = method.Invoke(instance, new object[] {});
-            Assert.AreEqual("samplereturn", result.ToString());
+            TypedValue result = method.Invoke(instance, new object[] {});
+            Assert.AreEqual("samplereturn", result.Value.ToString());
         }
 
         [Test] public void MethodWithParmsIsInvoked() {
             RuntimeMember method = new RuntimeType(instance.GetType()).GetInstance("methodwithparms", 1);
             Assert.IsNotNull(method);
-            object result = method.Invoke(instance, new object[] {"input"});
-            Assert.AreEqual("sampleinput", result.ToString());
+            TypedValue result = method.Invoke(instance, new object[] {"input"});
+            Assert.AreEqual("sampleinput", result.Value.ToString());
         }
 
         [Test] public void StaticMethodWithParmsIsInvoked() {
             RuntimeMember method = new RuntimeType(instance.GetType()).FindStatic("parse", new [] {typeof(string)});
             Assert.IsNotNull(method);
-            object result = method.Invoke(instance.GetType(), new object[] {"input"});
-            Assert.AreEqual(typeof(SampleClass), result.GetType());
+            TypedValue result = method.Invoke(instance.GetType(), new object[] {"input"});
+            Assert.AreEqual(typeof(SampleClass), result.Type);
         }
 
         [Test] public void ConstructorIsInvoked() {
             RuntimeMember method = new RuntimeType(instance.GetType()).GetConstructor(0);
             Assert.IsNotNull(method);
-            object result = method.Invoke(instance.GetType(), new object[] {});
-            Assert.AreEqual(typeof(SampleClass), result.GetType());
+            TypedValue result = method.Invoke(instance.GetType(), new object[] {});
+            Assert.AreEqual(typeof(SampleClass), result.Type);
         }
+
+        [Test] public void PropertySetAndGetIsInvoked() {
+            RuntimeMember method = new RuntimeType(instance.GetType()).GetInstance("property", 1);
+            Assert.IsNotNull(method);
+            TypedValue result = method.Invoke(instance, new object[] {"stuff"});
+            Assert.AreEqual(null, result.Value);
+            Assert.AreEqual(typeof(void), result.Type);
+
+            method = new RuntimeType(instance.GetType()).GetInstance("property", 0);
+            Assert.IsNotNull(method);
+            result = method.Invoke(instance, new object[] {});
+            Assert.AreEqual("stuff", result.Value.ToString());
+            Assert.AreEqual(typeof(string), result.Type);
+        }
+
     }
 }

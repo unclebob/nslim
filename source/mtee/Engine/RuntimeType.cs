@@ -51,7 +51,7 @@ namespace fitnesse.mtee.engine {
         }
 
         private static bool Matches(RuntimeMember runtimeMember, int parameterCount, Type[] parameterTypes) {
-            if (runtimeMember.ParameterCount != parameterCount) return false;
+            if (!runtimeMember.MatchesParameterCount(parameterCount)) return false;
             if (parameterTypes == null) return true;
             for (int i = 0; i < parameterCount; i++) {
                 if (runtimeMember.GetParameterType(i) != parameterTypes[i]) return false;
@@ -64,6 +64,8 @@ namespace fitnesse.mtee.engine {
             switch (memberInfo.MemberType) {
                 case MemberTypes.Method:
                     return new MethodMember(memberInfo);
+                case MemberTypes.Property:
+                    return new PropertyMember(memberInfo);
                 case MemberTypes.Constructor:
                     return new ConstructorMember(memberInfo);
                 default:

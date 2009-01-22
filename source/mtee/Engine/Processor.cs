@@ -90,7 +90,7 @@ namespace fitnesse.mtee.engine {
 
         private static object TryInvoke(RuntimeMember runtimeMember, object instance, object[] parameters) {
             try {
-                return runtimeMember.Invoke(instance, parameters);
+                return runtimeMember.Invoke(instance, parameters).Value;
             }
             catch (TargetInvocationException e) {
                 throw e.InnerException;

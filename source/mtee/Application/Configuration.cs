@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using fitnesse.mtee.engine;
@@ -10,6 +11,8 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.application {
     public class Configuration {
+
+        private readonly Dictionary<string, object> items = new Dictionary<string, object>();
 
         public void LoadXml(string configXml) {
             var document = new XmlDocument();
@@ -28,13 +31,28 @@ namespace fitnesse.mtee.application {
             reader.Close();
         }
 
-        private static void LoadNode(string typeName, XmlNode methodNode) {
-            new Processor().Invoke(Context.Instance.GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
+        private void LoadNode(string typeName, XmlNode methodNode) {
+            new Processor().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
         }
 
         private static Tree<object> NodeParameters(XmlNode node) {
             return new TreeList<object>()
                 .AddBranch(node.InnerText);
+        }
+
+        public T GetItem<T>() where T: new() {
+            string typeName = typeof (T).FullName;
+            if (!items.ContainsKey(typeName)) {
+                items[typeName] = new T();
+            }
+            return (T)items[typeName];
+        }
+
+        public object GetItem(string typeName) {
+            if (!items.ContainsKey(typeName)) {
+                items[typeName] = new Processor().Create(typeName);
+            }
+            return items[typeName];
         }
     }
 }

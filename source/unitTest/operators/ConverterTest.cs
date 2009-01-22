@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class ConverterTest {
-        private readonly Processor processor = new Processor(new Assemblies());
+        private readonly Processor processor = new Processor(new SystemUnderTest());
 
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();

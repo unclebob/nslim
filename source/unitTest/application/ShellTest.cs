@@ -30,7 +30,7 @@ namespace fitnesse.unitTest.application {
             LastArguments = new string[] {};
         }
 
-        public int Run(string[] arguments) {
+        public int Run(string[] arguments, Configuration configuration) {
             LastArguments = arguments;
             return Result;
         }

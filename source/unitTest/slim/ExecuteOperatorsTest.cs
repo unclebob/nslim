@@ -15,7 +15,7 @@ namespace fitnesse.unitTest.slim {
 
         [SetUp] public void SetUp() {
             processor = new Processor();
-            processor.Add(new ComposeDefault());
+            processor.AddOperator(new ComposeDefault());
         }
 
         [Test] public void ExecuteDefaultReturnsException() {
@@ -34,9 +34,9 @@ namespace fitnesse.unitTest.slim {
 
         [Test] public void ExecuteImportAddsNamespace() {
             var executeImport = new ExecuteImport();
-            var input = new TreeList<object>().AddBranch("step").AddBranch("import").AddBranch("space.name");
+            var input = new TreeList<object>().AddBranch("step").AddBranch("import").AddBranch("fitnesse.unitTest.slim");
             ExecuteOperation(executeImport, input, 2);
-            Assert.IsTrue(Namespaces.Instance.IsRegistered("space.name"));
+            Assert.IsTrue(processor.Create("SampleClass") is SampleClass);
         }
 
         [Test] public void ExecuteCallAndAssignSavesSymbol() {

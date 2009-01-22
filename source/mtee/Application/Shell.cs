@@ -8,12 +8,13 @@ using fitnesse.mtee.engine;
 
 namespace fitnesse.mtee.application {
     public interface Runnable {
-        int Run(string[] commandLineArguments);
+        int Run(string[] commandLineArguments, Configuration configuration);
     }
 
     public class Shell {
         private string runnerName;
         private readonly List<string> extraArguments = new List<string>();
+        private readonly Configuration configuration = new Configuration();
 
         public int Run(string[] commandLineArguments) {
             ParseArguments(commandLineArguments);
@@ -25,7 +26,7 @@ namespace fitnesse.mtee.application {
                 if (i < commandLineArguments.Length - 1) {
                     switch (commandLineArguments[i]) {
                         case "-c":
-                            new Configuration().LoadFile(commandLineArguments[i + 1]);
+                            configuration.LoadFile(commandLineArguments[i + 1]);
                             break;
                         case "-r":
                             runnerName = commandLineArguments[i + 1];
@@ -42,7 +43,7 @@ namespace fitnesse.mtee.application {
 
         private int ExecuteRunner() {
             var runnable = (Runnable) new Processor().Create(runnerName);
-            return runnable.Run(extraArguments.ToArray());
+            return runnable.Run(extraArguments.ToArray(), configuration);
         }
     }
 }

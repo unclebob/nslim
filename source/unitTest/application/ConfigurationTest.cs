@@ -12,7 +12,7 @@ namespace fitnesse.unitTest.application {
         [Test] public void MethodIsExecuted() {
             var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod>stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
-            Assert.AreEqual("stuff", Context.Instance.GetItem<TestConfig>().Data);
+            Assert.AreEqual("stuff", configuration.GetItem<TestConfig>().Data);
         }
     }
 

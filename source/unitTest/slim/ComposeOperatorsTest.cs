@@ -15,7 +15,7 @@ namespace fitnesse.unitTest.slim {
         private Processor processor;
 
         [SetUp] public void SetUp() {
-            processor = new Processor(new Assemblies());
+            processor = new Processor(new SystemUnderTest());
         }
         
         [Test] public void NullIsComposed() {
@@ -39,7 +39,7 @@ namespace fitnesse.unitTest.slim {
         }
 
         [Test] public void ListIsComposedAsTree() {
-            processor.Add(new ComposeDefault());
+            processor.AddOperator(new ComposeDefault());
             var result = Compose(new ComposeList(), new State(new List<object> {"a", 1.23}, typeof (List<object>))) as Tree<object>;
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
@@ -48,8 +48,8 @@ namespace fitnesse.unitTest.slim {
         }
 
         [Test] public void NestedListIsComposedAsTree() {
-            processor.Add(new ComposeDefault());
-            processor.Add(new ComposeList());
+            processor.AddOperator(new ComposeDefault());
+            processor.AddOperator(new ComposeList());
             var result = Compose(new ComposeList(), new State(new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>))) as Tree<object>;
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);

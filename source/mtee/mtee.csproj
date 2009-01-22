@@ -37,13 +37,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\Configuration.cs" />
-    <Compile Include="Application\Context.cs" />
     <Compile Include="Application\Shell.cs" />
-    <Compile Include="Engine\Assemblies.cs" />
+    <Compile Include="Engine\SystemUnderTest.cs" />
     <Compile Include="Engine\RuntimeMember.cs" />
     <Compile Include="Engine\RuntimeType.cs" />
     <Compile Include="Engine\Processor.cs" />
-    <Compile Include="Engine\Namespaces.cs" />
     <Compile Include="Engine\Operator.cs" />
     <Compile Include="Engine\State.cs" />
     <Compile Include="Model\IdentifierName.cs" />

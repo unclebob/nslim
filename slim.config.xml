@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <config>
-  <Assemblies>
-    <add>build\debug\fitnesse.dll</add>
-    <add>build\debug\sample.dll</add>
-  </Assemblies>
+  <SystemUnderTest>
+    <addAssembly>build\debug\fitnesse.dll</addAssembly>
+    <addAssembly>build\debug\sample.dll</addAssembly>
+  <!-->
+     <addNamespace>My.Namespace</addNamespace>
+  -->
+  </SystemUnderTest>
   
 <!--
-  <Namespaces>
-     <add>My.Namespace</add>
-  </Namespaces>
   <fitnesse.slim.Service>
-     <add>MyCustomConverter</add>
+     <addOperator>MyCustomConverter</addOperator>
   </fitnesse.slim.Service>
 -->
 

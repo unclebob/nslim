@@ -13,22 +13,30 @@ using fitnesse.mtee.operators;
 namespace fitnesse.mtee.engine {
     public class Processor { //todo: add setup and teardown
         private readonly List<List<Operator>> operators = new List<List<Operator>>();
-        public Assemblies Assemblies { get; private set;}
+        public SystemUnderTest SystemUnderTest { get; set; }
 
-        public Processor(Assemblies assemblies) {
-            Assemblies = assemblies;
-            Add(new DefaultParse());
-            Add(new DefaultRuntime());
-            Add(new DefaultMemory());
+        public Processor(SystemUnderTest systemUnderTest) {
+            SystemUnderTest = systemUnderTest;
+            AddOperator(new DefaultParse());
+            AddOperator(new DefaultRuntime());
+            AddOperator(new DefaultMemory());
         }
 
-        public Processor(): this(Assemblies.Instance) {}
+        public Processor(): this(new SystemUnderTest()) {}
 
-        public void Add(Operator anOperator) { Add(anOperator, 0); }
+        public void AddOperator(string operatorName) {
+            AddOperator((Operator)Create(operatorName));
+        }
 
-        public void Add(Operator anOperator, int priority) {
+        public void AddOperator(Operator anOperator) { AddOperator(anOperator, 0); }
+
+        public void AddOperator(Operator anOperator, int priority) {
             while (operators.Count <= priority) operators.Add(new List<Operator>());
             operators[priority].Add(anOperator);
+        }
+
+        public void AddNamespace(string namespaceName) {
+            SystemUnderTest.AddNamespace(namespaceName);
         }
 
         public object Execute(Tree<object> input) {
@@ -80,7 +88,7 @@ namespace fitnesse.mtee.engine {
             throw new ApplicationException(string.Format("No default for {0}", operation));
         }
 
-        public object TryInvoke(RuntimeMember runtimeMember, object instance, object[] parameters) {
+        private static object TryInvoke(RuntimeMember runtimeMember, object instance, object[] parameters) {
             try {
                 return runtimeMember.Invoke(instance, parameters);
             }

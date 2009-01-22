@@ -4,13 +4,17 @@
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
 using fitnesse.mtee.application;
+using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.slim {
     public class Runner: Runnable {
         private Messenger messenger;
+        private Service service;
 
-        public int Run(string[] commandLineArguments) {
+        public int Run(string[] commandLineArguments, Configuration configuration) {
+            service = configuration.GetItem<Service>();
+            service.SystemUnderTest = configuration.GetItem<SystemUnderTest>();
             ParseCommandLine(commandLineArguments);
             ProcessInstructions();
             return 0;
@@ -29,8 +33,7 @@ namespace fitnesse.slim {
             }
         }
 
-        private static Document Execute(Document document) {
-            Service service = Service.Instance;
+        private Document Execute(Document document) {
             var results = new TreeList<object>();
             foreach (Tree<object> statement in document.Content.Branches) {
                 results.AddBranch(service.Execute(statement));

@@ -28,15 +28,16 @@ namespace fitnesse.unitTest.slim {
         }
 
         [Test] public void OperatorIsAddedFromConfiguration() {
-            new Configuration().LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
+            var configuration = new Configuration();
+            configuration.LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
             var statement = new TreeList<object>().AddBranch("step").AddBranch("sampleCommand");
-            var result = (Tree<object>)Service.Instance.Execute(statement);
+            var result = (Tree<object>)configuration.GetItem<Service>().Execute(statement);
             Assert.AreEqual("sampleResult", result.BranchString(1));
         }
 
         [Test] public void ParseSymbolIsDoneFirst() {
             service.Store("$symbol", "testvalue");
-            service.Add(new ParseUpperCase());
+            service.AddOperator(new ParseUpperCase());
             object value = service.Parse(typeof(string), new TreeLeaf<object>("$symbol"));
             Assert.AreEqual("TESTVALUE", value.ToString());
         }

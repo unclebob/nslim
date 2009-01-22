@@ -33,15 +33,15 @@ namespace fitnesse.unitTest.engine {
         }
 
         [Test] public void DefaultOperatorIsFound() {
-            processor.Add(defaultTest);
+            processor.AddOperator(defaultTest);
             object result = processor.Execute(new TreeList<object>());
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
         [Test] public void SpecificOperatorIsFound() {
-            processor.Add(defaultTest);
-            processor.Add(specificTestA);
-            processor.Add(specificTestB);
+            processor.AddOperator(defaultTest);
+            processor.AddOperator(specificTestA);
+            processor.AddOperator(specificTestB);
             object result = processor.Execute(new TreeLeaf<object>("A"));
             Assert.AreEqual("executeA", result.ToString());
         }

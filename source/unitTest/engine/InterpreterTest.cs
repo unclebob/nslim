@@ -15,7 +15,7 @@ namespace fitnesse.unitTest.engine {
             processor = new Processor();
         }
         [Test] public void ExecuteUsesOperators() {
-            processor.Add(new TestOperator());
+            processor.AddOperator(new TestOperator());
             var result = (Tree<object>)processor.Execute(new TreeLeaf<object>("my input"));
             Assert.AreEqual("my input test", result.Value);
         }

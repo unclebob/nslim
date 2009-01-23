@@ -14,6 +14,12 @@ namespace fitnesse.unitTest.application {
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod>stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
             Assert.AreEqual("stuff", configuration.GetItem<TestConfig>().Data);
         }
+
+        [Test] public void MethodWithTwoParametersIsExecuted() {
+            var configuration = new Configuration();
+            configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod second=\"more\">stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
+            Assert.AreEqual("more stuff", configuration.GetItem<TestConfig>().Data);
+        }
     }
 
     public class TestConfig {
@@ -21,6 +27,10 @@ namespace fitnesse.unitTest.application {
 
         public void TestMethod(string data) {
             Data = data;
+        }
+
+        public void TestMethod(string data, string more) {
+            Data = more + " " + data;
         }
     }
 }

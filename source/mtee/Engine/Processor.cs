@@ -40,23 +40,28 @@ namespace fitnesse.mtee.engine {
         }
 
         public object Execute(Tree<object> input) {
-            return Invoke("execute", new State(input));
+            var state = new State(input);
+            return FindOperator<ExecuteOperator>(state).Execute(this, state);
         }
 
         public object Parse(Type type, Tree<object> input) {
-            return Invoke("parse", new State(type, input));
+            var state = new State(type, input);
+            return FindOperator<ParseOperator>(state).Parse(this, state);
         }
 
         public object Compose(object result, Type type) {
-            return Invoke("compose", new State(result, type));
+            var state = new State(result, type);
+            return FindOperator<ComposeOperator>(state).Compose(this, state);
         }
 
         public TypedValue Invoke(object instance, string member, Tree<object> parameters) {
-            return (TypedValue)Invoke("invoke", new State(instance, instance.GetType(), member, parameters));
+            var state = new State(instance, instance.GetType(), member, parameters);
+            return FindOperator<RuntimeOperator>(state).Invoke(this, state);
         }
 
         public object Create(string typeName, Tree<object> parameters) {
-            return Invoke("create", new State(typeName, parameters));
+            var state = new State(typeName, parameters);
+            return FindOperator<RuntimeOperator>(state).Create(this, state);
         }
 
         public object Create(string typeName) {
@@ -64,37 +69,30 @@ namespace fitnesse.mtee.engine {
         }
 
         public void Store(string variableName, object instance) {
-            Invoke("store", new State(instance, variableName));
+            var state = new State(instance, variableName);
+            FindOperator<MemoryOperator>(state).Store(this, state);
         }
 
         public object Load(string variableName) {
-            return Invoke("load", new State(variableName));
+            var state = new State(variableName);
+            return FindOperator<MemoryOperator>(state).Load(this, state);
         }
 
         public bool Contains(string variableName) {
-            return (bool)Invoke("contains", new State(variableName));
+            var state = new State(variableName);
+            return FindOperator<MemoryOperator>(state).Contains(this, state);
         }
 
-        private object Invoke(string operation, State state) {
+        private T FindOperator<T> (State state) where T: class, Operator{
             for (int priority = operators.Count - 1; priority >= 0; priority--) {
                 for (int i = operators[priority].Count - 1; i >= 0; i--) {
-                    Operator candidate = operators[priority][i];
-                    RuntimeMember runtimeMember = new RuntimeType(candidate.GetType()).FindInstance(operation, 2);
-                    if (runtimeMember != null && candidate.IsMatch(this, state)) {
-                        return TryInvoke(runtimeMember, candidate, new object[] {this, state});
+                    var candidate = operators[priority][i] as T;
+                    if (candidate != null && candidate.IsMatch(this, state)) {
+                        return candidate;
                     }
                 }
             }
-            throw new ApplicationException(string.Format("No default for {0}", operation));
-        }
-
-        private static object TryInvoke(RuntimeMember runtimeMember, object instance, object[] parameters) {
-            try {
-                return runtimeMember.Invoke(instance, parameters).Value;
-            }
-            catch (TargetInvocationException e) {
-                throw e.InnerException;
-            }
+            throw new ApplicationException(string.Format("No default for {0}", typeof(T).Name));
         }
     }
 }

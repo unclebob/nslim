@@ -36,8 +36,12 @@ namespace fitnesse.mtee.application {
         }
 
         private static Tree<object> NodeParameters(XmlNode node) {
-            return new TreeList<object>()
+            var result = new TreeList<object>()
                 .AddBranch(node.InnerText);
+            foreach (XmlAttribute attribute in node.Attributes) {
+                result.AddBranch(attribute.Value);
+            }
+            return result;
         }
 
         public T GetItem<T>() where T: new() {

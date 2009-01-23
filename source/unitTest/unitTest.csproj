@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="application\ConfigurationTest.cs" />
-    <Compile Include="application\ContextTest.cs" />
     <Compile Include="application\ShellTest.cs" />
     <Compile Include="engine\AssembliesTest.cs" />
     <Compile Include="engine\RuntimeTypeTest.cs" />

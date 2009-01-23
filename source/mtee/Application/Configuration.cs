@@ -58,5 +58,7 @@ namespace fitnesse.mtee.application {
             }
             return items[typeName];
         }
+
+        public void SetItem(string typeName, object value) { items[typeName] = value; }
     }
 }

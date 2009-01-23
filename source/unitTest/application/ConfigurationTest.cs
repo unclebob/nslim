@@ -20,6 +20,13 @@ namespace fitnesse.unitTest.application {
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod second=\"more\">stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
             Assert.AreEqual("more stuff", configuration.GetItem<TestConfig>().Data);
         }
+
+        [Test] public void TwoFilesAreLoadedIncrementally() {
+            var configuration = new Configuration();
+            configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod>stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
+            configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><Append>more</Append></fitnesse.unitTest.application.TestConfig></config>");
+            Assert.AreEqual("stuffmore", configuration.GetItem<TestConfig>().Data);
+        }
     }
 
     public class TestConfig {
@@ -31,6 +38,10 @@ namespace fitnesse.unitTest.application {
 
         public void TestMethod(string data, string more) {
             Data = more + " " + data;
+        }
+
+        public void Append(string data) {
+            Data += data;
         }
     }
 }

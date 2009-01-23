@@ -7,7 +7,7 @@ using fitnesse.mtee.engine;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.engine {
-    [TestFixture] public class AssembliesTest {
+    [TestFixture] public class SystemUnderTestTest {
         private SystemUnderTest systemUnderTest;
 
         [SetUp] public void SetUp() {
@@ -17,6 +17,11 @@ namespace fitnesse.unitTest.engine {
         [Test] public void TypeIsFoundInCurrentAssembly() {
             RuntimeType sample = systemUnderTest.FindType("fitnesse.unitTest.engine.SampleClass");
             Assert.AreEqual(typeof(SampleClass), sample.Type);
+        }
+
+        [Test] public void TypeWithoutNamespaceIsFound() {
+            RuntimeType sample = systemUnderTest.FindType("AnotherSampleClass");
+            Assert.AreEqual(typeof(AnotherSampleClass), sample.Type);
         }
 
         [Test] public void TypeIsFoundUsingNamespaces() {
@@ -49,4 +54,6 @@ namespace fitnesse.unitTest.engine {
             Assert.AreEqual(typeof(SystemUnderTest), sample.Type);
         }
     }
+
 }
+public class AnotherSampleClass {}

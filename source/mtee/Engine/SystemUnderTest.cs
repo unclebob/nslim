@@ -37,7 +37,7 @@ namespace fitnesse.mtee.engine {
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
                 foreach (Type type in assembly.GetExportedTypes()) {
                     if (typeName.Matches(type.FullName)) return type;
-                    if (!IsRegistered(type.Namespace)) continue;
+                    if (type.Namespace == null || !IsRegistered(type.Namespace)) continue;
                     if (typeName.Matches(type.Name)) return type;
                 }
             }

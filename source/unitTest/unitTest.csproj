@@ -41,7 +41,7 @@
   <ItemGroup>
     <Compile Include="application\ConfigurationTest.cs" />
     <Compile Include="application\ShellTest.cs" />
-    <Compile Include="engine\AssembliesTest.cs" />
+    <Compile Include="engine\SystemUnderTestTest.cs" />
     <Compile Include="engine\RuntimeTypeTest.cs" />
     <Compile Include="engine\InterpreterTest.cs" />
     <Compile Include="engine\ProcessorTest.cs" />

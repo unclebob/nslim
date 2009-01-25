@@ -5,13 +5,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using fitnesse.mtee.model;
 using fitnesse.mtee.Model;
 using fitnesse.mtee.operators;
 
 namespace fitnesse.mtee.engine {
-    public class Processor { //todo: add setup and teardown
+    public class Processor: Copyable { //todo: add setup and teardown
         private readonly List<List<Operator>> operators = new List<List<Operator>>();
         public SystemUnderTest SystemUnderTest { get; set; }
 
@@ -23,6 +22,13 @@ namespace fitnesse.mtee.engine {
         }
 
         public Processor(): this(new SystemUnderTest()) {}
+
+        public Processor(Processor other): this(new SystemUnderTest(other.SystemUnderTest)) {
+            operators.Clear();
+            foreach (List<Operator> list in other.operators) {
+                operators.Add(new List<Operator>(list));
+            }
+        }
 
         public void AddOperator(string operatorName) {
             AddOperator((Operator)Create(operatorName));
@@ -93,6 +99,10 @@ namespace fitnesse.mtee.engine {
                 }
             }
             throw new ApplicationException(string.Format("No default for {0}", typeof(T).Name));
+        }
+
+        Copyable Copyable.Copy() {
+            return new Processor(this);
         }
     }
 }

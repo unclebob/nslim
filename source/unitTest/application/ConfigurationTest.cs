@@ -4,32 +4,45 @@
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
 using fitnesse.mtee.application;
+using fitnesse.mtee.Model;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.application {
     [TestFixture] public class ConfigurationTest {
 
+        private Configuration configuration;
+
+        [SetUp] public void SetUp() {
+            configuration = new Configuration();
+        }
+
         [Test] public void MethodIsExecuted() {
-            var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod>stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
             Assert.AreEqual("stuff", configuration.GetItem<TestConfig>().Data);
         }
 
         [Test] public void MethodWithTwoParametersIsExecuted() {
-            var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod second=\"more\">stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
             Assert.AreEqual("more stuff", configuration.GetItem<TestConfig>().Data);
         }
 
         [Test] public void TwoFilesAreLoadedIncrementally() {
-            var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><TestMethod>stuff</TestMethod></fitnesse.unitTest.application.TestConfig></config>");
             configuration.LoadXml("<config><fitnesse.unitTest.application.TestConfig><Append>more</Append></fitnesse.unitTest.application.TestConfig></config>");
             Assert.AreEqual("stuffmore", configuration.GetItem<TestConfig>().Data);
         }
+
+        [Test] public void ChangesDontShowInCopy() {
+            var test = new TestConfig {Data = "stuff"};
+            configuration.SetItem(test.GetType().FullName, test);
+            var copy = new Configuration(configuration);
+            configuration.GetItem<TestConfig>().Data = "other";
+            Assert.AreEqual("stuff", copy.GetItem<TestConfig>().Data);
+            Assert.AreEqual("other", configuration.GetItem<TestConfig>().Data);
+        }
     }
 
-    public class TestConfig {
+    public class TestConfig: Copyable {
         public string Data;
 
         public void TestMethod(string data) {
@@ -42,6 +55,10 @@ namespace fitnesse.unitTest.application {
 
         public void Append(string data) {
             Data += data;
+        }
+
+        public Copyable Copy() {
+            return new TestConfig {Data = Data};
         }
     }
 }

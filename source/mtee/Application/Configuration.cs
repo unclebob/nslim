@@ -8,11 +8,20 @@ using System.IO;
 using System.Xml;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.application {
     public class Configuration {
 
-        private readonly Dictionary<string, object> items = new Dictionary<string, object>();
+        private readonly Dictionary<string, Copyable> items = new Dictionary<string, Copyable>();
+
+        public Configuration() {}
+
+        public Configuration(Configuration other) {
+            foreach (string key in other.items.Keys) {
+                SetItem(key, other.items[key].Copy());
+            }
+        }
 
         public void LoadXml(string configXml) {
             var document = new XmlDocument();
@@ -44,7 +53,7 @@ namespace fitnesse.mtee.application {
             return result;
         }
 
-        public T GetItem<T>() where T: new() {
+        public T GetItem<T>() where T: Copyable, new() {
             string typeName = typeof (T).FullName;
             if (!items.ContainsKey(typeName)) {
                 items[typeName] = new T();
@@ -52,13 +61,13 @@ namespace fitnesse.mtee.application {
             return (T)items[typeName];
         }
 
-        public object GetItem(string typeName) {
+        public Copyable GetItem(string typeName) {
             if (!items.ContainsKey(typeName)) {
-                items[typeName] = new Processor().Create(typeName);
+                items[typeName] = (Copyable)new Processor().Create(typeName);
             }
             return items[typeName];
         }
 
-        public void SetItem(string typeName, object value) { items[typeName] = value; }
+        public void SetItem(string typeName, Copyable value) { items[typeName] = value; }
     }
 }

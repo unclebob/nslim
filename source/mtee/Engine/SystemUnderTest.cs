@@ -7,14 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using fitnesse.mtee.model;
+using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.engine {
-    public class SystemUnderTest {
-        private readonly List<Assembly> assemblies = new List<Assembly>();
-        private readonly List<LanguageName> namespaces = new List<LanguageName>();
+    public class SystemUnderTest: Copyable {
+        private readonly List<Assembly> assemblies;
+        private readonly List<LanguageName> namespaces;
 
         public SystemUnderTest() {
+            assemblies = new List<Assembly>();
+            namespaces = new List<LanguageName>();
             AddNamespace(GetType().Namespace);
+        }
+
+        public SystemUnderTest(SystemUnderTest other) {
+            assemblies = new List<Assembly>(other.assemblies);
+            namespaces = new List<LanguageName>(other.namespaces);
         }
 
         public void AddAssembly(string assemblyName) {
@@ -47,6 +55,10 @@ namespace fitnesse.mtee.engine {
         private bool IsRegistered(string namespaceString) {
             var existingNamespace = new LanguageName(namespaceString);
             return namespaces.Contains(existingNamespace);
+        }
+
+        public Copyable Copy() {
+            return new SystemUnderTest(this);
         }
     }
 }

@@ -14,8 +14,7 @@ namespace fitnesse.mtee.model {
     }
 
     public abstract class Tree<T> {
-        protected T value;
-        public T Value { get { return value; } }
+        public abstract T Value { get; }
 
         public abstract bool IsLeaf { get; }
         public abstract IList<Tree<T>> Branches { get; }
@@ -38,6 +37,8 @@ namespace fitnesse.mtee.model {
 
     public class TreeList<T>: Tree<T> {
         private readonly List<Tree<T>> list = new List<Tree<T>>();
+        private readonly T value;
+        public override T Value { get { return value; } }
 
         public TreeList() {}
 
@@ -54,6 +55,8 @@ namespace fitnesse.mtee.model {
     }
 
     public class TreeLeaf<T>: Tree<T> {
+        private readonly T value;
+        public override T Value { get { return value; } }
         public TreeLeaf(T value) { this.value = value; }
 
         public override bool IsLeaf { get { return true; } }

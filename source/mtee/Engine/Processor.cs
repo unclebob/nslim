@@ -17,6 +17,7 @@ namespace fitnesse.mtee.engine {
         public Processor(SystemUnderTest systemUnderTest) {
             SystemUnderTest = systemUnderTest;
             AddOperator(new DefaultParse());
+            AddOperator(new ParseType());
             AddOperator(new DefaultRuntime());
             AddOperator(new DefaultMemory());
         }
@@ -53,6 +54,10 @@ namespace fitnesse.mtee.engine {
         public object Parse(Type type, Tree<object> input) {
             var state = new State(type, input);
             return FindOperator<ParseOperator>(state).Parse(this, state);
+        }
+
+        public T Parse<T>(Tree<object> input) {
+            return (T) Parse(typeof (T), input);
         }
 
         public object Compose(object result, Type type) {

@@ -54,6 +54,7 @@
     <Compile Include="Operators\DefaultRuntime.cs" />
     <Compile Include="Operators\DefaultMemory.cs" />
     <Compile Include="Operators\DefaultParse.cs" />
+    <Compile Include="Operators\ParseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

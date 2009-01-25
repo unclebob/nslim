@@ -37,8 +37,7 @@ namespace fitnesse.mtee.engine {
         }
 
         public RuntimeType FindType(string typeName) {
-            var languageName = new LanguageName(typeName);
-            return new RuntimeType(Type.GetType(languageName.MatchName) ?? SearchForType(languageName));
+            return new RuntimeType(Type.GetType(new LanguageName(typeName).MatchName) ?? SearchForType(new IdentifierName(typeName)));
         }
 
         private Type SearchForType(NameMatcher typeName) {

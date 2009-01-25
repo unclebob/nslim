@@ -47,21 +47,30 @@ namespace fitnesse.mtee.engine {
         }
 
         public object Execute(Tree<object> input) {
-            var state = new State(input);
+            var state = State.MakeTree(input);
             return FindOperator<ExecuteOperator>(state).Execute(this, state);
         }
 
-        public object Parse(Type type, Tree<object> input) {
-            var state = new State(type, input);
+        public object ParseTree(Type type, Tree<object> input) {
+            var state = State.MakeTree(type, input);
             return FindOperator<ParseOperator>(state).Parse(this, state);
         }
 
-        public T Parse<T>(Tree<object> input) {
+        public object Parse(Type type, object input) {
+            var state = State.MakeParameter(type, input);
+            return FindOperator<ParseOperator>(state).Parse(this, state);
+        }
+
+        public T ParseTree<T>(Tree<object> input) {
+            return (T) ParseTree(typeof (T), input);
+        }
+
+        public T Parse<T>(object input) {
             return (T) Parse(typeof (T), input);
         }
 
         public object Compose(object result, Type type) {
-            var state = new State(result, type);
+            var state = State.MakeInstance(result, type);
             return FindOperator<ComposeOperator>(state).Compose(this, state);
         }
 
@@ -71,7 +80,7 @@ namespace fitnesse.mtee.engine {
         }
 
         public object Create(string typeName, Tree<object> parameters) {
-            var state = new State(typeName, parameters);
+            var state = State.MakeNew(typeName, parameters);
             return FindOperator<RuntimeOperator>(state).Create(this, state);
         }
 
@@ -80,17 +89,17 @@ namespace fitnesse.mtee.engine {
         }
 
         public void Store(string variableName, object instance) {
-            var state = new State(instance, variableName);
+            var state = State.MakeInstance(instance, variableName);
             FindOperator<MemoryOperator>(state).Store(this, state);
         }
 
         public object Load(string variableName) {
-            var state = new State(variableName);
+            var state = State.MakeName(variableName);
             return FindOperator<MemoryOperator>(state).Load(this, state);
         }
 
         public bool Contains(string variableName) {
-            var state = new State(variableName);
+            var state = State.MakeName(variableName);
             return FindOperator<MemoryOperator>(state).Contains(this, state);
         }
 

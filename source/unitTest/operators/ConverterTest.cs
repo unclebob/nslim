@@ -9,7 +9,7 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();
-            var state = new State(typeof(CustomClass), new TreeLeaf<object>("info"));
+            var state = State.MakeParameter(typeof(CustomClass), "info");
             Assert.IsTrue(converter.IsMatch(processor, state));
             var result = converter.Parse(processor, state) as CustomClass;
             Assert.IsNotNull(result);
@@ -18,7 +18,7 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void CustomTypeIsComposed() {
             var converter = new CustomConverter();
-            var state = new State(new CustomClass {Info = "stuff"}, typeof(CustomClass));
+            var state = State.MakeInstance(new CustomClass {Info = "stuff"}, typeof(CustomClass));
             Assert.IsTrue(converter.IsMatch(processor, state));
             var result = converter.Compose(processor, state) as string;
             Assert.IsNotNull(result);

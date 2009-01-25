@@ -19,7 +19,7 @@ namespace fitnesse.slim.operators {
         public object Parse(Processor processor, State state) {
             string input = state.ParameterValueString;
             string result = ReplaceSymbols(input, processor);
-            return processor.Parse(state.Type, new TreeLeaf<object>(result));
+            return processor.Parse(state.Type, result);
         }
 
         private static string ReplaceSymbols(string input, Processor processor) {

@@ -21,12 +21,12 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void InstanceIsCreated() {
             Assert.IsTrue(
-                runtime.Create(processor, new State("fitnesse.unitTest.engine.SampleClass", new TreeList<object>())) is SampleClass);
+                runtime.Create(processor, State.MakeNew("fitnesse.unitTest.engine.SampleClass", new TreeList<object>())) is SampleClass);
         }
 
         [Test] public void StandardInstanceIsCreated() {
             Assert.IsTrue(
-                runtime.Create(processor, new State("System.Boolean", new TreeList<object>())) is bool);
+                runtime.Create(processor, State.MakeNew("System.Boolean", new TreeList<object>())) is bool);
         }
 
         [Test] public void MethodIsInvoked() {

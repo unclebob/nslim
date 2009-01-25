@@ -13,7 +13,7 @@ namespace fitnesse.mtee.operators {
         public bool IsMatch(Processor processor, State state) { return true; }
 
         public object Create(Processor processor, State state) {
-            var runtimeType = processor.Parse<RuntimeType>(new TreeLeaf<object>(state.Member));
+            var runtimeType = processor.Parse<RuntimeType>(state.Member);
             if (state.ParameterCount == 0) return runtimeType.CreateInstance();
             RuntimeMember member = runtimeType.GetConstructor(state.ParameterCount);
             return member.Invoke(runtimeType.Type, GetParameterList(state.Parameters, processor, member)).Value;
@@ -28,7 +28,7 @@ namespace fitnesse.mtee.operators {
             var parameterList = new List<object>();
             int i = 0;
             foreach (Tree<object> parameter in parameters.Branches) {
-                parameterList.Add(processor.Parse(member.GetParameterType(i), parameter));
+                parameterList.Add(processor.ParseTree(member.GetParameterType(i), parameter));
                 i++;
             }
             return parameterList.ToArray();

@@ -17,13 +17,13 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void EmptyMemoryContainsNothing() {
-            Assert.IsFalse(memory.Contains(processor, new State("anything")));
+            Assert.IsFalse(memory.Contains(processor, State.MakeName("anything")));
         }
 
         [Test] public void StoredDataIsLoaded() {
-            memory.Store(processor, new State("stuff", "something"));
-            Assert.IsTrue(memory.Contains(processor, new State("something")));
-            Assert.AreEqual("stuff", memory.Load(processor, new State("something")));
+            memory.Store(processor, State.MakeInstance("stuff", "something"));
+            Assert.IsTrue(memory.Contains(processor, State.MakeName("something")));
+            Assert.AreEqual("stuff", memory.Load(processor, State.MakeName("something")));
         }
     }
 }

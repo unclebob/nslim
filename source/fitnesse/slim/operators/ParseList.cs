@@ -18,7 +18,7 @@ namespace fitnesse.slim.operators {
         public object Parse(Processor processor, State state) {
             var result = (IList)Activator.CreateInstance(state.Type);
             foreach (Tree<object> branch in state.Parameters.Branches) {
-                result.Add(processor.Parse(state.Type.GetGenericArguments()[0], branch));
+                result.Add(processor.ParseTree(state.Type.GetGenericArguments()[0], branch));
             }
             return result;
         }

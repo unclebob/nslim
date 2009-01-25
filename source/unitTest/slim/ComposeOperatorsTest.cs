@@ -19,28 +19,28 @@ namespace fitnesse.unitTest.slim {
         }
         
         [Test] public void NullIsComposed() {
-            CheckCompose(new ComposeDefault(), new State(null, typeof (object)), "null");
+            CheckCompose(new ComposeDefault(), State.MakeInstance(null, typeof (object)), "null");
         }
         
         [Test] public void VoidIsComposed() {
-            CheckCompose(new ComposeDefault(), new State(null, typeof (void)), "/__VOID__/");
+            CheckCompose(new ComposeDefault(), State.MakeInstance(null, typeof (void)), "/__VOID__/");
         }
         
         [Test] public void DefaultComposeIsString() {
-            CheckCompose(new ComposeDefault(), new State(1.23, typeof (double)), "1.23");
+            CheckCompose(new ComposeDefault(), State.MakeInstance(1.23, typeof (double)), "1.23");
         }
         
         [Test] public void BooleanTrueIsComposed() {
-            CheckCompose(new ComposeBoolean(), new State(true, typeof (bool)), "true");
+            CheckCompose(new ComposeBoolean(), State.MakeInstance(true, typeof (bool)), "true");
         }
         
         [Test] public void BooleanFalseIsComposed() {
-            CheckCompose(new ComposeBoolean(), new State(false, typeof (bool)), "false");
+            CheckCompose(new ComposeBoolean(), State.MakeInstance(false, typeof (bool)), "false");
         }
 
         [Test] public void ListIsComposedAsTree() {
             processor.AddOperator(new ComposeDefault());
-            var result = Compose(new ComposeList(), new State(new List<object> {"a", 1.23}, typeof (List<object>))) as Tree<object>;
+            var result = Compose(new ComposeList(), State.MakeInstance(new List<object> {"a", 1.23}, typeof (List<object>))) as Tree<object>;
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
             Assert.AreEqual("a", result.Branches[0].Value); 
@@ -50,7 +50,7 @@ namespace fitnesse.unitTest.slim {
         [Test] public void NestedListIsComposedAsTree() {
             processor.AddOperator(new ComposeDefault());
             processor.AddOperator(new ComposeList());
-            var result = Compose(new ComposeList(), new State(new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>))) as Tree<object>;
+            var result = Compose(new ComposeList(), State.MakeInstance(new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>))) as Tree<object>;
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
             Assert.AreEqual("a", result.Branches[0].Value);

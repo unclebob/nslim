@@ -19,19 +19,19 @@ namespace fitnesse.unitTest.slim {
 
         [Test] public void ParseSymbolReplacesWithValue() {
             processor.Store("$symbol", "testvalue");
-            Assert.AreEqual("testvalue", Parse(new ParseSymbol(), new State(typeof(object), new TreeLeaf<object>("$symbol"))));
+            Assert.AreEqual("testvalue", Parse(new ParseSymbol(), State.MakeParameter(typeof(object), "$symbol")));
         }
 
         [Test] public void ParseSymbolReplacesEmbeddedValues() {
             processor.Store("$symbol1", "test");
             processor.Store("$symbol2", "value");
-            Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), new State(typeof(object), new TreeLeaf<object>("-$symbol1$symbol2-"))));
+            Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), State.MakeParameter(typeof(object), "-$symbol1$symbol2-")));
         }
 
         [Test] public void TreeIsParsedForList() {
             var list =
                 Parse(new ParseList(),
-                      new State(typeof (List<int>), new TreeList<object>().AddBranch("5").AddBranch("4"))) as List<int>;
+                      State.MakeTree(typeof (List<int>), new TreeList<object>().AddBranch("5").AddBranch("4"))) as List<int>;
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count);
             Assert.AreEqual(5, list[0]);

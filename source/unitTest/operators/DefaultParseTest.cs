@@ -20,15 +20,15 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void StringIsParsed() {
-            Assert.AreEqual("stuff", parse.Parse(processor, new State(typeof(string), new TreeLeaf<object>("stuff"))));
+            Assert.AreEqual("stuff", parse.Parse(processor, State.MakeParameter(typeof(string), "stuff")));
         }
 
         [Test] public void DateIsParsed() {
-            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor, new State(typeof(DateTime), new TreeLeaf<object>("03 Jan 2008"))));
+            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor, State.MakeParameter(typeof(DateTime), "03 Jan 2008")));
         }
 
         [Test] public void ClassIsParsed() {
-            Assert.IsTrue(parse.Parse(processor, new State(typeof(SampleClass), new TreeLeaf<object>("stuff"))) is SampleClass);
+            Assert.IsTrue(parse.Parse(processor, State.MakeParameter(typeof(SampleClass), "stuff")) is SampleClass);
         }
     }
 }

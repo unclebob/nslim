@@ -34,7 +34,7 @@ namespace fitnesse.unitTest.application {
 
         [Test] public void ChangesDontShowInCopy() {
             var test = new TestConfig {Data = "stuff"};
-            configuration.SetItem(test.GetType().FullName, test);
+            configuration.SetItem(test.GetType(), test);
             var copy = new Configuration(configuration);
             configuration.GetItem<TestConfig>().Data = "other";
             Assert.AreEqual("stuff", copy.GetItem<TestConfig>().Data);

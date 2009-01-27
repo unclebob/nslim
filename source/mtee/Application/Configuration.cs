@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -13,12 +14,12 @@ using fitnesse.mtee.Model;
 namespace fitnesse.mtee.application {
     public class Configuration {
 
-        private readonly Dictionary<string, Copyable> items = new Dictionary<string, Copyable>();
+        private readonly Dictionary<Type, Copyable> items = new Dictionary<Type, Copyable>();
 
         public Configuration() {}
 
         public Configuration(Configuration other) {
-            foreach (string key in other.items.Keys) {
+            foreach (Type key in other.items.Keys) {
                 SetItem(key, other.items[key].Copy());
             }
         }
@@ -54,20 +55,24 @@ namespace fitnesse.mtee.application {
         }
 
         public T GetItem<T>() where T: Copyable, new() {
-            string typeName = typeof (T).FullName;
-            if (!items.ContainsKey(typeName)) {
-                items[typeName] = new T();
+            if (!items.ContainsKey(typeof(T))) {
+                items[typeof(T)] = new T();
             }
-            return (T)items[typeName];
+            return (T)items[typeof(T)];
         }
 
         public Copyable GetItem(string typeName) {
-            if (!items.ContainsKey(typeName)) {
-                items[typeName] = (Copyable)new Processor().Create(typeName);
-            }
-            return items[typeName];
+            Type type = new Processor().Parse<RuntimeType>(typeName).Type;
+            return GetItem(type);
         }
 
-        public void SetItem(string typeName, Copyable value) { items[typeName] = value; }
+        public Copyable GetItem(Type type) {
+            if (!items.ContainsKey(type)) {
+                items[type] = (Copyable)new Processor().Create(type.AssemblyQualifiedName);
+            }
+            return items[type];
+        }
+
+        public void SetItem(Type type, Copyable value) { items[type] = value; }
     }
 }

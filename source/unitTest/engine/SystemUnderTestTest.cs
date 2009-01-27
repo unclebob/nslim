@@ -4,6 +4,7 @@
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
 using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.engine {
@@ -15,42 +16,46 @@ namespace fitnesse.unitTest.engine {
         }
 
         [Test] public void TypeIsFoundInCurrentAssembly() {
-            RuntimeType sample = systemUnderTest.FindType("fitnesse.unitTest.engine.SampleClass");
+            RuntimeType sample = GetType("fitnesse.unitTest.engine.SampleClass");
             Assert.AreEqual(typeof(SampleClass), sample.Type);
         }
 
+        private RuntimeType GetType(string name) {
+            return systemUnderTest.FindType(new IdentifierName(name));
+        }
+
         [Test] public void TypeWithoutNamespaceIsFound() {
-            RuntimeType sample = systemUnderTest.FindType("AnotherSampleClass");
+            RuntimeType sample = GetType("AnotherSampleClass");
             Assert.AreEqual(typeof(AnotherSampleClass), sample.Type);
         }
 
         [Test] public void TypeIsFoundUsingNamespaces() {
             systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
-            RuntimeType sample = systemUnderTest.FindType("SampleClass");
+            RuntimeType sample = GetType("SampleClass");
             Assert.AreEqual(typeof(SampleClass), sample.Type);
         }
 
         [Test] public void NamespaceIsTrimmed() {
             systemUnderTest.AddNamespace(" fitnesse.unitTest.engine\n");
-            RuntimeType sample = systemUnderTest.FindType("SampleClass");
+            RuntimeType sample = GetType("SampleClass");
             Assert.AreEqual(typeof(SampleClass), sample.Type);
         }
 
         [Test] public void TypeIsFoundInLoadedAssembly() {
             systemUnderTest.AddAssembly("sample.dll");
-            RuntimeType sample = systemUnderTest.FindType("fitnesse.sample.SampleDomain");
+            RuntimeType sample = GetType("fitnesse.sample.SampleDomain");
             Assert.AreEqual("fitnesse.sample.SampleDomain", sample.Type.FullName);
         }
 
         [Test] public void ReloadingAssemblyIsIgnored() {
             systemUnderTest.AddAssembly("sample.dll");
             systemUnderTest.AddAssembly("sample.dll");
-            RuntimeType sample = systemUnderTest.FindType("fitnesse.sample.SampleDomain");
+            RuntimeType sample = GetType("fitnesse.sample.SampleDomain");
             Assert.AreEqual("fitnesse.sample.SampleDomain", sample.Type.FullName);
         }
 
         [Test] public void TypeIsFoundInDefaultNamespace() {
-            RuntimeType sample = systemUnderTest.FindType(typeof(SystemUnderTest).Name);
+            RuntimeType sample = systemUnderTest.FindType(new IdentifierName(typeof(SystemUnderTest).Name));
             Assert.AreEqual(typeof(SystemUnderTest), sample.Type);
         }
     }

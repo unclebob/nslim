@@ -4,6 +4,7 @@
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
 using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     class ParseType: ParseOperator {
@@ -12,7 +13,7 @@ namespace fitnesse.mtee.operators {
         }
 
         public object Parse(Processor processor, State state) {
-            return processor.SystemUnderTest.FindType(state.ParameterValueString);
+            return processor.SystemUnderTest.FindType(new IdentifierName(state.ParameterValueString));
         }
     }
 }

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using fitnesse.mtee.model;
 using fitnesse.mtee.Model;
 
@@ -13,6 +14,8 @@ namespace fitnesse.mtee.engine {
     public class SystemUnderTest: Copyable {
         private readonly List<Assembly> assemblies;
         private readonly List<LanguageName> namespaces;
+        private const int cacheSize = 50;
+        private readonly List<Type> cache = new List<Type>(cacheSize);
 
         public SystemUnderTest() {
             assemblies = new List<Assembly>();
@@ -36,19 +39,44 @@ namespace fitnesse.mtee.engine {
             if (!namespaces.Contains(newNamespace)) namespaces.Add(newNamespace);
         }
 
-        public RuntimeType FindType(string typeName) {
-            return new RuntimeType(Type.GetType(new LanguageName(typeName).MatchName) ?? SearchForType(new IdentifierName(typeName)));
+        public RuntimeType FindType(NameMatcher typeName) {
+            Type type = Type.GetType(typeName.MatchName);
+            if (type == null) {
+                type = SearchForType(typeName, cache)
+                    ?? SearchForType(typeName, AssemblyTypes(assemblies))
+                    ?? SearchForType(typeName, AssemblyTypes(AppDomain.CurrentDomain.GetAssemblies()));
+                if (type == null) throw new ArgumentException(TypeNotFoundMessage(typeName));
+                UpdateCache(type);
+            }
+            return new RuntimeType(type);
         }
 
-        private Type SearchForType(NameMatcher typeName) {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-                foreach (Type type in assembly.GetExportedTypes()) {
-                    if (typeName.Matches(type.FullName)) return type;
-                    if (type.Namespace == null || !IsRegistered(type.Namespace)) continue;
-                    if (typeName.Matches(type.Name)) return type;
-                }
+        private static string TypeNotFoundMessage(NameMatcher typeName) {
+            var result = new StringBuilder();
+            result.AppendFormat("Type '{0}' not found in assemblies:\n", typeName.MatchName);
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) result.AppendFormat("    {0}\n", assembly.CodeBase);
+            return result.ToString();
+        }
+
+        private void UpdateCache(Type type) {
+            if (cache.Contains(type)) cache.Remove(type);
+            cache.Add(type);
+            if (cache.Count > cacheSize) cache.RemoveAt(0);
+        }
+
+        private Type SearchForType(NameMatcher typeName, IEnumerable<Type> types) {
+            foreach (Type type in types) {
+                if (typeName.Matches(type.FullName)) return type;
+                if (type.Namespace == null || !IsRegistered(type.Namespace)) continue;
+                if (typeName.Matches(type.Name)) return type;
             }
-            throw new ArgumentException(string.Format("Type '{0}' not found", typeName.MatchName));
+            return null;
+        }
+
+        private static IEnumerable<Type> AssemblyTypes(IEnumerable<Assembly> assemblies) {
+            foreach (Assembly assembly in assemblies) {
+                foreach (Type type in assembly.GetExportedTypes()) yield return type;
+            }
         }
 
         private bool IsRegistered(string namespaceString) {

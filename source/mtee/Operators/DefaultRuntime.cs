@@ -6,7 +6,6 @@
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.operators {
     public class DefaultRuntime: RuntimeOperator {

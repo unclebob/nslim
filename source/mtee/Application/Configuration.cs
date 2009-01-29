@@ -9,7 +9,6 @@ using System.IO;
 using System.Xml;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.application {
     public class Configuration {

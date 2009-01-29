@@ -5,7 +5,6 @@
 
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
 
 namespace fitnesse.slim.operators {
     class ExecuteCall: ExecuteBase {

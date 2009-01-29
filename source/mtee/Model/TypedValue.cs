@@ -5,7 +5,7 @@
 
 using System;
 
-namespace fitnesse.mtee.Model {
+namespace fitnesse.mtee.model {
     public struct TypedValue {
         public object Value { get; private set; }
         public Type Type { get; private set; }

@@ -6,7 +6,6 @@
 using System;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.engine {

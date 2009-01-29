@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
 using fitnesse.mtee.operators;
 
 namespace fitnesse.mtee.engine {

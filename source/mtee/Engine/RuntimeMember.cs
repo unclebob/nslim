@@ -5,7 +5,7 @@
 
 using System;
 using System.Reflection;
-using fitnesse.mtee.Model;
+using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
     public interface RuntimeMember {

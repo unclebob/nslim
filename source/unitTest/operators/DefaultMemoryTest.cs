@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class DefaultMemoryTest {
         private DefaultMemory memory;
-        private readonly Processor processor = new Processor(new SystemUnderTest());
+        private readonly Processor processor = new Processor(new ApplicationUnderTest());
 
         [SetUp] public void SetUp() {
             memory = new DefaultMemory();

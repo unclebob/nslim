@@ -10,19 +10,19 @@ using System.Text;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
-    public class SystemUnderTest: Copyable {
+    public class ApplicationUnderTest: Copyable {
         private readonly List<Assembly> assemblies;
         private readonly List<LanguageName> namespaces;
         private const int cacheSize = 50;
         private readonly List<Type> cache = new List<Type>(cacheSize);
 
-        public SystemUnderTest() {
+        public ApplicationUnderTest() {
             assemblies = new List<Assembly>();
             namespaces = new List<LanguageName>();
             AddNamespace(GetType().Namespace);
         }
 
-        public SystemUnderTest(SystemUnderTest other) {
+        public ApplicationUnderTest(ApplicationUnderTest other) {
             assemblies = new List<Assembly>(other.assemblies);
             namespaces = new List<LanguageName>(other.namespaces);
         }
@@ -89,7 +89,7 @@ namespace fitnesse.mtee.engine {
         }
 
         public Copyable Copy() {
-            return new SystemUnderTest(this);
+            return new ApplicationUnderTest(this);
         }
     }
 }

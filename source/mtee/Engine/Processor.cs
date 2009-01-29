@@ -12,19 +12,19 @@ using fitnesse.mtee.operators;
 namespace fitnesse.mtee.engine {
     public class Processor: Copyable { //todo: add setup and teardown
         private readonly List<List<Operator>> operators = new List<List<Operator>>();
-        public SystemUnderTest SystemUnderTest { get; set; }
+        public ApplicationUnderTest ApplicationUnderTest { get; set; }
 
-        public Processor(SystemUnderTest systemUnderTest) {
-            SystemUnderTest = systemUnderTest;
+        public Processor(ApplicationUnderTest applicationUnderTest) {
+            ApplicationUnderTest = applicationUnderTest;
             AddOperator(new DefaultParse());
             AddOperator(new ParseType());
             AddOperator(new DefaultRuntime());
             AddOperator(new DefaultMemory());
         }
 
-        public Processor(): this(new SystemUnderTest()) {}
+        public Processor(): this(new ApplicationUnderTest()) {}
 
-        public Processor(Processor other): this(new SystemUnderTest(other.SystemUnderTest)) {
+        public Processor(Processor other): this(new ApplicationUnderTest(other.ApplicationUnderTest)) {
             operators.Clear();
             foreach (List<Operator> list in other.operators) {
                 operators.Add(new List<Operator>(list));
@@ -52,7 +52,7 @@ namespace fitnesse.mtee.engine {
         }
 
         public void AddNamespace(string namespaceName) {
-            SystemUnderTest.AddNamespace(namespaceName);
+            ApplicationUnderTest.AddNamespace(namespaceName);
         }
 
         public object Execute(Tree<object> input) {

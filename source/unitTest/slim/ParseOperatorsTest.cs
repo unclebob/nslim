@@ -14,7 +14,7 @@ namespace fitnesse.unitTest.slim {
         private Processor processor;
 
         [SetUp] public void SetUp() {
-            processor = new Processor(new SystemUnderTest());
+            processor = new Processor(new ApplicationUnderTest());
         }
 
         [Test] public void ParseSymbolReplacesWithValue() {

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class DefaultParseTest {
         private DefaultParse parse;
-        private readonly Processor processor = new Processor(new SystemUnderTest());
+        private readonly Processor processor = new Processor(new ApplicationUnderTest());
 
         [SetUp] public void SetUp() {
             parse = new DefaultParse();

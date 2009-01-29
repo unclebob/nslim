@@ -14,7 +14,7 @@ namespace fitnesse.slim {
 
         public int Run(string[] commandLineArguments, Configuration configuration) {
             service = configuration.GetItem<Service>();
-            service.SystemUnderTest = configuration.GetItem<SystemUnderTest>();
+            service.ApplicationUnderTest = configuration.GetItem<ApplicationUnderTest>();
             ParseCommandLine(commandLineArguments);
             ProcessInstructions();
             return 0;

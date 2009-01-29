@@ -9,11 +9,11 @@ using fitnesse.mtee.model;
 using NUnit.Framework;
 
 namespace fitnesse.unitTest.engine {
-    [TestFixture] public class SystemUnderTestTest {
-        private SystemUnderTest systemUnderTest;
+    [TestFixture] public class ApplicationUnderTestTest {
+        private ApplicationUnderTest applicationUnderTest;
 
         [SetUp] public void SetUp() {
-            systemUnderTest = new SystemUnderTest();
+            applicationUnderTest = new ApplicationUnderTest();
         }
 
         [Test] public void TypeIsFoundInCurrentAssembly() {
@@ -26,43 +26,43 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void TypeIsFoundUsingNamespaces() {
             CheckTypeNotFound("SampleClass");
-            systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
+            applicationUnderTest.AddNamespace("fitnesse.unitTest.engine");
             CheckTypeFound<SampleClass>("SampleClass");
         }
 
         [Test] public void NamespaceIsTrimmed() {
-            systemUnderTest.AddNamespace(" fitnesse.unitTest.engine\n");
+            applicationUnderTest.AddNamespace(" fitnesse.unitTest.engine\n");
             CheckTypeFound<SampleClass>("SampleClass");
         }
 
         [Test] public void TypeIsFoundInLoadedAssembly() {
-            systemUnderTest.AddAssembly("sample.dll");
+            applicationUnderTest.AddAssembly("sample.dll");
             RuntimeType sample = GetType("fitnesse.sample.SampleDomain");
             Assert.AreEqual("fitnesse.sample.SampleDomain", sample.Type.FullName);
         }
 
         [Test] public void ReloadingAssemblyIsIgnored() {
-            systemUnderTest.AddAssembly("sample.dll");
-            systemUnderTest.AddAssembly("sample.dll");
+            applicationUnderTest.AddAssembly("sample.dll");
+            applicationUnderTest.AddAssembly("sample.dll");
             RuntimeType sample = GetType("fitnesse.sample.SampleDomain");
             Assert.AreEqual("fitnesse.sample.SampleDomain", sample.Type.FullName);
         }
 
         [Test] public void TypeIsFoundInDefaultNamespace() {
-            CheckTypeFound<SystemUnderTest>("SystemUnderTest");
+            CheckTypeFound<ApplicationUnderTest>("ApplicationUnderTest");
         }
 
         [Test] public void NamespaceIsRemoved() {
-            systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
+            applicationUnderTest.AddNamespace("fitnesse.unitTest.engine");
             CheckTypeFound<SampleClass>("SampleClass");
-            systemUnderTest.RemoveNamespace("fitnesse.unitTest.engine");
+            applicationUnderTest.RemoveNamespace("fitnesse.unitTest.engine");
             CheckTypeNotFound("SampleClass");
         }
 
         [Test] public void ChangesNotMadeInCopy() {
-            var copy = (SystemUnderTest)systemUnderTest.Copy();
-            systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
-            systemUnderTest = copy;
+            var copy = (ApplicationUnderTest)applicationUnderTest.Copy();
+            applicationUnderTest.AddNamespace("fitnesse.unitTest.engine");
+            applicationUnderTest = copy;
             CheckTypeNotFound("SampleClass");
         }
 
@@ -83,7 +83,7 @@ namespace fitnesse.unitTest.engine {
         }
 
         private RuntimeType GetType(string name) {
-            return systemUnderTest.FindType(new IdentifierName(name));
+            return applicationUnderTest.FindType(new IdentifierName(name));
         }
     }
 }

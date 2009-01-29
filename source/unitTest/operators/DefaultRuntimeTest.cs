@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class DefaultRuntimeTest {
         private DefaultRuntime runtime;
-        private readonly Processor processor = new Processor(new SystemUnderTest());
+        private readonly Processor processor = new Processor(new ApplicationUnderTest());
 
         [SetUp] public void SetUp() {
             runtime = new DefaultRuntime();

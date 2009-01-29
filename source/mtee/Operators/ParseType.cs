@@ -13,7 +13,7 @@ namespace fitnesse.mtee.operators {
         }
 
         public object Parse(Processor processor, State state) {
-            return processor.SystemUnderTest.FindType(new IdentifierName(state.ParameterValueString));
+            return processor.ApplicationUnderTest.FindType(new IdentifierName(state.ParameterValueString));
         }
     }
 }

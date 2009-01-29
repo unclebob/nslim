@@ -38,7 +38,7 @@
   <ItemGroup>
     <Compile Include="Application\Configuration.cs" />
     <Compile Include="Application\Shell.cs" />
-    <Compile Include="Engine\SystemUnderTest.cs" />
+    <Compile Include="Engine\ApplicationUnderTest.cs" />
     <Compile Include="Engine\RuntimeMember.cs" />
     <Compile Include="Engine\RuntimeType.cs" />
     <Compile Include="Engine\Processor.cs" />

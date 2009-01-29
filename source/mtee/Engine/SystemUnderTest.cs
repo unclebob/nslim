@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using fitnesse.mtee.model;
-using fitnesse.mtee.Model;
 
 namespace fitnesse.mtee.engine {
     public class SystemUnderTest: Copyable {

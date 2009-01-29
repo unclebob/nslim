@@ -42,9 +42,13 @@ namespace fitnesse.mtee.engine {
             operators[priority].Add(anOperator);
         }
 
-        //todo: implement
         public void RemoveOperator(string operatorName) {
-            throw new NotImplementedException();
+            foreach (List<Operator> list in operators)
+                foreach (Operator item in list)
+                    if (item.GetType().FullName == operatorName) {
+                        list.Remove(item);
+                        return;
+                    }
         }
 
         public void AddNamespace(string namespaceName) {

@@ -63,6 +63,16 @@ namespace fitnesse.unitTest.engine {
             Assert.AreEqual("samplestringparm0", result.Value);
         }
 
+        [Test] public void OperatorIsRemoved() {
+            processor.AddOperator(defaultTest);
+            processor.AddOperator(specificTestA);
+            object result = processor.Execute(new TreeLeaf<object>("A"));
+            Assert.AreEqual("executeA", result.ToString());
+            processor.RemoveOperator(specificTestA.GetType().FullName);
+            result = processor.Execute(new TreeList<object>("A"));
+            Assert.AreEqual("defaultexecute", result.ToString());
+        }
+
         private class DefaultTest: ExecuteOperator {
             public bool IsMatch(Processor processor, State state) {
                 return true;

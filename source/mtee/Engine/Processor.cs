@@ -42,6 +42,11 @@ namespace fitnesse.mtee.engine {
             operators[priority].Add(anOperator);
         }
 
+        //todo: implement
+        public void RemoveOperator(string operatorName) {
+            throw new NotImplementedException();
+        }
+
         public void AddNamespace(string namespaceName) {
             SystemUnderTest.AddNamespace(namespaceName);
         }

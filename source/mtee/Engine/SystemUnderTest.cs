@@ -39,6 +39,11 @@ namespace fitnesse.mtee.engine {
             if (!namespaces.Contains(newNamespace)) namespaces.Add(newNamespace);
         }
 
+        public void RemoveNamespace(string namespaceName) {
+            var existingNamespace = new LanguageName(namespaceName);
+            if (namespaces.Contains(existingNamespace)) namespaces.Remove(existingNamespace);
+        }
+
         public RuntimeType FindType(NameMatcher typeName) {
             Type type = Type.GetType(typeName.MatchName);
             if (type == null) {

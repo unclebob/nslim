@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 using NUnit.Framework;
@@ -16,29 +17,22 @@ namespace fitnesse.unitTest.engine {
         }
 
         [Test] public void TypeIsFoundInCurrentAssembly() {
-            RuntimeType sample = GetType("fitnesse.unitTest.engine.SampleClass");
-            Assert.AreEqual(typeof(SampleClass), sample.Type);
-        }
-
-        private RuntimeType GetType(string name) {
-            return systemUnderTest.FindType(new IdentifierName(name));
+            CheckTypeFound<SampleClass>("fitnesse.unitTest.engine.SampleClass");
         }
 
         [Test] public void TypeWithoutNamespaceIsFound() {
-            RuntimeType sample = GetType("AnotherSampleClass");
-            Assert.AreEqual(typeof(AnotherSampleClass), sample.Type);
+            CheckTypeFound<AnotherSampleClass>("AnotherSampleClass");
         }
 
         [Test] public void TypeIsFoundUsingNamespaces() {
+            CheckTypeNotFound("SampleClass");
             systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
-            RuntimeType sample = GetType("SampleClass");
-            Assert.AreEqual(typeof(SampleClass), sample.Type);
+            CheckTypeFound<SampleClass>("SampleClass");
         }
 
         [Test] public void NamespaceIsTrimmed() {
             systemUnderTest.AddNamespace(" fitnesse.unitTest.engine\n");
-            RuntimeType sample = GetType("SampleClass");
-            Assert.AreEqual(typeof(SampleClass), sample.Type);
+            CheckTypeFound<SampleClass>("SampleClass");
         }
 
         [Test] public void TypeIsFoundInLoadedAssembly() {
@@ -55,10 +49,43 @@ namespace fitnesse.unitTest.engine {
         }
 
         [Test] public void TypeIsFoundInDefaultNamespace() {
-            RuntimeType sample = systemUnderTest.FindType(new IdentifierName(typeof(SystemUnderTest).Name));
-            Assert.AreEqual(typeof(SystemUnderTest), sample.Type);
+            CheckTypeFound<SystemUnderTest>("SystemUnderTest");
+        }
+
+        [Test] public void NamespaceIsRemoved() {
+            systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
+            CheckTypeFound<SampleClass>("SampleClass");
+            systemUnderTest.RemoveNamespace("fitnesse.unitTest.engine");
+            CheckTypeNotFound("SampleClass");
+        }
+
+        [Test] public void ChangesNotMadeInCopy() {
+            var copy = (SystemUnderTest)systemUnderTest.Copy();
+            systemUnderTest.AddNamespace("fitnesse.unitTest.engine");
+            systemUnderTest = copy;
+            CheckTypeNotFound("SampleClass");
+        }
+
+        private void CheckTypeFound<T>(string typeName) {
+            RuntimeType sample = GetType(typeName);
+            Assert.AreEqual(typeof(T), sample.Type);
+        }
+
+        private void CheckTypeNotFound(string typeName) {
+            string message = string.Empty;
+            try {
+                GetType(typeName);
+            }
+            catch (Exception e) {
+                message = e.Message;
+            }
+            Assert.IsTrue(message.StartsWith("Type 'SampleClass' not found in assemblies"));
+        }
+
+        private RuntimeType GetType(string name) {
+            return systemUnderTest.FindType(new IdentifierName(name));
         }
     }
-
 }
+
 public class AnotherSampleClass {}

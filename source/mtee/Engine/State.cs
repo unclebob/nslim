@@ -29,6 +29,7 @@ namespace fitnesse.mtee.engine {
 
         public static State MakeInstance(object instance, string member) { return new State(instance, typeof (void), member, null); }
         public static State MakeInstance(object instance, Type type) { return new State(instance, type, string.Empty, null); }
+        public static State MakeInstance(object instance, Type type, Tree<object> parameters) { return new State(instance, type, string.Empty, parameters); }
 
         public static State MakeName(string name) { return new State(null, typeof(void), name, null); }
 

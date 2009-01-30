@@ -22,6 +22,10 @@ namespace fitnesse.mtee.engine {
         object Compose(Processor processor, State state);
     }
 
+    public interface CompareOperator: Operator {
+        bool Compare(Processor processor, State state);
+    }
+
     public interface RuntimeOperator: Operator {
         object Create(Processor processor, State state);
         TypedValue Invoke(Processor processor, State state);

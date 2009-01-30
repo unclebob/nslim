@@ -111,6 +111,11 @@ namespace fitnesse.mtee.engine {
             return FindOperator<MemoryOperator>(state).Contains(this, state);
         }
 
+        public bool Compare(object instance, Type type, Tree<object> parameters) {
+            var state = State.MakeInstance(instance, type, parameters);
+            return FindOperator<CompareOperator>(state).Compare(this, state);
+        }
+
         private T FindOperator<T> (State state) where T: class, Operator{
             for (int priority = operators.Count - 1; priority >= 0; priority--) {
                 for (int i = operators[priority].Count - 1; i >= 0; i--) {

@@ -29,7 +29,9 @@ namespace fitnesse.mtee.application {
             if (document.DocumentElement == null) return;
             foreach (XmlNode typeNode in document.DocumentElement.ChildNodes) {
                 foreach (XmlNode methodNode in typeNode.ChildNodes) {
-                    LoadNode(typeNode.Name, methodNode);
+                    if (methodNode.NodeType == XmlNodeType.Element) {
+                        LoadNode(typeNode.Name, methodNode);
+                    }
                 }
             }
         }

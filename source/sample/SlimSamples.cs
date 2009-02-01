@@ -25,6 +25,7 @@ namespace fitnesse.slim.test {
         }
 
         public void execute() {}
+        public void reset() {}
     }
 
     public class EmployeesHiredBefore {

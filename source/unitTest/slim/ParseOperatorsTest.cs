@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.slim;
 using fitnesse.slim.operators;
 using NUnit.Framework;
 
@@ -15,16 +16,17 @@ namespace fitnesse.unitTest.slim {
 
         [SetUp] public void SetUp() {
             processor = new Processor(new ApplicationUnderTest());
+            processor.AddMemory<Symbol>();
         }
 
         [Test] public void ParseSymbolReplacesWithValue() {
-            processor.Store("$symbol", "testvalue");
+            processor.Store(new Symbol("$symbol", "testvalue"));
             Assert.AreEqual("testvalue", Parse(new ParseSymbol(), State.MakeParameter(typeof(object), "$symbol")));
         }
 
         [Test] public void ParseSymbolReplacesEmbeddedValues() {
-            processor.Store("$symbol1", "test");
-            processor.Store("$symbol2", "value");
+            processor.Store(new Symbol("$symbol1", "test"));
+            processor.Store(new Symbol("$symbol2", "value"));
             Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), State.MakeParameter(typeof(object), "-$symbol1$symbol2-")));
         }
 

@@ -9,8 +9,34 @@ using fitnesse.mtee.model;
 using fitnesse.mtee.operators;
 
 namespace fitnesse.mtee.engine {
+
     public class Processor: Copyable { //todo: add setup and teardown
         private readonly List<List<Operator>> operators = new List<List<Operator>>();
+
+        private readonly Dictionary<Type, object> memoryBanks = new Dictionary<Type, object>();
+
+        public void AddMemory<T>() {
+            memoryBanks[typeof (T)] = new List<T>();
+        }
+
+        public void Store<T>(T item) {
+            ((List<T>) memoryBanks[typeof (T)]).Add(item);
+        }
+
+        public T Load<T>(T matchItem) {
+            foreach (T item in ((List<T>) memoryBanks[typeof (T)])) {
+                if (matchItem.Equals(item)) return item;
+            }
+            throw new KeyNotFoundException();
+        }
+
+        public bool Contains<T>(T matchItem) {
+            foreach (T item in ((List<T>) memoryBanks[typeof (T)])) {
+                if (matchItem.Equals(item)) return true;
+            }
+            return false;
+        }
+
         public ApplicationUnderTest ApplicationUnderTest { get; set; }
 
         public Processor(ApplicationUnderTest applicationUnderTest) {
@@ -18,7 +44,6 @@ namespace fitnesse.mtee.engine {
             AddOperator(new DefaultParse());
             AddOperator(new ParseType());
             AddOperator(new DefaultRuntime());
-            AddOperator(new DefaultMemory());
         }
 
         public Processor(): this(new ApplicationUnderTest()) {}
@@ -94,21 +119,6 @@ namespace fitnesse.mtee.engine {
 
         public object Create(string typeName) {
             return Create(typeName, new TreeList<object>());
-        }
-
-        public void Store(string variableName, object instance) {
-            var state = State.MakeInstance(instance, variableName);
-            FindOperator<MemoryOperator>(state).Store(this, state);
-        }
-
-        public object Load(string variableName) {
-            var state = State.MakeName(variableName);
-            return FindOperator<MemoryOperator>(state).Load(this, state);
-        }
-
-        public bool Contains(string variableName) {
-            var state = State.MakeName(variableName);
-            return FindOperator<MemoryOperator>(state).Contains(this, state);
         }
 
         public bool Compare(object instance, Type type, Tree<object> parameters) {

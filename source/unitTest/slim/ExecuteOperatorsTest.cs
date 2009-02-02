@@ -5,6 +5,7 @@
 
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
+using fitnesse.slim;
 using fitnesse.slim.operators;
 using NUnit.Framework;
 
@@ -16,6 +17,8 @@ namespace fitnesse.unitTest.slim {
         [SetUp] public void SetUp() {
             processor = new Processor();
             processor.AddOperator(new ComposeDefault());
+            processor.AddMemory<SavedInstance>();
+            processor.AddMemory<Symbol>();
         }
 
         [Test] public void ExecuteDefaultReturnsException() {
@@ -40,14 +43,14 @@ namespace fitnesse.unitTest.slim {
         }
 
         [Test] public void ExecuteCallAndAssignSavesSymbol() {
-            processor.Store("variable", new SampleClass());
+            processor.Store(new SavedInstance("variable", new SampleClass()));
             var executeCallAndAssign = new ExecuteCallAndAssign();
             var input =
                 new TreeList<object>().AddBranch("step").AddBranch("callAndAssign").AddBranch("symbol").AddBranch(
                     "variable").AddBranch("sampleMethod");
             ExecuteOperation(executeCallAndAssign, input, 2);
             Assert.AreEqual("testresult", result.Branches[1].Value);
-            Assert.AreEqual("testresult", processor.Load("$symbol"));
+            Assert.AreEqual("testresult", processor.Load(new Symbol("symbol")).Instance);
         }
 
         private void ExecuteOperation(ExecuteOperator executeOperator, Tree<object> input, int branchCount) {

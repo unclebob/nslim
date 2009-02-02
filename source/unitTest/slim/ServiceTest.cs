@@ -36,7 +36,7 @@ namespace fitnesse.unitTest.slim {
         }
 
         [Test] public void ParseSymbolIsDoneFirst() {
-            service.Store("$symbol", "testvalue");
+            service.Store(new Symbol("$symbol", "testvalue"));
             service.AddOperator(new ParseUpperCase());
             string value = service.Parse<string>("$symbol");
             Assert.AreEqual("TESTVALUE", value);

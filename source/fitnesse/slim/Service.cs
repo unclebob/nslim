@@ -4,12 +4,15 @@
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
 using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 using fitnesse.slim.operators;
 
 namespace fitnesse.slim {
     public class Service: Processor {
 
         public Service() {
+            AddMemory<SavedInstance>();
+            AddMemory<Symbol>();
             AddOperator(new ExecuteDefault());
             AddOperator(new ExecuteImport());
             AddOperator(new ExecuteMake());
@@ -22,5 +25,15 @@ namespace fitnesse.slim {
             AddOperator(new ComposeList());
         }
 
+    }
+
+    public class SavedInstance: KeyValueMemory<string, object> {
+        public SavedInstance(string id, object instance): base(id, instance) {}
+        public SavedInstance(string id): base(id) {}
+    }
+
+    public class Symbol: KeyValueMemory<string, object> {
+        public Symbol(string id, object instance): base(id, instance) {}
+        public Symbol(string id): base(id) {}
     }
 }

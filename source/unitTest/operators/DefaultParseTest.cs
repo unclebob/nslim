@@ -5,7 +5,6 @@
 
 using System;
 using fitnesse.mtee.engine;
-using fitnesse.mtee.model;
 using fitnesse.mtee.operators;
 using fitnesse.unitTest.engine;
 using NUnit.Framework;

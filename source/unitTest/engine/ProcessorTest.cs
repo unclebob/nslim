@@ -72,6 +72,18 @@ namespace fitnesse.unitTest.engine {
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
+        [Test] public void EmptyMemoryContainsNothing() {
+            processor.AddMemory<string>();
+            Assert.IsFalse(processor.Contains("anything"));
+        }
+
+        [Test] public void StoredDataIsLoaded() {
+            processor.AddMemory<KeyValueMemory<string, string>>();
+            processor.Store(new KeyValueMemory<string, string>("something", "stuff"));
+            Assert.IsTrue(processor.Contains(new KeyValueMemory<string, string>("something")));
+            Assert.AreEqual("stuff", processor.Load(new KeyValueMemory<string, string>("something")).Instance);
+        }
+
         private class DefaultTest: ExecuteOperator {
             public bool IsMatch(Processor processor, State state) {
                 return true;
@@ -95,5 +107,6 @@ namespace fitnesse.unitTest.engine {
                 return "execute" + name;
             }
         }
+
     }
 }

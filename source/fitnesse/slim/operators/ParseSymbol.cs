@@ -6,7 +6,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using fitnesse.mtee.engine;
-using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ParseSymbol: ParseOperator {
@@ -28,7 +27,7 @@ namespace fitnesse.slim.operators {
             for (Match symbolMatch = symbolPattern.Match(input); symbolMatch.Success; symbolMatch = symbolMatch.NextMatch()) {
                 string symbolName = symbolMatch.Groups[1].Value;
                 if (symbolMatch.Index > lastMatch) result.Append(input.Substring(lastMatch, symbolMatch.Index - lastMatch));
-                result.Append(processor.Contains(symbolName) ? processor.Load(symbolName) : symbolName);
+                result.Append(processor.Contains(new Symbol(symbolName)) ? processor.Load(new Symbol(symbolName)).Instance : symbolName);
                 lastMatch = symbolMatch.Index + symbolMatch.Length;
             }
             if (lastMatch < input.Length) result.Append(input.Substring(lastMatch, input.Length - lastMatch));

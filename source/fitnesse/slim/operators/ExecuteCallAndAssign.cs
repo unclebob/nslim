@@ -12,7 +12,7 @@ namespace fitnesse.slim.operators {
 
         protected override Tree<object> ExecuteOperation(Processor processor, State state) {
             TypedValue result = InvokeMember(processor, state, 3);
-            processor.Store("$" + state.ParameterString(2), result.Value); //todo: should we store the composed result?
+            processor.Store(new Symbol(state.ParameterString(2), result.Value)); //todo: should we store the composed result?
             return Result(state, processor.Compose(result.Value, result.Type));
         }
     }

@@ -1,5 +1,4 @@
 ﻿using fitnesse.mtee.engine;
-using fitnesse.mtee.model;
 using fitnesse.mtee.operators;
 using NUnit.Framework;
 

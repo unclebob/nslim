@@ -30,10 +30,4 @@ namespace fitnesse.mtee.engine {
         object Create(Processor processor, State state);
         TypedValue Invoke(Processor processor, State state);
     }
-
-    public interface MemoryOperator: Operator {
-        object Load(Processor processor, State state);
-        object Store(Processor processor, State state);
-        bool Contains(Processor processor, State state);
-    }
 }

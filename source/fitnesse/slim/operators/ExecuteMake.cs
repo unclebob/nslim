@@ -12,9 +12,9 @@ namespace fitnesse.slim.operators {
         public ExecuteMake(): base("make") {}
 
         protected override Tree<object> ExecuteOperation(Processor processor, State state) {
-            processor.Store(
+            processor.Store(new SavedInstance(
                 state.ParameterString(2),
-                processor.Create(state.ParameterString(3), ParameterTree(state.Parameters, 4)));
+                processor.Create(state.ParameterString(3), ParameterTree(state.Parameters, 4))));
             return DefaultResult(state);
         }
 

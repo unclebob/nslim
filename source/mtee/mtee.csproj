@@ -46,13 +46,13 @@
     <Compile Include="Engine\State.cs" />
     <Compile Include="Model\Copyable.cs" />
     <Compile Include="Model\IdentifierName.cs" />
+    <Compile Include="Model\KeyValueMemory.cs" />
     <Compile Include="Model\LanguageName.cs" />
     <Compile Include="Model\NameMatcher.cs" />
     <Compile Include="Model\Tree.cs" />
     <Compile Include="Model\TypedValue.cs" />
     <Compile Include="Operators\Converter.cs" />
     <Compile Include="Operators\DefaultRuntime.cs" />
-    <Compile Include="Operators\DefaultMemory.cs" />
     <Compile Include="Operators\DefaultParse.cs" />
     <Compile Include="Operators\ParseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

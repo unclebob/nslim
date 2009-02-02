@@ -53,7 +53,7 @@ namespace fitnesse.slim.operators {
         }
 
         protected static TypedValue InvokeMember(Processor processor, State state, int memberIndex) {
-            object target = processor.Load(state.ParameterString(memberIndex));
+            object target = processor.Load(new SavedInstance(state.ParameterString(memberIndex))).Instance;
             return processor.Invoke(target, state.ParameterString(memberIndex + 1), ParameterTree(state.Parameters, memberIndex + 2));
         }
     }

@@ -15,28 +15,6 @@ namespace fitnesse.mtee.engine {
 
         private readonly Dictionary<Type, object> memoryBanks = new Dictionary<Type, object>();
 
-        public void AddMemory<T>() {
-            memoryBanks[typeof (T)] = new List<T>();
-        }
-
-        public void Store<T>(T item) {
-            ((List<T>) memoryBanks[typeof (T)]).Add(item);
-        }
-
-        public T Load<T>(T matchItem) {
-            foreach (T item in ((List<T>) memoryBanks[typeof (T)])) {
-                if (matchItem.Equals(item)) return item;
-            }
-            throw new KeyNotFoundException();
-        }
-
-        public bool Contains<T>(T matchItem) {
-            foreach (T item in ((List<T>) memoryBanks[typeof (T)])) {
-                if (matchItem.Equals(item)) return true;
-            }
-            return false;
-        }
-
         public ApplicationUnderTest ApplicationUnderTest { get; set; }
 
         public Processor(ApplicationUnderTest applicationUnderTest) {
@@ -53,6 +31,7 @@ namespace fitnesse.mtee.engine {
             foreach (List<Operator> list in other.operators) {
                 operators.Add(new List<Operator>(list));
             }
+            memoryBanks = new Dictionary<Type, object>(other.memoryBanks);
         }
 
         public void AddOperator(string operatorName) {
@@ -141,5 +120,39 @@ namespace fitnesse.mtee.engine {
         Copyable Copyable.Copy() {
             return new Processor(this);
         }
+
+        public void AddMemory<T>() {
+            memoryBanks[typeof (T)] = new List<T>();
+        }
+
+        public void Store<T>(T newItem) {
+            List<T> memory = GetMemory<T>();
+            foreach (T item in memory) {
+                if (!newItem.Equals(item)) continue;
+                memory.Remove(item);
+                break;
+            }
+            memory.Add(newItem);
+        }
+
+        public T Load<T>(T matchItem) {
+            foreach (T item in GetMemory<T>()) {
+                if (matchItem.Equals(item)) return item;
+            }
+            throw new KeyNotFoundException();
+        }
+
+        public bool Contains<T>(T matchItem) {
+            foreach (T item in GetMemory<T>()) {
+                if (matchItem.Equals(item)) return true;
+            }
+            return false;
+        }
+
+        public void Clear<T>() {
+            GetMemory<T>().Clear();
+        }
+
+        private List<T> GetMemory<T>() { return (List<T>) memoryBanks[typeof (T)];}
     }
 }

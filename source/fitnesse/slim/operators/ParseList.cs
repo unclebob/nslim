@@ -10,14 +10,14 @@ using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
-    public class ParseList: ParseOperator { // todo: handle any IList type
-        public bool IsMatch(Processor processor, State state) {
+    public class ParseList: ParseOperator<string> { // todo: handle any IList type
+        public bool IsMatch(Processor<string> processor, State<string> state) {
             return state.Type.IsGenericType && state.Type.GetGenericTypeDefinition() == typeof (List<>);
         }
 
-        public object Parse(Processor processor, State state) {
+        public object Parse(Processor<string> processor, State<string> state) {
             var result = (IList)Activator.CreateInstance(state.Type);
-            foreach (Tree<object> branch in state.Parameters.Branches) {
+            foreach (Tree<string> branch in state.Parameters.Branches) {
                 result.Add(processor.ParseTree(state.Type.GetGenericArguments()[0], branch));
             }
             return result;

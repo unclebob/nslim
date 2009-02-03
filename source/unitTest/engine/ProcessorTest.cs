@@ -15,15 +15,15 @@ namespace fitnesse.unitTest.engine {
         private static readonly SpecificTest specificTestA = new SpecificTest("A");
         private static readonly SpecificTest specificTestB = new SpecificTest("B");
 
-        private Processor processor;
+        private Processor<string> processor;
 
         [SetUp] public void SetUp() {
-            processor = new Processor();
+            processor = new Processor<string>();
         }
 
         [Test] public void NoOperatorIsFound() {
             try {
-                processor.Execute(new TreeList<object>());
+                processor.Execute(new TreeList<string>());
                 Assert.Fail();
             }
             catch (ApplicationException) {
@@ -33,7 +33,7 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void DefaultOperatorIsFound() {
             processor.AddOperator(defaultTest);
-            object result = processor.Execute(new TreeList<object>());
+            object result = processor.Execute(new TreeList<string>());
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
@@ -41,34 +41,34 @@ namespace fitnesse.unitTest.engine {
             processor.AddOperator(defaultTest);
             processor.AddOperator(specificTestA);
             processor.AddOperator(specificTestB);
-            object result = processor.Execute(new TreeLeaf<object>("A"));
+            object result = processor.Execute(new TreeLeaf<string>("A"));
             Assert.AreEqual("executeA", result.ToString());
         }
 
          [Test] public void TypeIsCreated() {
-            object result = new Processor().Create("fitnesse.unitTest.engine.SampleClass");
+            object result = new Processor<string>().Create("fitnesse.unitTest.engine.SampleClass");
             Assert.IsTrue(result is SampleClass);
         }
 
         [Test] public void MethodIsInvoked() {
             var instance = new SampleClass();
-            TypedValue result = new Processor().Invoke(instance, "methodnoparms", new TreeList<object>());
+            TypedValue result = new Processor<string>().Invoke(instance, "methodnoparms", new TreeList<string>());
             Assert.AreEqual("samplereturn", result.Value);
         }
 
         [Test] public void MethodWithParameterIsInvoked() {
             var instance = new SampleClass();
-            TypedValue result = new Processor().Invoke(instance, "MethodWithParms", new TreeList<object>().AddBranch("stringparm0"));
+            TypedValue result = new Processor<string>().Invoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
             Assert.AreEqual("samplestringparm0", result.Value);
         }
 
         [Test] public void OperatorIsRemoved() {
             processor.AddOperator(defaultTest);
             processor.AddOperator(specificTestA);
-            object result = processor.Execute(new TreeLeaf<object>("A"));
+            object result = processor.Execute(new TreeLeaf<string>("A"));
             Assert.AreEqual("executeA", result.ToString());
             processor.RemoveOperator(specificTestA.GetType().FullName);
-            result = processor.Execute(new TreeList<object>("A"));
+            result = processor.Execute(new TreeList<string>("A"));
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
@@ -84,26 +84,26 @@ namespace fitnesse.unitTest.engine {
             Assert.AreEqual("stuff", processor.Load(new KeyValueMemory<string, string>("something")).Instance);
         }
 
-        private class DefaultTest: ExecuteOperator {
-            public bool IsMatch(Processor processor, State state) {
+        private class DefaultTest: ExecuteOperator<string> {
+            public bool IsMatch(Processor<string> processor, State<string> state) {
                 return true;
             }
 
-            public object Execute(Processor processor, State state) {
+            public object Execute(Processor<string> processor, State<string> state) {
                 return "defaultexecute";
             }
         }
 
-        private class SpecificTest: ExecuteOperator {
+        private class SpecificTest: ExecuteOperator<string> {
             private readonly string name;
             public SpecificTest(string name) {
                 this.name = name;
             }
-            public bool IsMatch(Processor processor, State state) {
+            public bool IsMatch(Processor<string> processor, State<string> state) {
                 return state.ParameterValueString == name;
             }
 
-            public object Execute(Processor processor, State state) {
+            public object Execute(Processor<string> processor, State<string> state) {
                 return "execute" + name;
             }
         }

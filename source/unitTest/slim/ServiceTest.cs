@@ -21,7 +21,7 @@ namespace fitnesse.unitTest.slim {
         [Test] public void InstanceIsCreated() {
             SampleClass.Count = 0;
             var statement =
-                new TreeList<object>().AddBranch("step").AddBranch("make").AddBranch("variable").AddBranch(
+                new TreeList<string>().AddBranchValue("step").AddBranchValue("make").AddBranchValue("variable").AddBranchValue(
                     "fitnesse.unitTest.slim.SampleClass");
             service.Execute(statement);
             Assert.AreEqual(1, SampleClass.Count);
@@ -30,27 +30,27 @@ namespace fitnesse.unitTest.slim {
         [Test] public void OperatorIsAddedFromConfiguration() {
             var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
-            var statement = new TreeList<object>().AddBranch("step").AddBranch("sampleCommand");
-            var result = (Tree<object>)configuration.GetItem<Service>().Execute(statement);
+            var statement = new TreeList<string>().AddBranchValue("step").AddBranchValue("sampleCommand");
+            var result = (Tree<string>)configuration.GetItem<Service>().Execute(statement);
             Assert.AreEqual("sampleResult", result.BranchString(1));
         }
 
         [Test] public void ParseSymbolIsDoneFirst() {
             service.Store(new Symbol("$symbol", "testvalue"));
             service.AddOperator(new ParseUpperCase());
-            string value = service.Parse<string>("$symbol");
+            var value = service.Parse<string>("$symbol");
             Assert.AreEqual("TESTVALUE", value);
         }
 
-        private class ParseUpperCase: ParseOperator {
-            public bool IsMatch(Processor processor, State state) { return true; }
-            public object Parse(Processor processor, State state) { return state.ParameterValueString.ToUpper(); }
+        private class ParseUpperCase: ParseOperator<string> {
+            public bool IsMatch(Processor<string> processor, State<string> state) { return true; }
+            public object Parse(Processor<string> processor, State<string> state) { return state.ParameterValueString.ToUpper(); }
         }
     }
 
     public class SampleOperator: ExecuteBase {
         public SampleOperator() : base("sampleCommand") {}
-        protected override Tree<object> ExecuteOperation(Processor processor, State state) {
+        protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
             return Result(state, "sampleResult");
         }
     }

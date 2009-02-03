@@ -11,11 +11,11 @@ using NUnit.Framework;
 
 namespace fitnesse.unitTest.slim {
     [TestFixture] public class ExecuteOperatorsTest {
-        private Processor processor;
-        private Tree<object> result;
+        private Processor<string> processor;
+        private Tree<string> result;
 
         [SetUp] public void SetUp() {
-            processor = new Processor();
+            processor = new Processor<string>();
             processor.AddOperator(new ComposeDefault());
             processor.AddMemory<SavedInstance>();
             processor.AddMemory<Symbol>();
@@ -23,21 +23,21 @@ namespace fitnesse.unitTest.slim {
 
         [Test] public void ExecuteDefaultReturnsException() {
             var executeDefault = new ExecuteDefault();
-            var input = new TreeList<object>().AddBranch("step").AddBranch("garbage");
+            var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("garbage");
             ExecuteOperation(executeDefault, input, 2);
             CheckForException("System.ArgumentException: Unrecognized operation 'garbage'");
         }
 
         [Test] public void ExecuteMakeBadClassReturnsException() {
             var executeMake = new ExecuteMake();
-            var input = new TreeList<object>().AddBranch("step").AddBranch("make").AddBranch("variable").AddBranch("garbage");
+            var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("make").AddBranchValue("variable").AddBranchValue("garbage");
             ExecuteOperation(executeMake, input, 2);
             CheckForException("System.ArgumentException: Type 'garbage' not found");
         }
 
         [Test] public void ExecuteImportAddsNamespace() {
             var executeImport = new ExecuteImport();
-            var input = new TreeList<object>().AddBranch("step").AddBranch("import").AddBranch("fitnesse.unitTest.slim");
+            var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("import").AddBranchValue("fitnesse.unitTest.slim");
             ExecuteOperation(executeImport, input, 2);
             Assert.IsTrue(processor.Create("SampleClass") is SampleClass);
         }
@@ -46,22 +46,22 @@ namespace fitnesse.unitTest.slim {
             processor.Store(new SavedInstance("variable", new SampleClass()));
             var executeCallAndAssign = new ExecuteCallAndAssign();
             var input =
-                new TreeList<object>().AddBranch("step").AddBranch("callAndAssign").AddBranch("symbol").AddBranch(
-                    "variable").AddBranch("sampleMethod");
+                new TreeList<string>().AddBranchValue("step").AddBranchValue("callAndAssign").AddBranchValue("symbol").AddBranchValue(
+                    "variable").AddBranchValue("sampleMethod");
             ExecuteOperation(executeCallAndAssign, input, 2);
             Assert.AreEqual("testresult", result.Branches[1].Value);
             Assert.AreEqual("testresult", processor.Load(new Symbol("symbol")).Instance);
         }
 
-        private void ExecuteOperation(ExecuteOperator executeOperator, Tree<object> input, int branchCount) {
-            result = (Tree<object>)executeOperator.Execute(processor, new State(null, typeof(void), null, input));
+        private void ExecuteOperation(ExecuteOperator<string> executeOperator, Tree<string> input, int branchCount) {
+            result = (Tree<string>)executeOperator.Execute(processor, new State<string>(null, typeof(void), null, input));
             Assert.IsFalse(result.IsLeaf);
             Assert.AreEqual(branchCount, result.Branches.Count);
             Assert.AreEqual("step", result.Branches[0].Value);
         }
 
         private void CheckForException(string exceptionText) {
-            Assert.IsTrue(result.Branches[1].Value.ToString().StartsWith("__EXCEPTION__:" + exceptionText));
+            Assert.IsTrue(result.Branches[1].Value.StartsWith("__EXCEPTION__:" + exceptionText));
         }
     }
 }

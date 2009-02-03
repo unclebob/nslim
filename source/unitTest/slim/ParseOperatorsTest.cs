@@ -12,35 +12,35 @@ using NUnit.Framework;
 
 namespace fitnesse.unitTest.slim {
     [TestFixture] public class ParseOperatorsTest {
-        private Processor processor;
+        private Processor<string> processor;
 
         [SetUp] public void SetUp() {
-            processor = new Processor(new ApplicationUnderTest());
+            processor = new Processor<string>(new ApplicationUnderTest());
             processor.AddMemory<Symbol>();
         }
 
         [Test] public void ParseSymbolReplacesWithValue() {
             processor.Store(new Symbol("$symbol", "testvalue"));
-            Assert.AreEqual("testvalue", Parse(new ParseSymbol(), State.MakeParameter(typeof(object), "$symbol")));
+            Assert.AreEqual("testvalue", Parse(new ParseSymbol(), State<string>.MakeParseValue(typeof(object), "$symbol")));
         }
 
         [Test] public void ParseSymbolReplacesEmbeddedValues() {
             processor.Store(new Symbol("$symbol1", "test"));
             processor.Store(new Symbol("$symbol2", "value"));
-            Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), State.MakeParameter(typeof(object), "-$symbol1$symbol2-")));
+            Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), State<string>.MakeParseValue(typeof(object), "-$symbol1$symbol2-")));
         }
 
         [Test] public void TreeIsParsedForList() {
             var list =
                 Parse(new ParseList(),
-                      State.MakeTree(typeof (List<int>), new TreeList<object>().AddBranch("5").AddBranch("4"))) as List<int>;
+                      State<string>.MakeParseTree(typeof (List<int>), new TreeList<string>().AddBranchValue("5").AddBranchValue("4"))) as List<int>;
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count);
             Assert.AreEqual(5, list[0]);
             Assert.AreEqual(4, list[1]);
         }
 
-        private object Parse(ParseOperator parseOperator, State state) {
+        private object Parse(ParseOperator<string> parseOperator, State<string> state) {
             Assert.IsTrue(parseOperator.IsMatch(processor, state));
             return parseOperator.Parse(processor, state);
         }

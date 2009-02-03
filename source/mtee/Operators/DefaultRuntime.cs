@@ -8,25 +8,25 @@ using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
-    public class DefaultRuntime: RuntimeOperator {
-        public bool IsMatch(Processor processor, State state) { return true; }
+    public class DefaultRuntime<T>: RuntimeOperator<T> {
+        public bool IsMatch(Processor<T> processor, State<T> state) { return true; }
 
-        public object Create(Processor processor, State state) {
-            var runtimeType = processor.Parse<RuntimeType>(state.Member);
+        public object Create(Processor<T> processor, State<T> state) {
+            var runtimeType = processor.ParseString<RuntimeType>(state.Member);
             if (state.ParameterCount == 0) return runtimeType.CreateInstance();
             RuntimeMember member = runtimeType.GetConstructor(state.ParameterCount);
             return member.Invoke(runtimeType.Type, GetParameterList(state.Parameters, processor, member)).Value;
         }
 
-        public TypedValue Invoke(Processor processor, State state) {
+        public TypedValue Invoke(Processor<T> processor, State<T> state) {
             RuntimeMember member = new RuntimeType(state.Type).GetInstance(state.Member, state.ParameterCount);
             return member.Invoke(state.Instance, GetParameterList(state.Parameters, processor, member));
         }
 
-        private static object[] GetParameterList(Tree<object> parameters, Processor processor, RuntimeMember member) {
+        private static object[] GetParameterList(Tree<T> parameters, Processor<T> processor, RuntimeMember member) {
             var parameterList = new List<object>();
             int i = 0;
-            foreach (Tree<object> parameter in parameters.Branches) {
+            foreach (Tree<T> parameter in parameters.Branches) {
                 parameterList.Add(processor.ParseTree(member.GetParameterType(i), parameter));
                 i++;
             }

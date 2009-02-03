@@ -6,28 +6,28 @@
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
-    public interface Operator {
-        bool IsMatch(Processor processor, State state);
+    public interface Operator<T> {
+        bool IsMatch(Processor<T> processor, State<T> state);
     }
 
-    public interface ExecuteOperator: Operator {
-        object Execute(Processor processor, State state);
+    public interface ExecuteOperator<T>: Operator<T> {
+        object Execute(Processor<T> processor, State<T> state);
     }
 
-    public interface ParseOperator: Operator {
-        object Parse(Processor processor, State state);
+    public interface ParseOperator<T>: Operator<T> {
+        object Parse(Processor<T> processor, State<T> state);
     }
 
-    public interface ComposeOperator: Operator {
-        object Compose(Processor processor, State state);
+    public interface ComposeOperator<T>: Operator<T> {
+        Tree<T> Compose(Processor<T> processor, State<T> state);
     }
 
-    public interface CompareOperator: Operator {
-        bool Compare(Processor processor, State state);
+    public interface CompareOperator<T>: Operator<T> {
+        bool Compare(Processor<T> processor, State<T> state);
     }
 
-    public interface RuntimeOperator: Operator {
-        object Create(Processor processor, State state);
-        TypedValue Invoke(Processor processor, State state);
+    public interface RuntimeOperator<T>: Operator<T> {
+        object Create(Processor<T> processor, State<T> state);
+        TypedValue Invoke(Processor<T> processor, State<T> state);
     }
 }

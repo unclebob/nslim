@@ -7,10 +7,10 @@ using System;
 using fitnesse.mtee.engine;
 
 namespace fitnesse.mtee.operators {
-    public class DefaultParse: ParseOperator { //todo: also look for constructor with string argument
-        public bool IsMatch(Processor processor, State state) { return true; }
+    public class DefaultParse<T>: ParseOperator<T> { //todo: also look for constructor with string argument
+        public bool IsMatch(Processor<T> processor, State<T> state) { return true; }
 
-        public object Parse(Processor processor, State state) {
+        public object Parse(Processor<T> processor, State<T> state) {
             if (state.Type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
                 return state.ParameterValueString;
             }

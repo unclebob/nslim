@@ -48,8 +48,13 @@ namespace fitnesse.mtee.model {
 
         public override IList<Tree<T>> Branches { get { return list; } }
 
-        public TreeList<T> AddBranch(T value) {
-            Branches.Add(value as Tree<T> ?? new TreeLeaf<T>(value));
+        public TreeList<T> AddBranchValue(object value) {
+            Branches.Add(value as Tree<T> ?? new TreeLeaf<T>((T)value));
+            return this;
+        }
+
+        public TreeList<T> AddBranch(Tree<T> value) {
+            Branches.Add(value);
             return this;
         }
     }

@@ -11,27 +11,27 @@ using NUnit.Framework;
 
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class DefaultRuntimeTest {
-        private DefaultRuntime runtime;
-        private readonly Processor processor = new Processor(new ApplicationUnderTest());
+        private DefaultRuntime<string> runtime;
+        private readonly Processor<string> processor = new Processor<string>(new ApplicationUnderTest());
 
         [SetUp] public void SetUp() {
-            runtime = new DefaultRuntime();
+            runtime = new DefaultRuntime<string>();
         }
 
         [Test] public void InstanceIsCreated() {
             Assert.IsTrue(
-                runtime.Create(processor, State.MakeNew("fitnesse.unitTest.engine.SampleClass", new TreeList<object>())) is SampleClass);
+                runtime.Create(processor, State<string>.MakeCreate("fitnesse.unitTest.engine.SampleClass", new TreeList<string>())) is SampleClass);
         }
 
         [Test] public void StandardInstanceIsCreated() {
             Assert.IsTrue(
-                runtime.Create(processor, State.MakeNew("System.Boolean", new TreeList<object>())) is bool);
+                runtime.Create(processor, State<string>.MakeCreate("System.Boolean", new TreeList<string>())) is bool);
         }
 
         [Test] public void MethodIsInvoked() {
             TypedValue result = runtime.Invoke(processor,
-                                               new State(new SampleClass(), typeof (SampleClass), "methodwithparms",
-                                                         new TreeList<object>().AddBranch("stuff")));
+                                               new State<string>(new SampleClass(), typeof (SampleClass), "methodwithparms",
+                                                         new TreeList<string>().AddBranchValue("stuff")));
             Assert.AreEqual(typeof(string), result.Type);
             Assert.AreEqual("samplestuff", result.Value);
         }

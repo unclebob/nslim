@@ -7,31 +7,32 @@ using System;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
-    public struct State {
+    public struct State<T> {
         public object Instance { get; private set; }
         public Type Type { get; private set; }
-        public string Member { get; private set; }
-        public Tree<object> Parameters { get; private set; }
+        public string  Member { get; private set; }
+        public Tree<T> Parameters { get; private set; }
 
-        public State(object instance, Type type, string member, Tree<object> parameters) : this() {
+        public State(object instance, Type type, string member, Tree<T> parameters) : this() {
             Instance = instance;
             Type = type;
             Member = member;
             Parameters = parameters;
         }
 
-        public static State MakeTree(Tree<object> parameters) { return MakeTree(typeof (void), parameters); }
-        public static State MakeTree(Type type, Tree<object> parameters) { return new State(null, type, string.Empty, parameters); }
+        public static State<T> MakeExecute(Tree<T> parameters) { return new State<T>(null, typeof (void), string.Empty, parameters); }
 
-        public static State MakeParameter(Type type, object parameter) { return MakeTree(type, new TreeLeaf<object>(parameter)); }
+        public static State<T> MakeParseTree(Type type, Tree<T> parameters) { return new State<T>(null, type, string.Empty, parameters); }
+        public static State<T> MakeParseValue(Type type, T parameter) { return MakeParseTree(type, new TreeLeaf<T>(parameter)); }
+        public static State<T> MakeParseString(Type type, string member) { return new State<T>(null, type, member, null); }
 
-        public static State MakeNew(string member, Tree<object> parameters) { return new State(null, typeof (void), member, parameters); }
+        public static State<T> MakeCreate(string member, Tree<T> parameters) { return new State<T>(null, typeof (void), member, parameters); }
 
-        public static State MakeInstance(object instance, string member) { return new State(instance, typeof (void), member, null); }
-        public static State MakeInstance(object instance, Type type) { return new State(instance, type, string.Empty, null); }
-        public static State MakeInstance(object instance, Type type, Tree<object> parameters) { return new State(instance, type, string.Empty, parameters); }
+        public static State<T> MakeInvoke(object instance, string member, Tree<T> parameters) { return new State<T>(instance, instance.GetType(), member, parameters); }
 
-        public static State MakeName(string name) { return new State(null, typeof(void), name, null); }
+        public static State<T> MakeCompose(object instance, Type type) { return new State<T>(instance, type, string.Empty, null); }
+
+        public static State<T> MakeCompare(object instance, Type type, Tree<T> parameters) { return new State<T>(instance, type, string.Empty, parameters); }
 
         public string ParameterString(int index) {
             return Parameters.BranchString(index);
@@ -39,8 +40,9 @@ namespace fitnesse.mtee.engine {
 
         public int ParameterCount { get { return Parameters == null || Parameters.IsLeaf ? 0 : Parameters.Branches.Count; }}
 
-        public object ParameterValue { get { return Parameters.Value; }}
+        public T ParameterValue { get { return Parameters.Value; }}
 
-        public string ParameterValueString { get { return Parameters == null || Parameters.Value == null ? string.Empty : Parameters.Value.ToString(); }}
+        //todo: check this warning
+        public string ParameterValueString { get { return Parameters == null || Parameters.Value == null ? Member : Parameters.Value.ToString(); }}
     }
 }

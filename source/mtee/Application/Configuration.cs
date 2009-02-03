@@ -43,14 +43,14 @@ namespace fitnesse.mtee.application {
         }
 
         private void LoadNode(string typeName, XmlNode methodNode) {
-            new Processor().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
+            new Processor<string>().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
         }
 
-        private static Tree<object> NodeParameters(XmlNode node) {
-            var result = new TreeList<object>()
-                .AddBranch(node.InnerText);
+        private static Tree<string> NodeParameters(XmlNode node) {
+            var result = new TreeList<string>()
+                .AddBranchValue(node.InnerText);
             foreach (XmlAttribute attribute in node.Attributes) {
-                result.AddBranch(attribute.Value);
+                result.AddBranchValue(attribute.Value);
             }
             return result;
         }
@@ -63,13 +63,13 @@ namespace fitnesse.mtee.application {
         }
 
         public Copyable GetItem(string typeName) {
-            Type type = new Processor().Parse<RuntimeType>(typeName).Type;
+            Type type = new Processor<string>().Parse<RuntimeType>(typeName).Type;
             return GetItem(type);
         }
 
         public Copyable GetItem(Type type) {
             if (!items.ContainsKey(type)) {
-                items[type] = (Copyable)new Processor().Create(type.AssemblyQualifiedName);
+                items[type] = (Copyable)new Processor<string>().Create(type.AssemblyQualifiedName);
             }
             return items[type];
         }

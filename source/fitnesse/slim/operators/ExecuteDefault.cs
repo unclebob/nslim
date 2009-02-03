@@ -11,7 +11,7 @@ namespace fitnesse.slim.operators {
     public class ExecuteDefault: ExecuteBase {
         public ExecuteDefault(): base(string.Empty) {}
 
-        protected override Tree<object> ExecuteOperation(Processor processor, State state) {
+        protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
             throw new ArgumentException(string.Format("Unrecognized operation '{0}'", state.ParameterString(1)));
         }
     }

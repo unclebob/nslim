@@ -7,12 +7,12 @@ using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
-    class ParseType: ParseOperator {
-        public bool IsMatch(Processor processor, State state) {
+    class ParseType<T>: ParseOperator<T> {
+        public bool IsMatch(Processor<T> processor, State<T> state) {
             return state.Type == typeof (RuntimeType);
         }
 
-        public object Parse(Processor processor, State state) {
+        public object Parse(Processor<T> processor, State<T> state) {
             return processor.ApplicationUnderTest.FindType(new IdentifierName(state.ParameterValueString));
         }
     }

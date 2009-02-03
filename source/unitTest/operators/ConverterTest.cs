@@ -4,11 +4,11 @@ using NUnit.Framework;
 
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class ConverterTest {
-        private readonly Processor processor = new Processor(new ApplicationUnderTest());
+        private readonly Processor<string> processor = new Processor<string>(new ApplicationUnderTest());
 
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();
-            var state = State.MakeParameter(typeof(CustomClass), "info");
+            var state = State<string>.MakeParseValue(typeof(CustomClass), "info");
             Assert.IsTrue(converter.IsMatch(processor, state));
             var result = converter.Parse(processor, state) as CustomClass;
             Assert.IsNotNull(result);
@@ -17,9 +17,9 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void CustomTypeIsComposed() {
             var converter = new CustomConverter();
-            var state = State.MakeInstance(new CustomClass {Info = "stuff"}, typeof(CustomClass));
+            var state = State<string>.MakeCompose(new CustomClass {Info = "stuff"}, typeof(CustomClass));
             Assert.IsTrue(converter.IsMatch(processor, state));
-            var result = converter.Compose(processor, state) as string;
+            var result = converter.Compose(processor, state).Value;
             Assert.IsNotNull(result);
             Assert.AreEqual("mystuff", result);
         }

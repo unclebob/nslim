@@ -10,8 +10,8 @@ using fitnesse.mtee.operators;
 
 namespace fitnesse.mtee.engine {
 
-    public class Processor: Copyable { //todo: add setup and teardown
-        private readonly List<List<Operator>> operators = new List<List<Operator>>();
+    public class Processor<U>: Copyable { //todo: add setup and teardown
+        private readonly List<List<Operator<U>>> operators = new List<List<Operator<U>>>();
 
         private readonly Dictionary<Type, object> memoryBanks = new Dictionary<Type, object>();
 
@@ -19,35 +19,35 @@ namespace fitnesse.mtee.engine {
 
         public Processor(ApplicationUnderTest applicationUnderTest) {
             ApplicationUnderTest = applicationUnderTest;
-            AddOperator(new DefaultParse());
-            AddOperator(new ParseType());
-            AddOperator(new DefaultRuntime());
+            AddOperator(new DefaultParse<U>());
+            AddOperator(new ParseType<U>());
+            AddOperator(new DefaultRuntime<U>());
         }
 
         public Processor(): this(new ApplicationUnderTest()) {}
 
-        public Processor(Processor other): this(new ApplicationUnderTest(other.ApplicationUnderTest)) {
+        public Processor(Processor<U> other): this(new ApplicationUnderTest(other.ApplicationUnderTest)) {
             operators.Clear();
-            foreach (List<Operator> list in other.operators) {
-                operators.Add(new List<Operator>(list));
+            foreach (List<Operator<U>> list in other.operators) {
+                operators.Add(new List<Operator<U>>(list));
             }
             memoryBanks = new Dictionary<Type, object>(other.memoryBanks);
         }
 
         public void AddOperator(string operatorName) {
-            AddOperator((Operator)Create(operatorName));
+            AddOperator((Operator<U>)Create(operatorName));
         }
 
-        public void AddOperator(Operator anOperator) { AddOperator(anOperator, 0); }
+        public void AddOperator(Operator<U> anOperator) { AddOperator(anOperator, 0); }
 
-        public void AddOperator(Operator anOperator, int priority) {
-            while (operators.Count <= priority) operators.Add(new List<Operator>());
+        public void AddOperator(Operator<U> anOperator, int priority) {
+            while (operators.Count <= priority) operators.Add(new List<Operator<U>>());
             operators[priority].Add(anOperator);
         }
 
         public void RemoveOperator(string operatorName) {
-            foreach (List<Operator> list in operators)
-                foreach (Operator item in list)
+            foreach (List<Operator<U>> list in operators)
+                foreach (Operator<U> item in list)
                     if (item.GetType().FullName == operatorName) {
                         list.Remove(item);
                         return;
@@ -58,54 +58,63 @@ namespace fitnesse.mtee.engine {
             ApplicationUnderTest.AddNamespace(namespaceName);
         }
 
-        public object Execute(Tree<object> input) {
-            var state = State.MakeTree(input);
-            return FindOperator<ExecuteOperator>(state).Execute(this, state);
+        public object Execute(Tree<U> input) {
+            var state = State<U>.MakeExecute(input);
+            return FindOperator<ExecuteOperator<U>>(state).Execute(this, state);
         }
 
-        public object ParseTree(Type type, Tree<object> input) {
-            var state = State.MakeTree(type, input);
-            return FindOperator<ParseOperator>(state).Parse(this, state);
+        public object ParseTree(Type type, Tree<U> input) {
+            var state = State<U>.MakeParseTree(type, input);
+            return FindOperator<ParseOperator<U>>(state).Parse(this, state);
         }
 
-        public object Parse(Type type, object input) {
-            var state = State.MakeParameter(type, input);
-            return FindOperator<ParseOperator>(state).Parse(this, state);
+        public object Parse(Type type, U input) {
+            var state = State<U>.MakeParseValue(type, input);
+            return FindOperator<ParseOperator<U>>(state).Parse(this, state);
         }
 
-        public T ParseTree<T>(Tree<object> input) {
+        public object ParseString(Type type, string input) {
+            var state = State<U>.MakeParseString(type, input);
+            return FindOperator<ParseOperator<U>>(state).Parse(this, state);
+        }
+
+        public T ParseTree<T>(Tree<U> input) {
             return (T) ParseTree(typeof (T), input);
         }
 
-        public T Parse<T>(object input) {
+        public T Parse<T>(U input) {
             return (T) Parse(typeof (T), input);
         }
 
-        public object Compose(object result, Type type) {
-            var state = State.MakeInstance(result, type);
-            return FindOperator<ComposeOperator>(state).Compose(this, state);
+        public T ParseString<T>(string input) {
+            return (T) ParseString(typeof (T), input);
         }
 
-        public TypedValue Invoke(object instance, string member, Tree<object> parameters) {
-            var state = new State(instance, instance.GetType(), member, parameters);
-            return FindOperator<RuntimeOperator>(state).Invoke(this, state);
+        public Tree<U> Compose(object result, Type type) {
+            var state = State<U>.MakeCompose(result, type);
+            return FindOperator<ComposeOperator<U>>(state).Compose(this, state);
         }
 
-        public object Create(string typeName, Tree<object> parameters) {
-            var state = State.MakeNew(typeName, parameters);
-            return FindOperator<RuntimeOperator>(state).Create(this, state);
+        public TypedValue Invoke(object instance, string member, Tree<U> parameters) {
+            var state = State<U>.MakeInvoke(instance, member, parameters);
+            return FindOperator<RuntimeOperator<U>>(state).Invoke(this, state);
+        }
+
+        public object Create(string typeName, Tree<U> parameters) {
+            var state = State<U>.MakeCreate(typeName, parameters);
+            return FindOperator<RuntimeOperator<U>>(state).Create(this, state);
         }
 
         public object Create(string typeName) {
-            return Create(typeName, new TreeList<object>());
+            return Create(typeName, new TreeList<U>());
         }
 
-        public bool Compare(object instance, Type type, Tree<object> parameters) {
-            var state = State.MakeInstance(instance, type, parameters);
-            return FindOperator<CompareOperator>(state).Compare(this, state);
+        public bool Compare(object instance, Type type, Tree<U> parameters) {
+            var state = State<U>.MakeCompare(instance, type, parameters);
+            return FindOperator<CompareOperator<U>>(state).Compare(this, state);
         }
 
-        private T FindOperator<T> (State state) where T: class, Operator{
+        private T FindOperator<T> (State<U> state) where T: class, Operator<U>{
             for (int priority = operators.Count - 1; priority >= 0; priority--) {
                 for (int i = operators[priority].Count - 1; i >= 0; i--) {
                     var candidate = operators[priority][i] as T;
@@ -118,7 +127,7 @@ namespace fitnesse.mtee.engine {
         }
 
         Copyable Copyable.Copy() {
-            return new Processor(this);
+            return new Processor<U>(this);
         }
 
         public void AddMemory<T>() {

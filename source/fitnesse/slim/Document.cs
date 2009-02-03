@@ -8,28 +8,28 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.slim {
     public class Document {
-        public Document(Tree<object> content) {
+        public Document(Tree<string> content) {
             Content = content;
         }
 
-        public Tree<object> Content { get; private set; }
+        public Tree<string> Content { get; private set; }
 
         public override string ToString() { return Content.Serialize(new SlimWriter()).ToString(); }
 
-        private class SlimWriter: TreeWriter<object> {
+        private class SlimWriter: TreeWriter<string> {
             private readonly StringBuilder output = new StringBuilder();
 
-            public void WritePrefix(Tree<object> tree) {
+            public void WritePrefix(Tree<string> tree) {
                 if (!tree.IsLeaf) output.AppendFormat("[{0:000000}:", tree.Branches.Count);
                 else output.Append(tree.Value == null ? "null" : tree.Value.ToString());
             }
 
-            public void WriteBranch(Tree<object> tree, int index) {
+            public void WriteBranch(Tree<string> tree, int index) {
                 string item = tree.Serialize(new SlimWriter()).ToString();
                 output.AppendFormat("{0:000000}:{1}:", item.Length, item);
             }
 
-            public void WriteSuffix(Tree<object> tree) {
+            public void WriteSuffix(Tree<string> tree) {
                 if (!tree.IsLeaf) output.Append(']');
             }
 
@@ -38,19 +38,19 @@ namespace fitnesse.slim {
 
         public static Document Parse(string input) { return new Document(Read(input)); }
 
-        private static Tree<object> Read(string input) {
+        private static Tree<string> Read(string input) {
             if (input.StartsWith("[") && input.EndsWith("]")) return ReadList(input.Substring(1, input.Length - 2));
-            return new TreeLeaf<object>(input);
+            return new TreeLeaf<string>(input);
         }
 
-        private static TreeList<object> ReadList(string input) {
+        private static TreeList<string> ReadList(string input) {
             int length = int.Parse(input.Substring(0, 6));
-            var result = new TreeList<object>();
+            var result = new TreeList<string>();
             int start = 7;
             for (int i = 0; i < length; i++) {
                 int itemLength = int.Parse(input.Substring(start, 6));
                 start += 7;
-                result.Branches.Add(Read(input.Substring(start, itemLength)));
+                result.AddBranch(Read(input.Substring(start, itemLength)));
                 start += itemLength + 1; 
             }
             return result;

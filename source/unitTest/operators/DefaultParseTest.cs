@@ -11,23 +11,23 @@ using NUnit.Framework;
 
 namespace fitnesse.unitTest.operators {
     [TestFixture] public class DefaultParseTest {
-        private DefaultParse parse;
-        private readonly Processor processor = new Processor(new ApplicationUnderTest());
+        private DefaultParse<string> parse;
+        private readonly Processor<string> processor = new Processor<string>(new ApplicationUnderTest());
 
         [SetUp] public void SetUp() {
-            parse = new DefaultParse();
+            parse = new DefaultParse<string>();
         }
 
         [Test] public void StringIsParsed() {
-            Assert.AreEqual("stuff", parse.Parse(processor, State.MakeParameter(typeof(string), "stuff")));
+            Assert.AreEqual("stuff", parse.Parse(processor, State<string>.MakeParseValue(typeof(string), "stuff")));
         }
 
         [Test] public void DateIsParsed() {
-            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor, State.MakeParameter(typeof(DateTime), "03 Jan 2008")));
+            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor, State<string>.MakeParseValue(typeof(DateTime), "03 Jan 2008")));
         }
 
         [Test] public void ClassIsParsed() {
-            Assert.IsTrue(parse.Parse(processor, State.MakeParameter(typeof(SampleClass), "stuff")) is SampleClass);
+            Assert.IsTrue(parse.Parse(processor, State<string>.MakeParseValue(typeof(SampleClass), "stuff")) is SampleClass);
         }
     }
 }

@@ -8,17 +8,16 @@ using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
-    public class ComposeList: ComposeOperator { //todo: handle any enumerable type
-        public bool IsMatch(Processor processor, State state) {
+    public class ComposeList: ComposeOperator<string> { //todo: handle any enumerable type
+        public bool IsMatch(Processor<string> processor, State<string> state) {
             return state.Type == typeof (List<object>);
         }
 
-        public object Compose(Processor processor, State state) {
+        public Tree<string> Compose(Processor<string> processor, State<string> state) {
             var list = state.Instance as List<object> ?? new List<object>();
-            var tree = new TreeList<object>();
+            var tree = new TreeList<string>();
             foreach (object value in list) {
-                object composeValue = processor.Compose(value, value != null ? value.GetType() : typeof(object));
-                tree.Branches.Add(composeValue as Tree<object> ?? new TreeLeaf<object>(composeValue));
+                tree.AddBranch(processor.Compose(value, value != null ? value.GetType() : typeof(object)));
             }
             return tree;
         }

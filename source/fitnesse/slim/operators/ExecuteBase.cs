@@ -8,7 +8,7 @@ using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
-    public abstract class ExecuteBase: ExecuteOperator {
+    public abstract class ExecuteBase: ExecuteOperator<string> {
         private const string defaultResult = "OK";
         private const string ExceptionResult = "__EXCEPTION__:{0}";
         private readonly IdentifierName identifier;
@@ -17,42 +17,46 @@ namespace fitnesse.slim.operators {
             identifier = new IdentifierName(identifierName);
         }
 
-        public bool IsMatch(Processor processor, State state) {
+        public bool IsMatch(Processor<string> processor, State<string> state) {
             return identifier.IsEmpty || (state.ParameterCount >= 2 && identifier.Matches(state.ParameterString(1)));
         }
 
-        public object Execute(Processor processor, State state) {
+        public object Execute(Processor<string> processor, State<string> state) {
             try {
                 return ExecuteOperation(processor, state);
             }
             catch (Exception e) {
-                return new TreeList<object>()
-                    .AddBranch(state.ParameterString(0))
-                    .AddBranch(string.Format(ExceptionResult, e));
+                return Result(state, string.Format(ExceptionResult, e));
             }
         }
 
-        protected abstract Tree<object> ExecuteOperation(Processor processor, State state);
+        protected abstract Tree<string> ExecuteOperation(Processor<string> processor, State<string> state);
 
-        protected static Tree<object> DefaultResult(State state) {
+        protected static Tree<string> DefaultResult(State<string> state) {
             return Result(state, defaultResult);
         }
 
-        protected static Tree<object> Result(State state, object result) {
-            return new TreeList<object>()
-                .AddBranch(state.ParameterString(0))
+        protected static Tree<string> Result(State<string> state, Tree<string> result) {
+            return new TreeList<string>()
+                .AddBranchValue(state.ParameterString(0))
                 .AddBranch(result);
         }
 
-        protected static Tree<object> ParameterTree(Tree<object> input, int startingIndex) {
-            var result = new TreeList<object>(input.Value);
+        protected static Tree<string> Result(State<string> state, string result) {
+            return new TreeList<string>()
+                .AddBranchValue(state.ParameterString(0))
+                .AddBranchValue(result);
+        }
+
+        protected static Tree<string> ParameterTree(Tree<string> input, int startingIndex) {
+            var result = new TreeList<string>(input.Value);
             for (int i = startingIndex; i < input.Branches.Count; i++) {
-                result.Branches.Add(input.Branches[i]);
+                result.AddBranch(input.Branches[i]);
             }
             return result;
         }
 
-        protected static TypedValue InvokeMember(Processor processor, State state, int memberIndex) {
+        protected static TypedValue InvokeMember(Processor<string> processor, State<string> state, int memberIndex) {
             object target = processor.Load(new SavedInstance(state.ParameterString(memberIndex))).Instance;
             return processor.Invoke(target, state.ParameterString(memberIndex + 1), ParameterTree(state.Parameters, memberIndex + 2));
         }

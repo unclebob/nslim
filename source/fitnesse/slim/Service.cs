@@ -8,7 +8,7 @@ using fitnesse.mtee.model;
 using fitnesse.slim.operators;
 
 namespace fitnesse.slim {
-    public class Service: Processor {
+    public class Service: Processor<string> {
 
         public Service() {
             AddMemory<SavedInstance>();

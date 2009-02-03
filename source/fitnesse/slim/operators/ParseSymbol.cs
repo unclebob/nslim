@@ -8,20 +8,20 @@ using System.Text.RegularExpressions;
 using fitnesse.mtee.engine;
 
 namespace fitnesse.slim.operators {
-    public class ParseSymbol: ParseOperator {
+    public class ParseSymbol: ParseOperator<string> {
         private static readonly Regex symbolPattern = new Regex("(\\$[a-zA-Z]\\w*)");
 
-        public bool IsMatch(Processor processor, State state) { //todo: save result so we don't have to re-do it
+        public bool IsMatch(Processor<string> processor, State<string> state) { //todo: save result so we don't have to re-do it
             return state.ParameterValueString != ReplaceSymbols(state.ParameterValueString, processor);
         }
 
-        public object Parse(Processor processor, State state) {
+        public object Parse(Processor<string> processor, State<string> state) {
             string input = state.ParameterValueString;
             string result = ReplaceSymbols(input, processor);
             return processor.Parse(state.Type, result);
         }
 
-        private static string ReplaceSymbols(string input, Processor processor) {
+        private static string ReplaceSymbols(string input, Processor<string> processor) {
             var result = new StringBuilder();
             int lastMatch = 0;
             for (Match symbolMatch = symbolPattern.Match(input); symbolMatch.Success; symbolMatch = symbolMatch.NextMatch()) {

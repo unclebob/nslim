@@ -11,7 +11,7 @@ namespace fitnesse.slim.operators {
         public ExecuteImport() : base("import") {}
 
         protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
-            processor.AddNamespace(state.ParameterString(2));
+            processor.AddNamespace(state.Parameter(2));
             return DefaultResult(state);
         }
     }

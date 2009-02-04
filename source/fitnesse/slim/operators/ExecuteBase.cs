@@ -18,7 +18,7 @@ namespace fitnesse.slim.operators {
         }
 
         public bool IsMatch(Processor<string> processor, State<string> state) {
-            return identifier.IsEmpty || (state.ParameterCount >= 2 && identifier.Matches(state.ParameterString(1)));
+            return identifier.IsEmpty || (state.ParameterCount >= 2 && identifier.Matches(state.Parameter(1)));
         }
 
         public object Execute(Processor<string> processor, State<string> state) {
@@ -38,13 +38,13 @@ namespace fitnesse.slim.operators {
 
         protected static Tree<string> Result(State<string> state, Tree<string> result) {
             return new TreeList<string>()
-                .AddBranchValue(state.ParameterString(0))
+                .AddBranchValue(state.Parameter(0))
                 .AddBranch(result);
         }
 
         protected static Tree<string> Result(State<string> state, string result) {
             return new TreeList<string>()
-                .AddBranchValue(state.ParameterString(0))
+                .AddBranchValue(state.Parameter(0))
                 .AddBranchValue(result);
         }
 
@@ -57,8 +57,8 @@ namespace fitnesse.slim.operators {
         }
 
         protected static TypedValue InvokeMember(Processor<string> processor, State<string> state, int memberIndex) {
-            object target = processor.Load(new SavedInstance(state.ParameterString(memberIndex))).Instance;
-            return processor.Invoke(target, state.ParameterString(memberIndex + 1), ParameterTree(state.Parameters, memberIndex + 2));
+            object target = processor.Load(new SavedInstance(state.Parameter(memberIndex))).Instance;
+            return processor.Invoke(target, state.Parameter(memberIndex + 1), ParameterTree(state.Parameters, memberIndex + 2));
         }
     }
 }

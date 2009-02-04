@@ -29,10 +29,6 @@ namespace fitnesse.mtee.model {
             serializer.WriteSuffix(this);
             return serializer;
         }
-
-        public string BranchString(int index) {
-            return Branches[index].Value.ToString();
-        }
     }
 
     public class TreeList<T>: Tree<T> {

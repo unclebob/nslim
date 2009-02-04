@@ -13,8 +13,8 @@ namespace fitnesse.slim.operators {
 
         protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
             processor.Store(new SavedInstance(
-                state.ParameterString(2),
-                processor.Create(state.ParameterString(3), ParameterTree(state.Parameters, 4))));
+                state.Parameter(2),
+                processor.Create(state.Parameter(3), ParameterTree(state.Parameters, 4))));
             return DefaultResult(state);
         }
 

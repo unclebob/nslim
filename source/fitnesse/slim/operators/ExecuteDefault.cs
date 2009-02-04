@@ -12,7 +12,7 @@ namespace fitnesse.slim.operators {
         public ExecuteDefault(): base(string.Empty) {}
 
         protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
-            throw new ArgumentException(string.Format("Unrecognized operation '{0}'", state.ParameterString(1)));
+            throw new ArgumentException(string.Format("Unrecognized operation '{0}'", state.Parameter(1)));
         }
     }
 }

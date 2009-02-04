@@ -34,8 +34,8 @@ namespace fitnesse.mtee.engine {
 
         public static State<T> MakeCompare(object instance, Type type, Tree<T> parameters) { return new State<T>(instance, type, string.Empty, parameters); }
 
-        public string ParameterString(int index) {
-            return Parameters.BranchString(index);
+        public T Parameter(int index) {
+            return Parameters.Branches[index].Value;
         }
 
         public int ParameterCount { get { return Parameters == null || Parameters.IsLeaf ? 0 : Parameters.Branches.Count; }}

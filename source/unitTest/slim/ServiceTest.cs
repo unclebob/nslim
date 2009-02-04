@@ -32,7 +32,7 @@ namespace fitnesse.unitTest.slim {
             configuration.LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
             var statement = new TreeList<string>().AddBranchValue("step").AddBranchValue("sampleCommand");
             var result = (Tree<string>)configuration.GetItem<Service>().Execute(statement);
-            Assert.AreEqual("sampleResult", result.BranchString(1));
+            Assert.AreEqual("sampleResult", result.Branches[1].Value);
         }
 
         [Test] public void ParseSymbolIsDoneFirst() {

@@ -24,7 +24,6 @@ namespace fitnesse.mtee.engine {
 
         public static State<T> MakeParseTree(Type type, Tree<T> parameters) { return new State<T>(null, type, string.Empty, parameters); }
         public static State<T> MakeParseValue(Type type, T parameter) { return MakeParseTree(type, new TreeLeaf<T>(parameter)); }
-        public static State<T> MakeParseString(Type type, string member) { return new State<T>(null, type, member, null); }
 
         public static State<T> MakeCreate(string member, Tree<T> parameters) { return new State<T>(null, typeof (void), member, parameters); }
 
@@ -42,7 +41,6 @@ namespace fitnesse.mtee.engine {
 
         public T ParameterValue { get { return Parameters.Value; }}
 
-        //todo: check this warning
-        public string ParameterValueString { get { return Parameters == null || Parameters.Value == null ? Member : Parameters.Value.ToString(); }}
+        public string ParameterValueString { get { return Parameters.Value.ToString(); }}
     }
 }

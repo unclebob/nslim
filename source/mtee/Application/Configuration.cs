@@ -63,13 +63,13 @@ namespace fitnesse.mtee.application {
         }
 
         public Copyable GetItem(string typeName) {
-            Type type = new Processor<string>().Parse<RuntimeType>(typeName).Type;
+            Type type = new BasicProcessor().Parse<RuntimeType>(typeName).Type;
             return GetItem(type);
         }
 
         public Copyable GetItem(Type type) {
             if (!items.ContainsKey(type)) {
-                items[type] = (Copyable)new Processor<string>().Create(type.AssemblyQualifiedName);
+                items[type] = (Copyable)new BasicProcessor().Create(type.AssemblyQualifiedName);
             }
             return items[type];
         }

@@ -15,10 +15,10 @@ namespace fitnesse.unitTest.engine {
         private static readonly SpecificTest specificTestA = new SpecificTest("A");
         private static readonly SpecificTest specificTestB = new SpecificTest("B");
 
-        private Processor<string> processor;
+        private BasicProcessor processor;
 
         [SetUp] public void SetUp() {
-            processor = new Processor<string>();
+            processor = new BasicProcessor();
         }
 
         [Test] public void NoOperatorIsFound() {
@@ -46,19 +46,19 @@ namespace fitnesse.unitTest.engine {
         }
 
          [Test] public void TypeIsCreated() {
-            object result = new Processor<string>().Create("fitnesse.unitTest.engine.SampleClass");
+            object result = processor.Create("fitnesse.unitTest.engine.SampleClass");
             Assert.IsTrue(result is SampleClass);
         }
 
         [Test] public void MethodIsInvoked() {
             var instance = new SampleClass();
-            TypedValue result = new Processor<string>().Invoke(instance, "methodnoparms", new TreeList<string>());
+            TypedValue result = processor.Invoke(instance, "methodnoparms", new TreeList<string>());
             Assert.AreEqual("samplereturn", result.Value);
         }
 
         [Test] public void MethodWithParameterIsInvoked() {
             var instance = new SampleClass();
-            TypedValue result = new Processor<string>().Invoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
+            TypedValue result = processor.Invoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
             Assert.AreEqual("samplestringparm0", result.Value);
         }
 

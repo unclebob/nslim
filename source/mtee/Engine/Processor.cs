@@ -11,6 +11,7 @@ using fitnesse.mtee.operators;
 namespace fitnesse.mtee.engine {
 
     public class Processor<U>: Copyable { //todo: add setup and teardown
+        //todo: this is turning into a facade so push everything else out
         private readonly List<List<Operator<U>>> operators = new List<List<Operator<U>>>();
 
         private readonly Dictionary<Type, object> memoryBanks = new Dictionary<Type, object>();
@@ -73,17 +74,16 @@ namespace fitnesse.mtee.engine {
             return FindOperator<ParseOperator<U>>(state).Parse(this, state);
         }
 
-        public object ParseString(Type type, string input) {
-            var state = State<U>.MakeParseString(type, input);
-            return FindOperator<ParseOperator<U>>(state).Parse(this, state);
-        }
-
         public T ParseTree<T>(Tree<U> input) {
             return (T) ParseTree(typeof (T), input);
         }
 
         public T Parse<T>(U input) {
             return (T) Parse(typeof (T), input);
+        }
+
+        public object ParseString(Type type, string input) {
+            return ParseTree(type, Compose(input, typeof (string)));
         }
 
         public T ParseString<T>(string input) {

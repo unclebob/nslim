@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
@@ -43,7 +44,12 @@ namespace fitnesse.mtee.application {
         }
 
         private void LoadNode(string typeName, XmlNode methodNode) {
-            new Processor<string>().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
+            try {
+                new Processor<string>().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
+            }
+            catch (TargetInvocationException e) {
+                throw e.InnerException;
+            }
         }
 
         private static Tree<string> NodeParameters(XmlNode node) {

@@ -46,10 +46,14 @@ namespace fitnesse.slim {
         }
 
         private string Read(int characterLength) {
-            var messageCharacters = new char[characterLength];
-            int charactersUsed = reader.Read(messageCharacters, 0, characterLength);
-            var message = new StringBuilder(charactersUsed);
-            message.Append(messageCharacters, 0, charactersUsed);
+            var message = new StringBuilder(characterLength);
+            int charactersRemaining = characterLength;
+            while (charactersRemaining > 0) {
+                var messageCharacters = new char[charactersRemaining];
+                int charactersUsed = reader.Read(messageCharacters, 0, charactersRemaining);
+                message.Append(messageCharacters, 0, charactersUsed);
+                charactersRemaining -= charactersUsed;
+            }
             return message.ToString();
         }
     }

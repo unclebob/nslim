@@ -11,14 +11,14 @@ namespace fitnesse.slim.operators {
         private const string nullResult = "null";
         private const string voidResult = "/__VOID__/";
 
-        public bool IsMatch(Processor<string> processor, State<string> state) {
+        public bool IsMatch(Command<string> command) {
             return true;
         }
 
-        public Tree<string> Compose(Processor<string> processor, State<string> state) {
-            return new TreeLeaf<string>(state.Type == typeof(void) ? voidResult 
-                : state.Instance == null ? nullResult
-                : state.Instance.ToString());
+        public Tree<string> Compose(Command<string> command) {
+            return new TreeLeaf<string>(command.Type == typeof(void) ? voidResult 
+                : command.Instance == null ? nullResult
+                : command.Instance.ToString());
         }
     }
 }

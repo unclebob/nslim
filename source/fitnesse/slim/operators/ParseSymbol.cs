@@ -11,14 +11,17 @@ namespace fitnesse.slim.operators {
     public class ParseSymbol: ParseOperator<string> {
         private static readonly Regex symbolPattern = new Regex("(\\$[a-zA-Z]\\w*)");
 
-        public bool IsMatch(Processor<string> processor, State<string> state) { //todo: save result so we don't have to re-do it
-            return state.ParameterValueString != ReplaceSymbols(state.ParameterValueString, processor);
+        public bool IsMatch(Command<string> command) { //todo: save result so we don't have to re-do it
+            return command.ParameterValueString != ReplaceSymbols(command.ParameterValueString, command.Processor);
         }
 
-        public object Parse(Processor<string> processor, State<string> state) {
-            string input = state.ParameterValueString;
-            string result = ReplaceSymbols(input, processor);
-            return processor.Parse(state.Type, result);
+        public object Parse(Command<string> command) {
+            string input = command.ParameterValueString;
+            string result = ReplaceSymbols(input, command.Processor);
+            return command.Make
+                .WithType(command.Type)
+                .WithValue(result)
+                .Parse();
         }
 
         private static string ReplaceSymbols(string input, Processor<string> processor) {

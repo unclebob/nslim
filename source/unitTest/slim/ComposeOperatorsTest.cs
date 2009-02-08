@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
@@ -19,28 +20,28 @@ namespace fitnesse.unitTest.slim {
         }
         
         [Test] public void NullIsComposed() {
-            CheckCompose(new ComposeDefault(), State<string>.MakeCompose(null, typeof (object)), "null");
+            CheckCompose(new ComposeDefault(), MakeCompose(null, typeof (object)), "null");
         }
         
         [Test] public void VoidIsComposed() {
-            CheckCompose(new ComposeDefault(), State<string>.MakeCompose(null, typeof (void)), "/__VOID__/");
+            CheckCompose(new ComposeDefault(), MakeCompose(null, typeof (void)), "/__VOID__/");
         }
         
         [Test] public void DefaultComposeIsString() {
-            CheckCompose(new ComposeDefault(), State<string>.MakeCompose(1.23, typeof (double)), "1.23");
+            CheckCompose(new ComposeDefault(), MakeCompose(1.23, typeof (double)), "1.23");
         }
         
         [Test] public void BooleanTrueIsComposed() {
-            CheckCompose(new ComposeBoolean(), State<string>.MakeCompose(true, typeof (bool)), "true");
+            CheckCompose(new ComposeBoolean(), MakeCompose(true, typeof (bool)), "true");
         }
         
         [Test] public void BooleanFalseIsComposed() {
-            CheckCompose(new ComposeBoolean(), State<string>.MakeCompose(false, typeof (bool)), "false");
+            CheckCompose(new ComposeBoolean(), MakeCompose(false, typeof (bool)), "false");
         }
 
         [Test] public void ListIsComposedAsTree() {
             processor.AddOperator(new ComposeDefault());
-            var result = Compose(new ComposeList(), State<string>.MakeCompose(new List<object> {"a", 1.23}, typeof (List<object>)));
+            var result = Compose(new ComposeList(), MakeCompose(new List<object> {"a", 1.23}, typeof (List<object>)));
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
             Assert.AreEqual("a", result.Branches[0].Value); 
@@ -50,7 +51,7 @@ namespace fitnesse.unitTest.slim {
         [Test] public void NestedListIsComposedAsTree() {
             processor.AddOperator(new ComposeDefault());
             processor.AddOperator(new ComposeList());
-            var result = Compose(new ComposeList(), State<string>.MakeCompose(new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>)));
+            var result = Compose(new ComposeList(), MakeCompose(new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>)));
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
             Assert.AreEqual("a", result.Branches[0].Value);
@@ -58,14 +59,18 @@ namespace fitnesse.unitTest.slim {
             Assert.AreEqual("c", result.Branches[1].Branches[1].Value); 
         }
 
-        private Tree<string> Compose(ComposeOperator<string> composeOperator, State<string> state) {
-            Assert.IsTrue(composeOperator.IsMatch(processor, state));
-            return composeOperator.Compose(processor, state);
+        private Command<string> MakeCompose(object instance, Type type) {
+            return processor.Command.WithInstance(instance).WithType(type);
         }
 
-        private void CheckCompose(ComposeOperator<string> composeOperator, State<string> state, object expected) {
-            Assert.IsTrue(composeOperator.IsMatch(processor, state));
-            Assert.AreEqual(expected, Compose(composeOperator, state).Value);
+        private Tree<string> Compose(ComposeOperator<string> composeOperator, Command<string> command) {
+            Assert.IsTrue(composeOperator.IsMatch(command));
+            return composeOperator.Compose(command);
+        }
+
+        private void CheckCompose(ComposeOperator<string> composeOperator, Command<string> command, object expected) {
+            Assert.IsTrue(composeOperator.IsMatch(command));
+            Assert.AreEqual(expected, Compose(composeOperator, command).Value);
         }
     }
 }

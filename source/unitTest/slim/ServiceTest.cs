@@ -23,7 +23,7 @@ namespace fitnesse.unitTest.slim {
             var statement =
                 new TreeList<string>().AddBranchValue("step").AddBranchValue("make").AddBranchValue("variable").AddBranchValue(
                     "fitnesse.unitTest.slim.SampleClass");
-            service.Execute(statement);
+            service.Command.WithParameters(statement).Execute();
             Assert.AreEqual(1, SampleClass.Count);
         }
 
@@ -31,7 +31,7 @@ namespace fitnesse.unitTest.slim {
             var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
             var statement = new TreeList<string>().AddBranchValue("step").AddBranchValue("sampleCommand");
-            var result = (Tree<string>)configuration.GetItem<Service>().Execute(statement);
+            var result = (Tree<string>)configuration.GetItem<Service>().Command.WithParameters(statement).Execute();
             Assert.AreEqual("sampleResult", result.Branches[1].Value);
         }
 
@@ -43,15 +43,15 @@ namespace fitnesse.unitTest.slim {
         }
 
         private class ParseUpperCase: ParseOperator<string> {
-            public bool IsMatch(Processor<string> processor, State<string> state) { return true; }
-            public object Parse(Processor<string> processor, State<string> state) { return state.ParameterValueString.ToUpper(); }
+            public bool IsMatch(Command<string> command) { return true; }
+            public object Parse(Command<string> command) { return command.ParameterValueString.ToUpper(); }
         }
     }
 
     public class SampleOperator: ExecuteBase {
         public SampleOperator() : base("sampleCommand") {}
-        protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
-            return Result(state, "sampleResult");
+        protected override Tree<string> ExecuteOperation(Command<string> command) {
+            return Result(command, "sampleResult");
         }
     }
 }

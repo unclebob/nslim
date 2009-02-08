@@ -8,12 +8,12 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ComposeBoolean: ComposeOperator<string> {
-        public bool IsMatch(Processor<string> processor, State<string> state) {
-            return state.Type == typeof (bool);
+        public bool IsMatch(Command<string> command) {
+            return command.Type == typeof (bool);
         }
 
-        public Tree<string> Compose(Processor<string> processor, State<string> state) {
-            return new TreeLeaf<string>((bool)state.Instance ? "true" : "false");
+        public Tree<string> Compose(Command<string> command) {
+            return new TreeLeaf<string>((bool)command.Instance ? "true" : "false");
         }
     }
 }

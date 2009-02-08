@@ -8,18 +8,18 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();
-            var state = State<string>.MakeParseValue(typeof(CustomClass), "info");
-            Assert.IsTrue(converter.IsMatch(processor, state));
-            var result = converter.Parse(processor, state) as CustomClass;
+            var state = processor.Command.WithType(typeof(CustomClass)).WithValue("info");
+            Assert.IsTrue(converter.IsMatch(state));
+            var result = converter.Parse(state) as CustomClass;
             Assert.IsNotNull(result);
             Assert.AreEqual("custominfo", result.Info);
         }
 
         [Test] public void CustomTypeIsComposed() {
             var converter = new CustomConverter();
-            var state = State<string>.MakeCompose(new CustomClass {Info = "stuff"}, typeof(CustomClass));
-            Assert.IsTrue(converter.IsMatch(processor, state));
-            var result = converter.Compose(processor, state).Value;
+            var state = processor.Command.WithInstance(new CustomClass {Info = "stuff"}).WithType(typeof(CustomClass));
+            Assert.IsTrue(converter.IsMatch(state));
+            var result = converter.Compose(state).Value;
             Assert.IsNotNull(result);
             Assert.AreEqual("mystuff", result);
         }

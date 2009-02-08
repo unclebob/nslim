@@ -8,12 +8,12 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     class ParseType<T>: ParseOperator<T> {
-        public bool IsMatch(Processor<T> processor, State<T> state) {
-            return state.Type == typeof (RuntimeType);
+        public bool IsMatch(Command<T> command) {
+            return command.Type == typeof (RuntimeType);
         }
 
-        public object Parse(Processor<T> processor, State<T> state) {
-            return processor.ApplicationUnderTest.FindType(new IdentifierName(state.ParameterValueString));
+        public object Parse(Command<T> command) {
+            return command.Processor.ApplicationUnderTest.FindType(new IdentifierName(command.ParameterValueString));
         }
     }
 }

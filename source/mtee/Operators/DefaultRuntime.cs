@@ -9,25 +9,28 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public class DefaultRuntime<T>: RuntimeOperator<T> {
-        public bool IsMatch(Processor<T> processor, State<T> state) { return true; }
+        public bool IsMatch(Command<T> command) { return true; }
 
-        public object Create(Processor<T> processor, State<T> state) {
-            var runtimeType = processor.ParseString<RuntimeType>(state.Member);
-            if (state.ParameterCount == 0) return runtimeType.CreateInstance();
-            RuntimeMember member = runtimeType.GetConstructor(state.ParameterCount);
-            return member.Invoke(runtimeType.Type, GetParameterList(state.Parameters, processor, member)).Value;
+        public object Create(Command<T> command) {
+            var runtimeType = command.Processor.ParseString<RuntimeType>(command.Member);
+            if (command.ParameterCount == 0) return runtimeType.CreateInstance();
+            RuntimeMember member = runtimeType.GetConstructor(command.ParameterCount);
+            return member.Invoke(runtimeType.Type, GetParameterList(command.Parameters, command, member)).Value;
         }
 
-        public TypedValue Invoke(Processor<T> processor, State<T> state) {
-            RuntimeMember member = new RuntimeType(state.Type).GetInstance(state.Member, state.ParameterCount);
-            return member.Invoke(state.Instance, GetParameterList(state.Parameters, processor, member));
+        public TypedValue Invoke(Command<T> command) {
+            RuntimeMember member = new RuntimeType(command.Type).GetInstance(command.Member, command.ParameterCount);
+            return member.Invoke(command.Instance, GetParameterList(command.Parameters, command, member));
         }
 
-        private static object[] GetParameterList(Tree<T> parameters, Processor<T> processor, RuntimeMember member) {
+        private static object[] GetParameterList(Tree<T> parameters, Command<T> command, RuntimeMember member) {
             var parameterList = new List<object>();
             int i = 0;
             foreach (Tree<T> parameter in parameters.Branches) {
-                parameterList.Add(processor.ParseTree(member.GetParameterType(i), parameter));
+                parameterList.Add(command.Make
+                    .WithType(member.GetParameterType(i))
+                    .WithParameters(parameter)
+                    .Parse());
                 i++;
             }
             return parameterList.ToArray();

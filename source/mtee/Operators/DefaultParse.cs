@@ -8,18 +8,18 @@ using fitnesse.mtee.engine;
 
 namespace fitnesse.mtee.operators {
     public class DefaultParse<T>: ParseOperator<T> { //todo: also look for constructor with string argument
-        public bool IsMatch(Processor<T> processor, State<T> state) { return true; }
+        public bool IsMatch(Command<T> command) { return true; }
 
-        public object Parse(Processor<T> processor, State<T> state) {
-            if (state.Type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
-                return state.ParameterValueString;
+        public object Parse(Command<T> command) {
+            if (command.Type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
+                return command.ParameterValueString;
             }
 
-            RuntimeMember parse = new RuntimeType(state.Type).FindStatic("parse", new [] {typeof(string)});
-            if (parse != null && parse.ReturnType == state.Type) {
-                return parse.Invoke(null, new object[] {state.ParameterValueString}).Value;
+            RuntimeMember parse = new RuntimeType(command.Type).FindStatic("parse", new [] {typeof(string)});
+            if (parse != null && parse.ReturnType == command.Type) {
+                return parse.Invoke(null, new object[] {command.ParameterValueString}).Value;
             }
-            throw new InvalidOperationException(string.Format("Can't parse {0} because it doesn't have a static Parse method", state.Type.FullName));
+            throw new InvalidOperationException(string.Format("Can't parse {0} because it doesn't have a static Parse method", command.Type.FullName));
         }
     }
 }

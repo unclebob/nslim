@@ -10,9 +10,9 @@ namespace fitnesse.slim.operators {
     public class ExecuteImport: ExecuteBase {
         public ExecuteImport() : base("import") {}
 
-        protected override Tree<string> ExecuteOperation(Processor<string> processor, State<string> state) {
-            processor.AddNamespace(state.Parameter(2));
-            return DefaultResult(state);
+        protected override Tree<string> ExecuteOperation(Command<string> command) {
+            command.Processor.AddNamespace(command.Parameter(2));
+            return DefaultResult(command);
         }
     }
 }

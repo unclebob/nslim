@@ -20,18 +20,20 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void InstanceIsCreated() {
             Assert.IsTrue(
-                runtime.Create(processor, State<string>.MakeCreate("fitnesse.unitTest.engine.SampleClass", new TreeList<string>())) is SampleClass);
+                runtime.Create(processor.Command.WithMember("fitnesse.unitTest.engine.SampleClass").WithParameters(new TreeList<string>())) is SampleClass);
         }
 
         [Test] public void StandardInstanceIsCreated() {
             Assert.IsTrue(
-                runtime.Create(processor, State<string>.MakeCreate("System.Boolean", new TreeList<string>())) is bool);
+                runtime.Create(processor.Command.WithMember("System.Boolean").WithParameters(new TreeList<string>())) is bool);
         }
 
         [Test] public void MethodIsInvoked() {
-            TypedValue result = runtime.Invoke(processor,
-                                               new State<string>(new SampleClass(), typeof (SampleClass), "methodwithparms",
-                                                         new TreeList<string>().AddBranchValue("stuff")));
+            TypedValue result = runtime.Invoke(processor.Command
+                                                   .WithInstance(new SampleClass())
+                                                   .WithType(typeof(SampleClass))
+                                                   .WithMember("methodwithparms")
+                                                   .WithParameters(new TreeList<string>().AddBranchValue("stuff")));
             Assert.AreEqual(typeof(string), result.Type);
             Assert.AreEqual("samplestuff", result.Value);
         }

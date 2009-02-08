@@ -9,15 +9,17 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ComposeList: ComposeOperator<string> { //todo: handle any enumerable type
-        public bool IsMatch(Processor<string> processor, State<string> state) {
-            return state.Type == typeof (List<object>);
+        public bool IsMatch(Command<string> command) {
+            return command.Type == typeof (List<object>);
         }
 
-        public Tree<string> Compose(Processor<string> processor, State<string> state) {
-            var list = state.Instance as List<object> ?? new List<object>();
+        public Tree<string> Compose(Command<string> command) {
+            var list = command.Instance as List<object> ?? new List<object>();
             var tree = new TreeList<string>();
             foreach (object value in list) {
-                tree.AddBranch(processor.Compose(value, value != null ? value.GetType() : typeof(object)));
+                tree.AddBranch(command.Make
+                    .WithInstance(value)
+                    .Compose());
             }
             return tree;
         }

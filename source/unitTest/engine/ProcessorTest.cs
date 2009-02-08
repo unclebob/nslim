@@ -23,7 +23,7 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void NoOperatorIsFound() {
             try {
-                processor.Execute(new TreeList<string>());
+                processor.Command.WithParameters(new TreeList<string>()).Execute();
                 Assert.Fail();
             }
             catch (ApplicationException) {
@@ -33,7 +33,7 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void DefaultOperatorIsFound() {
             processor.AddOperator(defaultTest);
-            object result = processor.Execute(new TreeList<string>());
+            object result = processor.Command.WithParameters(new TreeList<string>()).Execute();
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
@@ -41,34 +41,42 @@ namespace fitnesse.unitTest.engine {
             processor.AddOperator(defaultTest);
             processor.AddOperator(specificTestA);
             processor.AddOperator(specificTestB);
-            object result = processor.Execute(new TreeLeaf<string>("A"));
+            object result = processor.Command.WithParameters(new TreeLeaf<string>("A")).Execute();
             Assert.AreEqual("executeA", result.ToString());
         }
 
          [Test] public void TypeIsCreated() {
-            object result = processor.Create("fitnesse.unitTest.engine.SampleClass");
+            object result = processor.Command.WithMember("fitnesse.unitTest.engine.SampleClass").Create();
             Assert.IsTrue(result is SampleClass);
         }
 
         [Test] public void MethodIsInvoked() {
             var instance = new SampleClass();
-            TypedValue result = processor.Invoke(instance, "methodnoparms", new TreeList<string>());
+            TypedValue result = processor.Command
+                .WithInstance(instance)
+                .WithMember("methodnoparms")
+                .WithParameters(new TreeList<string>())
+                .Invoke();
             Assert.AreEqual("samplereturn", result.Value);
         }
 
         [Test] public void MethodWithParameterIsInvoked() {
             var instance = new SampleClass();
-            TypedValue result = processor.Invoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
+            TypedValue result = processor.Command
+                .WithInstance(instance)
+                .WithMember("MethodWithParms")
+                .WithParameters(new TreeList<string>().AddBranchValue("stringparm0"))
+                .Invoke();
             Assert.AreEqual("samplestringparm0", result.Value);
         }
 
         [Test] public void OperatorIsRemoved() {
             processor.AddOperator(defaultTest);
             processor.AddOperator(specificTestA);
-            object result = processor.Execute(new TreeLeaf<string>("A"));
+            object result = processor.Command.WithParameters(new TreeLeaf<string>("A")).Execute();
             Assert.AreEqual("executeA", result.ToString());
             processor.RemoveOperator(specificTestA.GetType().FullName);
-            result = processor.Execute(new TreeList<string>("A"));
+            result = processor.Command.WithParameters(new TreeList<string>("A")).Execute();
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
@@ -85,11 +93,11 @@ namespace fitnesse.unitTest.engine {
         }
 
         private class DefaultTest: ExecuteOperator<string> {
-            public bool IsMatch(Processor<string> processor, State<string> state) {
+            public bool IsMatch(Command<string> command) {
                 return true;
             }
 
-            public object Execute(Processor<string> processor, State<string> state) {
+            public object Execute(Command<string> command) {
                 return "defaultexecute";
             }
         }
@@ -99,11 +107,11 @@ namespace fitnesse.unitTest.engine {
             public SpecificTest(string name) {
                 this.name = name;
             }
-            public bool IsMatch(Processor<string> processor, State<string> state) {
-                return state.ParameterValueString == name;
+            public bool IsMatch(Command<string> command) {
+                return command.ParameterValueString == name;
             }
 
-            public object Execute(Processor<string> processor, State<string> state) {
+            public object Execute(Command<string> command) {
                 return "execute" + name;
             }
         }

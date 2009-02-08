@@ -39,7 +39,7 @@ namespace fitnesse.unitTest.slim {
             var executeImport = new ExecuteImport();
             var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("import").AddBranchValue("fitnesse.unitTest.slim");
             ExecuteOperation(executeImport, input, 2);
-            Assert.IsTrue(processor.Create("SampleClass") is SampleClass);
+            Assert.IsTrue(processor.Command.WithMember("SampleClass").Create() is SampleClass);
         }
 
         [Test] public void ExecuteCallAndAssignSavesSymbol() {
@@ -54,7 +54,7 @@ namespace fitnesse.unitTest.slim {
         }
 
         private void ExecuteOperation(ExecuteOperator<string> executeOperator, Tree<string> input, int branchCount) {
-            result = (Tree<string>)executeOperator.Execute(processor, new State<string>(null, typeof(void), null, input));
+            result = (Tree<string>) executeOperator.Execute(processor.Command.WithParameters(input));
             Assert.IsFalse(result.IsLeaf);
             Assert.AreEqual(branchCount, result.Branches.Count);
             Assert.AreEqual("step", result.Branches[0].Value);

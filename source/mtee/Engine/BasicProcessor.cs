@@ -12,12 +12,12 @@ namespace fitnesse.mtee.engine {
         }
 
         private class DefaultCompose: ComposeOperator<string> {
-            public bool IsMatch(Processor<string> processor, State<string> state) {
+            public bool IsMatch(Command<string> command) {
                 return true;
             }
 
-            public Tree<string> Compose(Processor<string> processor, State<string> state) {
-                return new TreeLeaf<string>(state.Instance.ToString());
+            public Tree<string> Compose(Command<string> command) {
+                return new TreeLeaf<string>(command.Instance.ToString());
             }
         }
     }

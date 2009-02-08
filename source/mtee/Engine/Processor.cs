@@ -36,7 +36,7 @@ namespace fitnesse.mtee.engine {
         }
 
         public void AddOperator(string operatorName) {
-            AddOperator((Operator<U>)Create(operatorName));
+            AddOperator((Operator<U>)Command.WithMember(operatorName).Create());
         }
 
         public void AddOperator(Operator<U> anOperator) { AddOperator(anOperator, 0); }
@@ -59,66 +59,58 @@ namespace fitnesse.mtee.engine {
             ApplicationUnderTest.AddNamespace(namespaceName);
         }
 
-        public object Execute(Tree<U> input) {
-            var state = State<U>.MakeExecute(input);
-            return FindOperator<ExecuteOperator<U>>(state).Execute(this, state);
+        public Command<U> Command { get { return new Command<U>(this); }}
+
+        public bool Compare(Command<U> command) { return FindOperator<CompareOperator<U>>(command).Compare(command); }
+
+        public Tree<U> Compose(Command<U> command) {
+            if (command.Type == null) command.WithType(command.Instance != null ? command.Instance.GetType() : typeof (object));
+            return FindOperator<ComposeOperator<U>>(command).Compose(command);
         }
 
-        public object ParseTree(Type type, Tree<U> input) {
-            var state = State<U>.MakeParseTree(type, input);
-            return FindOperator<ParseOperator<U>>(state).Parse(this, state);
+        public object Create(Command<U> command) {
+            if (command.Parameters == null) command.WithParameters(new TreeList<U>());
+            return FindOperator<RuntimeOperator<U>>(command).Create(command);
         }
 
-        public object Parse(Type type, U input) {
-            var state = State<U>.MakeParseValue(type, input);
-            return FindOperator<ParseOperator<U>>(state).Parse(this, state);
+        public object Execute(Command<U> command) { return FindOperator<ExecuteOperator<U>>(command).Execute(command); }
+
+        public TypedValue Invoke(Command<U> command) {
+            if (command.Type == null) command.WithType(command.Instance.GetType());
+            return FindOperator<RuntimeOperator<U>>(command).Invoke(command);
+        }
+
+        public object Parse(Command<U> command) {
+            return FindOperator<ParseOperator<U>>(command).Parse(command);
         }
 
         public T ParseTree<T>(Tree<U> input) {
-            return (T) ParseTree(typeof (T), input);
+            return (T) Command.WithType(typeof (T)).WithParameters(input).Parse();
         }
 
         public T Parse<T>(U input) {
-            return (T) Parse(typeof (T), input);
+            return (T) Command.WithType(typeof (T)).WithValue(input).Parse();
         }
 
         public object ParseString(Type type, string input) {
-            return ParseTree(type, Compose(input, typeof (string)));
+            return Command
+                .WithType(type)
+                .WithParameters(Command
+                    .WithInstance(input)
+                    .WithType(typeof (string))
+                    .Compose())
+                .Parse();
         }
 
         public T ParseString<T>(string input) {
             return (T) ParseString(typeof (T), input);
         }
 
-        public Tree<U> Compose(object result, Type type) {
-            var state = State<U>.MakeCompose(result, type);
-            return FindOperator<ComposeOperator<U>>(state).Compose(this, state);
-        }
-
-        public TypedValue Invoke(object instance, string member, Tree<U> parameters) {
-            var state = State<U>.MakeInvoke(instance, member, parameters);
-            return FindOperator<RuntimeOperator<U>>(state).Invoke(this, state);
-        }
-
-        public object Create(string typeName, Tree<U> parameters) {
-            var state = State<U>.MakeCreate(typeName, parameters);
-            return FindOperator<RuntimeOperator<U>>(state).Create(this, state);
-        }
-
-        public object Create(string typeName) {
-            return Create(typeName, new TreeList<U>());
-        }
-
-        public bool Compare(object instance, Type type, Tree<U> parameters) {
-            var state = State<U>.MakeCompare(instance, type, parameters);
-            return FindOperator<CompareOperator<U>>(state).Compare(this, state);
-        }
-
-        private T FindOperator<T> (State<U> state) where T: class, Operator<U>{
+        private T FindOperator<T> (Command<U> command) where T: class, Operator<U>{
             for (int priority = operators.Count - 1; priority >= 0; priority--) {
                 for (int i = operators[priority].Count - 1; i >= 0; i--) {
                     var candidate = operators[priority][i] as T;
-                    if (candidate != null && candidate.IsMatch(this, state)) {
+                    if (candidate != null && candidate.IsMatch(command)) {
                         return candidate;
                     }
                 }

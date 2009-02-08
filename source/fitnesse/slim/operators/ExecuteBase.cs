@@ -17,34 +17,34 @@ namespace fitnesse.slim.operators {
             identifier = new IdentifierName(identifierName);
         }
 
-        public bool IsMatch(Processor<string> processor, State<string> state) {
-            return identifier.IsEmpty || (state.ParameterCount >= 2 && identifier.Matches(state.Parameter(1)));
+        public bool IsMatch(Command<string> command) {
+            return identifier.IsEmpty || (command.ParameterCount >= 2 && identifier.Matches(command.Parameter(1)));
         }
 
-        public object Execute(Processor<string> processor, State<string> state) {
+        public object Execute(Command<string> command) {
             try {
-                return ExecuteOperation(processor, state);
+                return ExecuteOperation(command);
             }
             catch (Exception e) {
-                return Result(state, string.Format(ExceptionResult, e));
+                return Result(command, string.Format(ExceptionResult, e));
             }
         }
 
-        protected abstract Tree<string> ExecuteOperation(Processor<string> processor, State<string> state);
+        protected abstract Tree<string> ExecuteOperation(Command<string> command);
 
-        protected static Tree<string> DefaultResult(State<string> state) {
-            return Result(state, defaultResult);
+        protected static Tree<string> DefaultResult(Command<string> command) {
+            return Result(command, defaultResult);
         }
 
-        protected static Tree<string> Result(State<string> state, Tree<string> result) {
+        protected static Tree<string> Result(Command<string> command, Tree<string> result) {
             return new TreeList<string>()
-                .AddBranchValue(state.Parameter(0))
+                .AddBranchValue(command.Parameter(0))
                 .AddBranch(result);
         }
 
-        protected static Tree<string> Result(State<string> state, string result) {
+        protected static Tree<string> Result(Command<string> command, string result) {
             return new TreeList<string>()
-                .AddBranchValue(state.Parameter(0))
+                .AddBranchValue(command.Parameter(0))
                 .AddBranchValue(result);
         }
 
@@ -56,9 +56,13 @@ namespace fitnesse.slim.operators {
             return result;
         }
 
-        protected static TypedValue InvokeMember(Processor<string> processor, State<string> state, int memberIndex) {
-            object target = processor.Load(new SavedInstance(state.Parameter(memberIndex))).Instance;
-            return processor.Invoke(target, state.Parameter(memberIndex + 1), ParameterTree(state.Parameters, memberIndex + 2));
+        protected static TypedValue InvokeMember(Command<string> command, int memberIndex) {
+            object target = command.Processor.Load(new SavedInstance(command.Parameter(memberIndex))).Instance;
+            return command.Make
+                .WithInstance(target)
+                .WithMember(command.Parameter(memberIndex + 1))
+                .WithParameters(ParameterTree(command.Parameters, memberIndex + 2))
+                .Invoke();
         }
     }
 }

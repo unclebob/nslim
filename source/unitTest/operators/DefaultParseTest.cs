@@ -19,15 +19,15 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void StringIsParsed() {
-            Assert.AreEqual("stuff", parse.Parse(processor, State<string>.MakeParseValue(typeof(string), "stuff")));
+            Assert.AreEqual("stuff", parse.Parse(processor.Command.WithType(typeof(string)).WithValue("stuff")));
         }
 
         [Test] public void DateIsParsed() {
-            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor, State<string>.MakeParseValue(typeof(DateTime), "03 Jan 2008")));
+            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor.Command.WithType(typeof(DateTime)).WithValue("03 Jan 2008")));
         }
 
         [Test] public void ClassIsParsed() {
-            Assert.IsTrue(parse.Parse(processor, State<string>.MakeParseValue(typeof(SampleClass), "stuff")) is SampleClass);
+            Assert.IsTrue(parse.Parse(processor.Command.WithType(typeof(SampleClass)).WithValue("stuff")) is SampleClass);
         }
     }
 }

@@ -7,27 +7,27 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
     public interface Operator<T> {
-        bool IsMatch(Processor<T> processor, State<T> state);
+        bool IsMatch(Command<T> command);
     }
 
     public interface ExecuteOperator<T>: Operator<T> {
-        object Execute(Processor<T> processor, State<T> state);
+        object Execute(Command<T> command);
     }
 
     public interface ParseOperator<T>: Operator<T> {
-        object Parse(Processor<T> processor, State<T> state);
+        object Parse(Command<T> command);
     }
 
     public interface ComposeOperator<T>: Operator<T> {
-        Tree<T> Compose(Processor<T> processor, State<T> state);
+        Tree<T> Compose(Command<T> command);
     }
 
     public interface CompareOperator<T>: Operator<T> {
-        bool Compare(Processor<T> processor, State<T> state);
+        bool Compare(Command<T> command);
     }
 
     public interface RuntimeOperator<T>: Operator<T> {
-        object Create(Processor<T> processor, State<T> state);
-        TypedValue Invoke(Processor<T> processor, State<T> state);
+        object Create(Command<T> command);
+        TypedValue Invoke(Command<T> command);
     }
 }

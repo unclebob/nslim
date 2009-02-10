@@ -59,30 +59,7 @@ namespace fitnesse.mtee.engine {
             ApplicationUnderTest.AddNamespace(namespaceName);
         }
 
-        public Command<U> Command { get { return new Command<U>(this); }}
-
-        public bool Compare(Command<U> command) { return FindOperator<CompareOperator<U>>(command).Compare(command); }
-
-        public Tree<U> Compose(Command<U> command) {
-            if (command.Type == null) command.WithType(command.Instance != null ? command.Instance.GetType() : typeof (object));
-            return FindOperator<ComposeOperator<U>>(command).Compose(command);
-        }
-
-        public object Create(Command<U> command) {
-            if (command.Parameters == null) command.WithParameters(new TreeList<U>());
-            return FindOperator<RuntimeOperator<U>>(command).Create(command);
-        }
-
-        public object Execute(Command<U> command) { return FindOperator<ExecuteOperator<U>>(command).Execute(command); }
-
-        public TypedValue Invoke(Command<U> command) {
-            if (command.Type == null) command.WithType(command.Instance.GetType());
-            return FindOperator<RuntimeOperator<U>>(command).Invoke(command);
-        }
-
-        public object Parse(Command<U> command) {
-            return FindOperator<ParseOperator<U>>(command).Parse(command);
-        }
+        public Command<U> Command { get { return new Command<U>(this); } }
 
         public T ParseTree<T>(Tree<U> input) {
             return (T) Command.WithType(typeof (T)).WithParameters(input).Parse();
@@ -106,7 +83,7 @@ namespace fitnesse.mtee.engine {
             return (T) ParseString(typeof (T), input);
         }
 
-        private T FindOperator<T> (Command<U> command) where T: class, Operator<U>{
+        public T FindOperator<T> (Command<U> command) where T: class, Operator<U>{
             for (int priority = operators.Count - 1; priority >= 0; priority--) {
                 for (int i = operators[priority].Count - 1; i >= 0; i--) {
                     var candidate = operators[priority][i] as T;

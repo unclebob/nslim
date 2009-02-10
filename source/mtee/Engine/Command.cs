@@ -13,6 +13,7 @@ namespace fitnesse.mtee.engine {
         public string  Member { get; private set; }
         public Tree<T> Parameters { get; private set; }
         public Processor<T> Processor { get; private set; }
+        public Type Operator { get; private set; }
 
         public Command(Processor<T> processor) {
             Processor = processor;
@@ -45,12 +46,38 @@ namespace fitnesse.mtee.engine {
             return this;
         }
 
-        public object Create() { return Processor.Create(this); }
-        public Tree<T> Compose() { return Processor.Compose(this); }
-        public bool Compare() { return Processor.Compare(this); }
-        public object Execute() { return Processor.Execute(this); }
-        public object Parse() { return Processor.Parse(this); }
-        public TypedValue Invoke() { return Processor.Invoke(this); }
+        public bool Compare() {
+            Operator = typeof (CompareOperator<T>);
+            return Processor.FindOperator<CompareOperator<T>>(this).Compare(this);
+        }
+
+        public Tree<T> Compose() {
+            if (Type == null) Type = Instance != null ? Instance.GetType() : typeof (object);
+            Operator = typeof (ComposeOperator<T>);
+            return Processor.FindOperator<ComposeOperator<T>>(this).Compose(this);
+        }
+
+        public object Create() {
+            if (Parameters == null) Parameters = new TreeList<T>();
+            Operator = typeof (RuntimeOperator<T>);
+            return Processor.FindOperator<RuntimeOperator<T>>(this).Create(this);
+        }
+
+        public object Execute() {
+            Operator = typeof (ExecuteOperator<T>);
+            return Processor.FindOperator<ExecuteOperator<T>>(this).Execute(this);
+        }
+
+        public TypedValue Invoke() {
+            if (Type == null) Type = Instance.GetType();
+            Operator = typeof (RuntimeOperator<T>);
+            return Processor.FindOperator<RuntimeOperator<T>>(this).Invoke(this);
+        }
+
+        public object Parse() {
+            Operator = typeof (ParseOperator<T>);
+            return Processor.FindOperator<ParseOperator<T>>(this).Parse(this);
+        }
 
         public T Parameter(int index) { return Parameters.Branches[index].Value; }
         public int ParameterCount { get { return Parameters == null || Parameters.IsLeaf ? 0 : Parameters.Branches.Count; }}

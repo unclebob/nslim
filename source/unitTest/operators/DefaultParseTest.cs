@@ -5,6 +5,7 @@
 
 using System;
 using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 using fitnesse.mtee.operators;
 using fitnesse.unitTest.engine;
 using NUnit.Framework;
@@ -19,15 +20,21 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void StringIsParsed() {
-            Assert.AreEqual("stuff", parse.Parse(processor.Command.WithType(typeof(string)).WithValue("stuff")));
+            object result = null;
+            parse.TryParse(processor, typeof (string), new TreeLeaf<string>("stuff"), ref result);
+            Assert.AreEqual("stuff", result);
         }
 
         [Test] public void DateIsParsed() {
-            Assert.AreEqual(new DateTime(2008, 1, 3), parse.Parse(processor.Command.WithType(typeof(DateTime)).WithValue("03 Jan 2008")));
+            object result = null;
+            parse.TryParse(processor, typeof(DateTime), new TreeLeaf<string>("03 Jan 2008"), ref result);
+            Assert.AreEqual(new DateTime(2008, 1, 3), result);
         }
 
         [Test] public void ClassIsParsed() {
-            Assert.IsTrue(parse.Parse(processor.Command.WithType(typeof(SampleClass)).WithValue("stuff")) is SampleClass);
+            object result = null;
+            parse.TryParse(processor, typeof(SampleClass), new TreeLeaf<string>("stuff"), ref result);
+            Assert.IsTrue(result is SampleClass);
         }
     }
 }

@@ -3,25 +3,21 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ParseSymbol: ParseOperator<string> {
         private static readonly Regex symbolPattern = new Regex("(\\$[a-zA-Z]\\w*)");
 
-        public bool IsMatch(Command<string> command) { //todo: save result so we don't have to re-do it
-            return command.ParameterValueString != ReplaceSymbols(command.ParameterValueString, command.Processor);
-        }
-
-        public object Parse(Command<string> command) {
-            string input = command.ParameterValueString;
-            string result = ReplaceSymbols(input, command.Processor);
-            return command.Make
-                .WithType(command.Type)
-                .WithValue(result)
-                .Parse();
+        public bool TryParse(Processor<string> processor, Type type, Tree<string> parameters, ref object result) {
+            string decodedInput = ReplaceSymbols(parameters.Value, processor);
+            if (parameters.Value == decodedInput) return false;
+            result = processor.Parse(type, decodedInput);
+            return true;
         }
 
         private static string ReplaceSymbols(string input, Processor<string> processor) {
@@ -36,5 +32,6 @@ namespace fitnesse.slim.operators {
             if (lastMatch < input.Length) result.Append(input.Substring(lastMatch, input.Length - lastMatch));
             return result.ToString();
         }
+
     }
 }

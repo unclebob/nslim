@@ -36,7 +36,7 @@ namespace fitnesse.slim {
         private Document Execute(Document document) {
             var results = new TreeList<string>();
             foreach (Tree<string> statement in document.Content.Branches) {
-                results.AddBranchValue(service.Command.WithParameters(statement).Execute());
+                results.AddBranchValue(service.Execute(statement));
             }
             return new Document(results);
         }

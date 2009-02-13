@@ -12,7 +12,7 @@ namespace fitnesse.mtee.engine {
 
     public class Processor<U>: Copyable { //todo: add setup and teardown
         //todo: this is turning into a facade so push everything else out
-        private readonly List<List<Operator<U>>> operators = new List<List<Operator<U>>>();
+        private readonly List<List<Operator>> operators = new List<List<Operator>>();
 
         private readonly Dictionary<Type, object> memoryBanks = new Dictionary<Type, object>();
 
@@ -29,26 +29,26 @@ namespace fitnesse.mtee.engine {
 
         public Processor(Processor<U> other): this(new ApplicationUnderTest(other.ApplicationUnderTest)) {
             operators.Clear();
-            foreach (List<Operator<U>> list in other.operators) {
-                operators.Add(new List<Operator<U>>(list));
+            foreach (List<Operator> list in other.operators) {
+                operators.Add(new List<Operator>(list));
             }
             memoryBanks = new Dictionary<Type, object>(other.memoryBanks);
         }
 
         public void AddOperator(string operatorName) {
-            AddOperator((Operator<U>)Command.WithMember(operatorName).Create());
+            AddOperator((Operator)Create(operatorName));
         }
 
-        public void AddOperator(Operator<U> anOperator) { AddOperator(anOperator, 0); }
+        public void AddOperator(Operator anOperator) { AddOperator(anOperator, 0); }
 
-        public void AddOperator(Operator<U> anOperator, int priority) {
-            while (operators.Count <= priority) operators.Add(new List<Operator<U>>());
+        public void AddOperator(Operator anOperator, int priority) {
+            while (operators.Count <= priority) operators.Add(new List<Operator>());
             operators[priority].Add(anOperator);
         }
 
         public void RemoveOperator(string operatorName) {
-            foreach (List<Operator<U>> list in operators)
-                foreach (Operator<U> item in list)
+            foreach (List<Operator> list in operators)
+                foreach (Operator item in list)
                     if (item.GetType().FullName == operatorName) {
                         list.Remove(item);
                         return;
@@ -59,36 +59,82 @@ namespace fitnesse.mtee.engine {
             ApplicationUnderTest.AddNamespace(namespaceName);
         }
 
-        public Command<U> Command { get { return new Command<U>(this); } }
+        public bool Compare(Type type, object instance, Tree<U> parameters) {
+            bool result = false;
+            Do<CompareOperator<U>>(o => o.TryCompare(this, type, instance, parameters, ref result));
+            return result;
+        }
+
+        public Tree<U> Compose(object instance) {
+            return Compose(instance != null ? instance.GetType() : typeof (object), instance);
+        }
+
+        public Tree<U> Compose(Type type, object instance) {
+            Tree<U> result = null;
+            Do<ComposeOperator<U>>(o => o.TryCompose(this, type, instance, ref result));
+            return result;
+        }
+
+        public object Execute(Tree<U> parameters) {
+            object result = null;
+            Do<ExecuteOperator<U>>(o => o.TryExecute(this, parameters, ref result));
+            return result;
+        }
+
+        public object Parse(Type type, Tree<U> parameters) {
+            object result = null;
+            Do<ParseOperator<U>>(o => o.TryParse(this, type, parameters, ref result));
+            return result;
+        }
+
+        public object Parse(Type type, U input) {
+            return Parse(type, new TreeLeaf<U>(input));
+        }
 
         public T ParseTree<T>(Tree<U> input) {
-            return (T) Command.WithType(typeof (T)).WithParameters(input).Parse();
+            return (T) Parse(typeof (T), input);
         }
 
         public T Parse<T>(U input) {
-            return (T) Command.WithType(typeof (T)).WithValue(input).Parse();
+            return (T) Parse(typeof (T), input);
         }
 
         public object ParseString(Type type, string input) {
-            return Command
-                .WithType(type)
-                .WithParameters(Command
-                    .WithInstance(input)
-                    .WithType(typeof (string))
-                    .Compose())
-                .Parse();
+            return Parse(type, Compose(typeof(string), input));
         }
 
         public T ParseString<T>(string input) {
             return (T) ParseString(typeof (T), input);
         }
 
-        public T FindOperator<T> (Command<U> command) where T: class, Operator<U>{
+        public object Create(string membername) {
+            return Create(membername, new TreeList<U>());
+        }
+
+        public object Create(string memberName, Tree<U> parameters) {
+            object result = null;
+            Do<RuntimeOperator<U>>(o => o.TryCreate(this, memberName, parameters, ref result));
+            return result;
+        }
+
+        public TypedValue Invoke(object instance, string memberName, Tree<U> parameters) {
+            return Invoke(instance.GetType(), instance, memberName, parameters);
+        }
+
+        public TypedValue Invoke(Type type, object instance, string memberName, Tree<U> parameters) {
+            var result = new TypedValue();
+            Do<RuntimeOperator<U>>(o => o.TryInvoke(this, type, instance, memberName, parameters, ref result));
+            return result;
+        }
+
+        public delegate bool TryOperation<T>(T anOperator);
+
+        public void Do<T>(TryOperation<T> tryOperation) where T: class, Operator {
             for (int priority = operators.Count - 1; priority >= 0; priority--) {
                 for (int i = operators[priority].Count - 1; i >= 0; i--) {
                     var candidate = operators[priority][i] as T;
-                    if (candidate != null && candidate.IsMatch(command)) {
-                        return candidate;
+                    if (candidate != null && tryOperation(candidate)) {
+                        return;
                     }
                 }
             }

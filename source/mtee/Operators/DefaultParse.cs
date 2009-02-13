@@ -5,21 +5,26 @@
 
 using System;
 using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public class DefaultParse<T>: ParseOperator<T> { //todo: also look for constructor with string argument
-        public bool IsMatch(Command<T> command) { return true; }
-
-        public object Parse(Command<T> command) {
-            if (command.Type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
-                return command.ParameterValueString;
+        public bool TryParse(Processor<T> processor, Type type, Tree<T> parameters, ref object result) {
+            if (type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
+                result = parameters.Value.ToString();
             }
-
-            RuntimeMember parse = new RuntimeType(command.Type).FindStatic("parse", new [] {typeof(string)});
-            if (parse != null && parse.ReturnType == command.Type) {
-                return parse.Invoke(null, new object[] {command.ParameterValueString}).Value;
+            else {
+                RuntimeMember parse = new RuntimeType(type).FindStatic("parse", new[] {typeof (string)});
+                if (parse != null && parse.ReturnType == type) {
+                    result = parse.Invoke(null, new object[] {parameters.Value.ToString()}).Value;
+                }
+                else {
+                    throw new InvalidOperationException(
+                        string.Format("Can't parse {0} because it doesn't have a static Parse method",
+                                      type.FullName));
+                }
             }
-            throw new InvalidOperationException(string.Format("Can't parse {0} because it doesn't have a static Parse method", command.Type.FullName));
+            return true;
         }
     }
 }

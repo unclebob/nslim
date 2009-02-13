@@ -11,14 +11,11 @@ namespace fitnesse.slim.operators {
 
         public ExecuteMake(): base("make") {}
 
-        protected override Tree<string> ExecuteOperation(Command<string> command) {
-            command.Processor.Store(new SavedInstance(
-                command.Parameter(2),
-                command.Make
-                    .WithMember(command.Parameter(3))
-                    .WithParameters(ParameterTree(command.Parameters, 4))
-                    .Create()));
-            return DefaultResult(command);
+        protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {
+            processor.Store(new SavedInstance(
+                parameters.Branches[2].Value,
+                processor.Create(parameters.Branches[3].Value, ParameterTree(parameters, 4))));
+            return DefaultResult(parameters);
         }
 
     }

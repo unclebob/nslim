@@ -44,7 +44,6 @@
     <Compile Include="Engine\RuntimeType.cs" />
     <Compile Include="Engine\Processor.cs" />
     <Compile Include="Engine\Operator.cs" />
-    <Compile Include="Engine\Command.cs" />
     <Compile Include="Model\Copyable.cs" />
     <Compile Include="Model\IdentifierName.cs" />
     <Compile Include="Model\KeyValueMemory.cs" />

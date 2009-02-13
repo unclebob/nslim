@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
@@ -21,28 +22,28 @@ namespace fitnesse.unitTest.slim {
 
         [Test] public void ParseSymbolReplacesWithValue() {
             processor.Store(new Symbol("$symbol", "testvalue"));
-            Assert.AreEqual("testvalue", Parse(new ParseSymbol(), processor.Command.WithType(typeof(object)).WithValue("$symbol")));
+            Assert.AreEqual("testvalue", Parse(new ParseSymbol(), typeof(object), new TreeLeaf<string>("$symbol")));
         }
 
         [Test] public void ParseSymbolReplacesEmbeddedValues() {
             processor.Store(new Symbol("$symbol1", "test"));
             processor.Store(new Symbol("$symbol2", "value"));
-            Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), processor.Command.WithType(typeof(object)).WithValue("-$symbol1$symbol2-")));
+            Assert.AreEqual("-testvalue-", Parse(new ParseSymbol(), typeof(object), new TreeLeaf<string>("-$symbol1$symbol2-")));
         }
 
         [Test] public void TreeIsParsedForList() {
             var list =
-                Parse(new ParseList(),
-                      processor.Command.WithType(typeof (List<int>)).WithParameters(new TreeList<string>().AddBranchValue("5").AddBranchValue("4"))) as List<int>;
+                Parse(new ParseList(), typeof (List<int>), new TreeList<string>().AddBranchValue("5").AddBranchValue("4")) as List<int>;
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count);
             Assert.AreEqual(5, list[0]);
             Assert.AreEqual(4, list[1]);
         }
 
-        private object Parse(ParseOperator<string> parseOperator, Command<string> command) {
-            Assert.IsTrue(parseOperator.IsMatch(command));
-            return parseOperator.Parse(command);
+        private object Parse(ParseOperator<string> parseOperator, Type type, Tree<string> parameters) {
+            object result = null;
+            Assert.IsTrue(parseOperator.TryParse(processor, type, parameters, ref result));
+            return result;
         }
     }
 }

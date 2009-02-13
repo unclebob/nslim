@@ -20,28 +20,28 @@ namespace fitnesse.unitTest.slim {
         }
         
         [Test] public void NullIsComposed() {
-            CheckCompose(new ComposeDefault(), MakeCompose(null, typeof (object)), "null");
+            CheckCompose(new ComposeDefault(), null, typeof (object), "null");
         }
         
         [Test] public void VoidIsComposed() {
-            CheckCompose(new ComposeDefault(), MakeCompose(null, typeof (void)), "/__VOID__/");
+            CheckCompose(new ComposeDefault(), null, typeof (void), "/__VOID__/");
         }
         
         [Test] public void DefaultComposeIsString() {
-            CheckCompose(new ComposeDefault(), MakeCompose(1.23, typeof (double)), "1.23");
+            CheckCompose(new ComposeDefault(), 1.23, typeof (double), "1.23");
         }
         
         [Test] public void BooleanTrueIsComposed() {
-            CheckCompose(new ComposeBoolean(), MakeCompose(true, typeof (bool)), "true");
+            CheckCompose(new ComposeBoolean(), true, typeof (bool), "true");
         }
         
         [Test] public void BooleanFalseIsComposed() {
-            CheckCompose(new ComposeBoolean(), MakeCompose(false, typeof (bool)), "false");
+            CheckCompose(new ComposeBoolean(), false, typeof (bool), "false");
         }
 
         [Test] public void ListIsComposedAsTree() {
             processor.AddOperator(new ComposeDefault());
-            var result = Compose(new ComposeList(), MakeCompose(new List<object> {"a", 1.23}, typeof (List<object>)));
+            var result = Compose(new ComposeList(), new List<object> {"a", 1.23}, typeof (List<object>));
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
             Assert.AreEqual("a", result.Branches[0].Value); 
@@ -51,7 +51,7 @@ namespace fitnesse.unitTest.slim {
         [Test] public void NestedListIsComposedAsTree() {
             processor.AddOperator(new ComposeDefault());
             processor.AddOperator(new ComposeList());
-            var result = Compose(new ComposeList(), MakeCompose(new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>)));
+            var result = Compose(new ComposeList(), new List<object> {"a", new List<object> {"b", "c"}}, typeof (List<object>));
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Branches.Count);
             Assert.AreEqual("a", result.Branches[0].Value);
@@ -59,18 +59,16 @@ namespace fitnesse.unitTest.slim {
             Assert.AreEqual("c", result.Branches[1].Branches[1].Value); 
         }
 
-        private Command<string> MakeCompose(object instance, Type type) {
-            return processor.Command.WithInstance(instance).WithType(type);
+        private Tree<string> Compose(ComposeOperator<string> composeOperator, object instance, Type type) {
+            Tree<string> result = null;
+            Assert.IsTrue(composeOperator.TryCompose(processor, type, instance, ref result));
+            return result;
         }
 
-        private Tree<string> Compose(ComposeOperator<string> composeOperator, Command<string> command) {
-            Assert.IsTrue(composeOperator.IsMatch(command));
-            return composeOperator.Compose(command);
-        }
-
-        private void CheckCompose(ComposeOperator<string> composeOperator, Command<string> command, object expected) {
-            Assert.IsTrue(composeOperator.IsMatch(command));
-            Assert.AreEqual(expected, Compose(composeOperator, command).Value);
+        private void CheckCompose(ComposeOperator<string> composeOperator, object instance, Type type, object expected) {
+            Tree<string> result = null;
+            Assert.IsTrue(composeOperator.TryCompose(processor, type, instance, ref result));
+            Assert.AreEqual(expected, result.Value);
         }
     }
 }

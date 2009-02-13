@@ -3,25 +3,22 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ComposeList: ComposeOperator<string> { //todo: handle any enumerable type
-        public bool IsMatch(Command<string> command) {
-            return command.Type == typeof (List<object>);
-        }
-
-        public Tree<string> Compose(Command<string> command) {
-            var list = command.Instance as List<object> ?? new List<object>();
+        public bool TryCompose(Processor<string> processor, Type type, object instance, ref Tree<string> result) {
+            if (type != typeof (List<object>)) return false;
+            var list = instance as List<object> ?? new List<object>();
             var tree = new TreeList<string>();
             foreach (object value in list) {
-                tree.AddBranch(command.Make
-                    .WithInstance(value)
-                    .Compose());
+                tree.AddBranch(processor.Compose(value));
             }
-            return tree;
+            result = tree;
+            return true;
         }
     }
 }

@@ -42,7 +42,7 @@ namespace fitnesse.mtee.application {
         }
 
         private int ExecuteRunner() {
-            var runnable = (Runnable) new BasicProcessor().Command.WithMember(runnerName).Create();
+            var runnable = (Runnable) new BasicProcessor().Create(runnerName);
             return runnable.Run(extraArguments.ToArray(), configuration);
         }
     }

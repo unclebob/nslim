@@ -45,11 +45,7 @@ namespace fitnesse.mtee.application {
 
         private void LoadNode(string typeName, XmlNode methodNode) {
             try {
-                new Processor<string>().Command
-                    .WithInstance(GetItem(typeName))
-                    .WithMember(methodNode.Name)
-                    .WithParameters(NodeParameters(methodNode))
-                    .Invoke();
+                new Processor<string>().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
             }
             catch (TargetInvocationException e) {
                 throw e.InnerException;
@@ -79,7 +75,7 @@ namespace fitnesse.mtee.application {
 
         public Copyable GetItem(Type type) {
             if (!items.ContainsKey(type)) {
-                items[type] = (Copyable)new BasicProcessor().Command.WithMember(type.AssemblyQualifiedName).Create();
+                items[type] = (Copyable)new BasicProcessor().Create(type.AssemblyQualifiedName);
             }
             return items[type];
         }

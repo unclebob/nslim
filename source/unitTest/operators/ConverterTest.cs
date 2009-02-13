@@ -1,4 +1,5 @@
 ﻿using fitnesse.mtee.engine;
+using fitnesse.mtee.model;
 using fitnesse.mtee.operators;
 using NUnit.Framework;
 
@@ -8,18 +9,18 @@ namespace fitnesse.unitTest.operators {
 
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();
-            var state = processor.Command.WithType(typeof(CustomClass)).WithValue("info");
-            Assert.IsTrue(converter.IsMatch(state));
-            var result = converter.Parse(state) as CustomClass;
+            object parseResult = null;
+            Assert.IsTrue(converter.TryParse(processor, typeof(CustomClass), new TreeLeaf<string>("info"), ref parseResult));
+            var result = parseResult as CustomClass;
             Assert.IsNotNull(result);
             Assert.AreEqual("custominfo", result.Info);
         }
 
         [Test] public void CustomTypeIsComposed() {
             var converter = new CustomConverter();
-            var state = processor.Command.WithInstance(new CustomClass {Info = "stuff"}).WithType(typeof(CustomClass));
-            Assert.IsTrue(converter.IsMatch(state));
-            var result = converter.Compose(state).Value;
+            Tree<string> composeResult = null;
+            Assert.IsTrue(converter.TryCompose(processor, typeof(CustomClass), new CustomClass {Info = "stuff"}, ref composeResult));
+            var result = composeResult.Value;
             Assert.IsNotNull(result);
             Assert.AreEqual("mystuff", result);
         }

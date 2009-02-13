@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using fitnesse.mtee.application;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
@@ -23,7 +24,7 @@ namespace fitnesse.unitTest.slim {
             var statement =
                 new TreeList<string>().AddBranchValue("step").AddBranchValue("make").AddBranchValue("variable").AddBranchValue(
                     "fitnesse.unitTest.slim.SampleClass");
-            service.Command.WithParameters(statement).Execute();
+            service.Execute(statement);
             Assert.AreEqual(1, SampleClass.Count);
         }
 
@@ -31,7 +32,7 @@ namespace fitnesse.unitTest.slim {
             var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
             var statement = new TreeList<string>().AddBranchValue("step").AddBranchValue("sampleCommand");
-            var result = (Tree<string>)configuration.GetItem<Service>().Command.WithParameters(statement).Execute();
+            var result = (Tree<string>)configuration.GetItem<Service>().Execute(statement);
             Assert.AreEqual("sampleResult", result.Branches[1].Value);
         }
 
@@ -43,15 +44,17 @@ namespace fitnesse.unitTest.slim {
         }
 
         private class ParseUpperCase: ParseOperator<string> {
-            public bool IsMatch(Command<string> command) { return true; }
-            public object Parse(Command<string> command) { return command.ParameterValueString.ToUpper(); }
+            public bool TryParse(Processor<string> processor, Type type, Tree<string> parameters, ref object result) {
+                result = parameters.Value.ToUpper();
+                return true;
+            }
         }
     }
 
     public class SampleOperator: ExecuteBase {
         public SampleOperator() : base("sampleCommand") {}
-        protected override Tree<string> ExecuteOperation(Command<string> command) {
-            return Result(command, "sampleResult");
+        protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {
+            return Result(parameters, "sampleResult");
         }
     }
 }

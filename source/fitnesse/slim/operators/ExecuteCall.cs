@@ -10,12 +10,9 @@ namespace fitnesse.slim.operators {
     class ExecuteCall: ExecuteBase {
         public ExecuteCall() : base("call") {}
 
-        protected override Tree<string> ExecuteOperation(Command<string> command) {
-            TypedValue result = InvokeMember(command, 2);
-            return Result(command, command.Make
-                .WithInstance(result.Value)
-                .WithType(result.Type)
-                .Compose());
+        protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {
+            TypedValue result = InvokeMember(processor, parameters, 2);
+            return Result(parameters, processor.Compose(result.Type, result.Value));
         }
     }
 }

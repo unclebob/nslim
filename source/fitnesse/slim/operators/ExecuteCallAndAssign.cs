@@ -10,13 +10,10 @@ namespace fitnesse.slim.operators {
     public class ExecuteCallAndAssign: ExecuteBase {
         public ExecuteCallAndAssign(): base("callAndAssign") {}
 
-        protected override Tree<string> ExecuteOperation(Command<string> command) {
-            TypedValue result = InvokeMember(command, 3);
-            command.Processor.Store(new Symbol(command.Parameter(2), result.Value)); //todo: should we store the composed result?
-            return Result(command, command.Make
-                .WithInstance(result.Value)
-                .WithType(result.Type)
-                .Compose());
+        protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {
+            TypedValue result = InvokeMember(processor, parameters, 3);
+            processor.Store(new Symbol(parameters.Branches[2].Value, result.Value)); //todo: should we store the composed result?
+            return Result(parameters, processor.Compose(result.Type, result.Value));
         }
     }
 }

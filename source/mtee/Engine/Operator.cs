@@ -3,31 +3,30 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
-    public interface Operator<T> {
-        bool IsMatch(Command<T> command);
+    public interface Operator {}
+
+    public interface CompareOperator<T>: Operator {
+        bool TryCompare(Processor<T> processor, Type type, object instance, Tree<T> parameters, ref bool result);
     }
 
-    public interface ExecuteOperator<T>: Operator<T> {
-        object Execute(Command<T> command);
+    public interface ComposeOperator<T>: Operator {
+        bool TryCompose(Processor<T> processor, Type type, object instance, ref Tree<T> result);
     }
 
-    public interface ParseOperator<T>: Operator<T> {
-        object Parse(Command<T> command);
+    public interface ExecuteOperator<T>: Operator {
+        bool TryExecute(Processor<T> processor, Tree<T> parameters, ref object result);
     }
 
-    public interface ComposeOperator<T>: Operator<T> {
-        Tree<T> Compose(Command<T> command);
+    public interface ParseOperator<T>: Operator {
+        bool TryParse(Processor<T> processor, Type type, Tree<T> parameters, ref object result);
     }
 
-    public interface CompareOperator<T>: Operator<T> {
-        bool Compare(Command<T> command);
-    }
-
-    public interface RuntimeOperator<T>: Operator<T> {
-        object Create(Command<T> command);
-        TypedValue Invoke(Command<T> command);
+    public interface RuntimeOperator<T>: Operator {
+        bool TryCreate(Processor<T> processor, string memberName, Tree<T> parameters, ref object result);
+        bool TryInvoke(Processor<T> processor, Type type, object instance, string memberName, Tree<T> parameters, ref TypedValue result);
     }
 }

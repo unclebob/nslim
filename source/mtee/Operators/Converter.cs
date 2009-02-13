@@ -1,18 +1,23 @@
-﻿using fitnesse.mtee.engine;
+﻿using System;
+using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public abstract class Converter<T>: ParseOperator<string>, ComposeOperator<string> {
-        public bool IsMatch(Command<string> command) {
-            return command.Type == typeof(T);
+        public bool TryParse(Processor<string> processor, Type type, Tree<string> parameters, ref object result) {
+            if (!IsMatch(type)) return false;
+            result = Parse(parameters.Value);
+            return true;
         }
 
-        public Tree<string> Compose(Command<string> command) {
-            return new TreeLeaf<string>(Compose((T)command.Instance));
+        public bool TryCompose(Processor<string> processor, Type type, object instance, ref Tree<string> result) {
+            if (!IsMatch(type)) return false;
+            result = new TreeLeaf<string>(Compose((T)instance));
+            return true;
         }
 
-        public object Parse(Command <string>command) {
-            return Parse(command.ParameterValue);
+        private static bool IsMatch(Type type) {
+            return type == typeof(T);
         }
 
         protected abstract T Parse(string input);

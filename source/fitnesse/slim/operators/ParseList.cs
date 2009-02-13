@@ -11,19 +11,14 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ParseList: ParseOperator<string> { // todo: handle any IList type
-        public bool IsMatch(Command<string> command) {
-            return command.Type.IsGenericType && command.Type.GetGenericTypeDefinition() == typeof (List<>);
-        }
-
-        public object Parse(Command<string> command) {
-            var result = (IList)Activator.CreateInstance(command.Type);
-            foreach (Tree<string> branch in command.Parameters.Branches) {
-                result.Add(command.Make
-                    .WithType(command.Type.GetGenericArguments()[0])
-                    .WithParameters(branch)
-                    .Parse());
+        public bool TryParse(Processor<string> processor, Type type, Tree<string> parameters, ref object result) {
+            if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof (List<>)) return false;
+            var list = (IList)Activator.CreateInstance(type);
+            foreach (Tree<string> branch in parameters.Branches) {
+                list.Add(processor.Parse(type.GetGenericArguments()[0], branch));
             }
-            return result;
+            result = list;
+            return true;
         }
     }
 }

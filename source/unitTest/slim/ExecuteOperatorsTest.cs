@@ -55,7 +55,7 @@ namespace fitnesse.unitTest.slim {
 
         private void ExecuteOperation(ExecuteOperator<string> executeOperator, Tree<string> input, int branchCount) {
             object executeResult = null;
-            executeOperator.TryExecute(processor, input, ref executeResult);
+            executeOperator.TryExecute(processor, null, input, ref executeResult);
             result = (Tree<string>)executeResult;
             Assert.IsFalse(result.IsLeaf);
             Assert.AreEqual(branchCount, result.Branches.Count);

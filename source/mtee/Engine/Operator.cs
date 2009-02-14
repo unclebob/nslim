@@ -18,7 +18,7 @@ namespace fitnesse.mtee.engine {
     }
 
     public interface ExecuteOperator<T>: Operator {
-        bool TryExecute(Processor<T> processor, Tree<T> parameters, ref object result);
+        bool TryExecute(Processor<T> processor, object instance, Tree<T> parameters, ref object result);
     }
 
     public interface ParseOperator<T>: Operator {

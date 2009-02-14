@@ -13,7 +13,7 @@ namespace fitnesse.slim.operators {
         private const string ExceptionResult = "__EXCEPTION__:{0}";
         private readonly IdentifierName identifier;
 
-        public bool TryExecute(Processor<string> processor, Tree<string> parameters, ref object result) {
+        public bool TryExecute(Processor<string> processor, object instance, Tree<string> parameters, ref object result) {
             if (!identifier.IsEmpty && (parameters.Branches.Count < 2 || !identifier.Matches(parameters.Branches[1].Value))) return false;
             try {
                 result = ExecuteOperation(processor, parameters);

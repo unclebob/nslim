@@ -85,7 +85,7 @@ namespace fitnesse.unitTest.engine {
         }
 
         private class DefaultTest: ExecuteOperator<string> {
-            public bool TryExecute(Processor<string> processor, Tree<string> parameters, ref object result) {
+            public bool TryExecute(Processor<string> processor, object instance, Tree<string> parameters, ref object result) {
                 result = "defaultexecute";
                 return true;
             }
@@ -98,7 +98,7 @@ namespace fitnesse.unitTest.engine {
                 this.name = name;
             }
 
-            public bool TryExecute(Processor<string> processor, Tree<string> parameters, ref object result) {
+            public bool TryExecute(Processor<string> processor, object instance, Tree<string> parameters, ref object result) {
                 if (parameters.Value != name) return false;
                 result = "execute" + name;
                 return true;

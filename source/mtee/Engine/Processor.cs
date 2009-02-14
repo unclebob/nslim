@@ -75,10 +75,14 @@ namespace fitnesse.mtee.engine {
             return result;
         }
 
-        public object Execute(Tree<U> parameters) {
+        public object Execute(object instance, Tree<U> parameters) {
             object result = null;
-            Do<ExecuteOperator<U>>(o => o.TryExecute(this, parameters, ref result));
+            Do<ExecuteOperator<U>>(o => o.TryExecute(this, instance, parameters, ref result));
             return result;
+        }
+
+        public object Execute(Tree<U> parameters) {
+            return Execute(null, parameters);
         }
 
         public object Parse(Type type, Tree<U> parameters) {

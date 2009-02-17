@@ -7,6 +7,8 @@ using System;
 
 namespace fitnesse.mtee.model {
     public struct TypedValue {
+        public static readonly TypedValue Void = new TypedValue(null, typeof(void));
+
         public object Value { get; private set; }
         public Type Type { get; private set; }
 
@@ -16,5 +18,7 @@ namespace fitnesse.mtee.model {
         }
 
         public TypedValue(object value): this(value, value != null ? value.GetType() : typeof(object)) {}
+
+        public bool IsVoid { get { return Type == typeof (void); } }
     }
 }

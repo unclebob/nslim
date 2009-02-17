@@ -36,7 +36,7 @@ namespace fitnesse.mtee.engine {
         }
 
         public void AddOperator(string operatorName) {
-            AddOperator((Operator)Create(operatorName));
+            AddOperator((Operator)Create(operatorName).Value);
         }
 
         public void AddOperator(Operator anOperator) { AddOperator(anOperator, 0); }
@@ -59,40 +59,40 @@ namespace fitnesse.mtee.engine {
             ApplicationUnderTest.AddNamespace(namespaceName);
         }
 
-        public bool Compare(Type type, object instance, Tree<U> parameters) {
+        public bool Compare(TypedValue instance, Tree<U> parameters) {
             bool result = false;
-            Do<CompareOperator<U>>(o => o.TryCompare(this, type, instance, parameters, ref result));
+            Do<CompareOperator<U>>(o => o.TryCompare(this, instance, parameters, ref result));
             return result;
         }
 
         public Tree<U> Compose(object instance) {
-            return Compose(instance != null ? instance.GetType() : typeof (object), instance);
+            return Compose(new TypedValue(instance));
         }
 
-        public Tree<U> Compose(Type type, object instance) {
+        public Tree<U> Compose(TypedValue instance) {
             Tree<U> result = null;
-            Do<ComposeOperator<U>>(o => o.TryCompose(this, type, instance, ref result));
+            Do<ComposeOperator<U>>(o => o.TryCompose(this, instance, ref result));
             return result;
         }
 
-        public object Execute(object instance, Tree<U> parameters) {
+        public object Execute(TypedValue instance, Tree<U> parameters) {
             object result = null;
             Do<ExecuteOperator<U>>(o => o.TryExecute(this, instance, parameters, ref result));
             return result;
         }
 
         public object Execute(Tree<U> parameters) {
-            return Execute(null, parameters);
+            return Execute(TypedValue.Void, parameters);
         }
 
-        public object Parse(Type type, object instance, Tree<U> parameters) {
+        public object Parse(Type type, TypedValue instance, Tree<U> parameters) {
             object result = null;
             Do<ParseOperator<U>>(o => o.TryParse(this, type, instance, parameters, ref result));
             return result;
         }
 
         public object Parse(Type type, Tree<U> parameters) {
-            return Parse(type, null, parameters);
+            return Parse(type, TypedValue.Void, parameters);
         }
 
         public object Parse(Type type, U input) {
@@ -108,30 +108,30 @@ namespace fitnesse.mtee.engine {
         }
 
         public object ParseString(Type type, string input) {
-            return Parse(type, Compose(typeof(string), input));
+            return Parse(type, Compose(new TypedValue(input, typeof(string))));
         }
 
         public T ParseString<T>(string input) {
             return (T) ParseString(typeof (T), input);
         }
 
-        public object Create(string membername) {
+        public TypedValue Create(string membername) {
             return Create(membername, new TreeList<U>());
         }
 
-        public object Create(string memberName, Tree<U> parameters) {
-            object result = null;
+        public TypedValue Create(string memberName, Tree<U> parameters) {
+            TypedValue result = TypedValue.Void;
             Do<RuntimeOperator<U>>(o => o.TryCreate(this, memberName, parameters, ref result));
             return result;
         }
 
         public TypedValue Invoke(object instance, string memberName, Tree<U> parameters) {
-            return Invoke(instance.GetType(), instance, memberName, parameters);
+            return Invoke(new TypedValue(instance), memberName, parameters);
         }
 
-        public TypedValue Invoke(Type type, object instance, string memberName, Tree<U> parameters) {
+        public TypedValue Invoke(TypedValue instance, string memberName, Tree<U> parameters) {
             var result = new TypedValue();
-            Do<RuntimeOperator<U>>(o => o.TryInvoke(this, type, instance, memberName, parameters, ref result));
+            Do<RuntimeOperator<U>>(o => o.TryInvoke(this, instance, memberName, parameters, ref result));
             return result;
         }
 

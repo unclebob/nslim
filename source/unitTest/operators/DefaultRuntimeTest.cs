@@ -19,21 +19,21 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void InstanceIsCreated() {
-            object result = null;
+            TypedValue result = TypedValue.Void;
             runtime.TryCreate(processor, "fitnesse.unitTest.engine.SampleClass", new TreeList<string>(), ref result);
-            Assert.IsTrue(result is SampleClass);
+            Assert.IsTrue(result.Value is SampleClass);
         }
 
         [Test] public void StandardInstanceIsCreated() {
-            object result = null;
+            TypedValue result = TypedValue.Void;
             runtime.TryCreate(processor, "System.Boolean", new TreeList<string>(), ref result);
-            Assert.IsTrue(result is bool);
+            Assert.IsTrue(result.Value is bool);
         }
 
         [Test]
         public void MethodIsInvoked() {
             var result = new TypedValue();
-            runtime.TryInvoke(processor, typeof (SampleClass), new SampleClass(), "methodwithparms", new TreeList<string>().AddBranchValue("stuff"), ref result);
+            runtime.TryInvoke(processor, new TypedValue(new SampleClass()), "methodwithparms", new TreeList<string>().AddBranchValue("stuff"), ref result);
             Assert.AreEqual(typeof (string), result.Type);
             Assert.AreEqual("samplestuff", result.Value);
         }

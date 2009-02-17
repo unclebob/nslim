@@ -61,13 +61,13 @@ namespace fitnesse.unitTest.slim {
 
         private Tree<string> Compose(ComposeOperator<string> composeOperator, object instance, Type type) {
             Tree<string> result = null;
-            Assert.IsTrue(composeOperator.TryCompose(processor, type, instance, ref result));
+            Assert.IsTrue(composeOperator.TryCompose(processor, new TypedValue(instance, type), ref result));
             return result;
         }
 
         private void CheckCompose(ComposeOperator<string> composeOperator, object instance, Type type, object expected) {
             Tree<string> result = null;
-            Assert.IsTrue(composeOperator.TryCompose(processor, type, instance, ref result));
+            Assert.IsTrue(composeOperator.TryCompose(processor, new TypedValue(instance, type), ref result));
             Assert.AreEqual(expected, result.Value);
         }
     }

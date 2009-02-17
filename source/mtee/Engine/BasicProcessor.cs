@@ -3,7 +3,6 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
-using System;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
@@ -13,8 +12,8 @@ namespace fitnesse.mtee.engine {
         }
 
         private class DefaultCompose: ComposeOperator<string> {
-            public bool TryCompose(Processor<string> processor, Type type, object instance, ref Tree<string> result) {
-                result = new TreeLeaf<string>(instance.ToString());
+            public bool TryCompose(Processor<string> processor, TypedValue instance, ref Tree<string> result) {
+                result = new TreeLeaf<string>(instance.Value.ToString());
                 return true;
             }
         }

@@ -11,7 +11,7 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ParseList: ParseOperator<string> { // todo: handle any IList type
-        public bool TryParse(Processor<string> processor, Type type, object instance, Tree<string> parameters, ref object result) {
+        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref object result) {
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof (List<>)) return false;
             var list = (IList)Activator.CreateInstance(type);
             foreach (Tree<string> branch in parameters.Branches) {

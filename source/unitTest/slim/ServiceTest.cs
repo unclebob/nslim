@@ -44,7 +44,7 @@ namespace fitnesse.unitTest.slim {
         }
 
         private class ParseUpperCase: ParseOperator<string> {
-            public bool TryParse(Processor<string> processor, Type type, object instance, Tree<string> parameters, ref object result) {
+            public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref object result) {
                 result = parameters.Value.ToUpper();
                 return true;
             }

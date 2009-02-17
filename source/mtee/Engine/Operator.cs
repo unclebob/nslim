@@ -10,23 +10,23 @@ namespace fitnesse.mtee.engine {
     public interface Operator {}
 
     public interface CompareOperator<T>: Operator {
-        bool TryCompare(Processor<T> processor, Type type, object instance, Tree<T> parameters, ref bool result);
+        bool TryCompare(Processor<T> processor, TypedValue actual, Tree<T> expected, ref bool result);
     }
 
     public interface ComposeOperator<T>: Operator {
-        bool TryCompose(Processor<T> processor, Type type, object instance, ref Tree<T> result);
+        bool TryCompose(Processor<T> processor, TypedValue instance, ref Tree<T> result);
     }
 
     public interface ExecuteOperator<T>: Operator {
-        bool TryExecute(Processor<T> processor, object instance, Tree<T> parameters, ref object result);
+        bool TryExecute(Processor<T> processor, TypedValue instance, Tree<T> parameters, ref object result);
     }
 
     public interface ParseOperator<T>: Operator {
-        bool TryParse(Processor<T> processor, Type type, object instance, Tree<T> parameters, ref object result);
+        bool TryParse(Processor<T> processor, Type type, TypedValue instance, Tree<T> parameters, ref object result);
     }
 
     public interface RuntimeOperator<T>: Operator {
-        bool TryCreate(Processor<T> processor, string memberName, Tree<T> parameters, ref object result);
-        bool TryInvoke(Processor<T> processor, Type type, object instance, string memberName, Tree<T> parameters, ref TypedValue result);
+        bool TryCreate(Processor<T> processor, string memberName, Tree<T> parameters, ref TypedValue result);
+        bool TryInvoke(Processor<T> processor, TypedValue instance, string memberName, Tree<T> parameters, ref TypedValue result);
     }
 }

@@ -9,7 +9,7 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public class DefaultParse<T>: ParseOperator<T> { //todo: also look for constructor with string argument
-        public bool TryParse(Processor<T> processor, Type type, object instance, Tree<T> parameters, ref object result) {
+        public bool TryParse(Processor<T> processor, Type type, TypedValue instance, Tree<T> parameters, ref object result) {
             if (type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
                 result = parameters.Value.ToString();
             }

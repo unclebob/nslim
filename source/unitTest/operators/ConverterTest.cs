@@ -10,7 +10,7 @@ namespace fitnesse.unitTest.operators {
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();
             object parseResult = null;
-            Assert.IsTrue(converter.TryParse(processor, typeof(CustomClass), null, new TreeLeaf<string>("info"), ref parseResult));
+            Assert.IsTrue(converter.TryParse(processor, typeof(CustomClass), TypedValue.Void, new TreeLeaf<string>("info"), ref parseResult));
             var result = parseResult as CustomClass;
             Assert.IsNotNull(result);
             Assert.AreEqual("custominfo", result.Info);
@@ -19,7 +19,7 @@ namespace fitnesse.unitTest.operators {
         [Test] public void CustomTypeIsComposed() {
             var converter = new CustomConverter();
             Tree<string> composeResult = null;
-            Assert.IsTrue(converter.TryCompose(processor, typeof(CustomClass), new CustomClass {Info = "stuff"}, ref composeResult));
+            Assert.IsTrue(converter.TryCompose(processor, new TypedValue(new CustomClass {Info = "stuff"}), ref composeResult));
             var result = composeResult.Value;
             Assert.IsNotNull(result);
             Assert.AreEqual("mystuff", result);

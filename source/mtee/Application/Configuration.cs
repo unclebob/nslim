@@ -75,7 +75,7 @@ namespace fitnesse.mtee.application {
 
         public Copyable GetItem(Type type) {
             if (!items.ContainsKey(type)) {
-                items[type] = (Copyable)new BasicProcessor().Create(type.AssemblyQualifiedName);
+                items[type] = (Copyable)new BasicProcessor().Create(type.AssemblyQualifiedName).Value;
             }
             return items[type];
         }

@@ -42,7 +42,7 @@ namespace fitnesse.unitTest.slim {
 
         private object Parse(ParseOperator<string> parseOperator, Type type, Tree<string> parameters) {
             object result = null;
-            Assert.IsTrue(parseOperator.TryParse(processor, type, parameters, ref result));
+            Assert.IsTrue(parseOperator.TryParse(processor, type, null, parameters, ref result));
             return result;
         }
     }

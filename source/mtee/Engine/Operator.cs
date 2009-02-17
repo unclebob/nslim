@@ -22,7 +22,7 @@ namespace fitnesse.mtee.engine {
     }
 
     public interface ParseOperator<T>: Operator {
-        bool TryParse(Processor<T> processor, Type type, Tree<T> parameters, ref object result);
+        bool TryParse(Processor<T> processor, Type type, object instance, Tree<T> parameters, ref object result);
     }
 
     public interface RuntimeOperator<T>: Operator {

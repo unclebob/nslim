@@ -60,10 +60,12 @@ namespace fitnesse.mtee.engine {
         }
 
 
-        private static RuntimeMember MakeMember(MemberInfo memberInfo) { //todo: add other types
+        private static RuntimeMember MakeMember(MemberInfo memberInfo) {
             switch (memberInfo.MemberType) {
                 case MemberTypes.Method:
                     return new MethodMember(memberInfo);
+                case MemberTypes.Field:
+                    return new FieldMember(memberInfo);
                 case MemberTypes.Property:
                     return new PropertyMember(memberInfo);
                 case MemberTypes.Constructor:

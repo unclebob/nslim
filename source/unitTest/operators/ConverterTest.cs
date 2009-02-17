@@ -10,7 +10,7 @@ namespace fitnesse.unitTest.operators {
         [Test] public void CustomTypeIsParsed() {
             var converter = new CustomConverter();
             object parseResult = null;
-            Assert.IsTrue(converter.TryParse(processor, typeof(CustomClass), new TreeLeaf<string>("info"), ref parseResult));
+            Assert.IsTrue(converter.TryParse(processor, typeof(CustomClass), null, new TreeLeaf<string>("info"), ref parseResult));
             var result = parseResult as CustomClass;
             Assert.IsNotNull(result);
             Assert.AreEqual("custominfo", result.Info);

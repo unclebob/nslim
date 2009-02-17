@@ -9,7 +9,7 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public class ParseType<T>: ParseOperator<T> {
-        public bool TryParse(Processor<T> processor, Type type, Tree<T> parameters, ref object result) {
+        public bool TryParse(Processor<T> processor, Type type, object instance, Tree<T> parameters, ref object result) {
             if (type != typeof (RuntimeType)) return false;
             result = processor.ApplicationUnderTest.FindType(new IdentifierName(parameters.Value.ToString()));
             return true;

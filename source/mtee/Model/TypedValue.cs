@@ -14,5 +14,7 @@ namespace fitnesse.mtee.model {
             Value = value;
             Type = type;
         }
+
+        public TypedValue(object value): this(value, value != null ? value.GetType() : typeof(object)) {}
     }
 }

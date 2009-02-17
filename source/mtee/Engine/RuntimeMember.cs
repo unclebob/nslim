@@ -12,7 +12,7 @@ namespace fitnesse.mtee.engine {
         TypedValue Invoke(object instance, object[] parameters);
         bool MatchesParameterCount(int count);
         Type GetParameterType(int index);
-        Type ReturnType { get; } //todo: can probably eliminate this
+        Type ReturnType { get; }
     }
 
     class MethodMember: RuntimeMember {
@@ -37,6 +37,31 @@ namespace fitnesse.mtee.engine {
         }
 
         public Type ReturnType { get { return info.ReturnType; } }
+    }
+
+    class FieldMember: RuntimeMember {
+        private readonly FieldInfo info;
+
+        public FieldMember(MemberInfo memberInfo) { info = (FieldInfo) memberInfo; }
+
+        public Type GetParameterType(int index) {
+            return info.FieldType;
+        }
+
+        public bool MatchesParameterCount(int count) { return count == 0 || count == 1; }
+
+        public TypedValue Invoke(object instance, object[] parameters) {
+            Type type = info.DeclaringType;
+            object result = type.InvokeMember(info.Name,
+                                              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                              | (parameters.Length == 0 ? BindingFlags.GetField : BindingFlags.SetField)
+                                              | BindingFlags.Static,
+                                              null, instance, parameters);
+
+            return new TypedValue(result, parameters.Length == 0 ? info.FieldType : typeof(void));
+        }
+
+        public Type ReturnType { get { return info.FieldType; } }
     }
 
     class PropertyMember: RuntimeMember {

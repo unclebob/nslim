@@ -4,9 +4,9 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public abstract class Converter<T>: ParseOperator<string>, ComposeOperator<string> {
-        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref object result) {
+        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
             if (!IsMatch(type)) return false;
-            result = Parse(parameters.Value);
+            result = new TypedValue(Parse(parameters.Value), type);
             return true;
         }
 

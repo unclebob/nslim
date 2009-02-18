@@ -75,44 +75,44 @@ namespace fitnesse.mtee.engine {
             return result;
         }
 
-        public object Execute(TypedValue instance, Tree<U> parameters) {
-            object result = null;
+        public TypedValue Execute(TypedValue instance, Tree<U> parameters) {
+            TypedValue result = TypedValue.Void;
             Do<ExecuteOperator<U>>(o => o.TryExecute(this, instance, parameters, ref result));
             return result;
         }
 
-        public object Execute(Tree<U> parameters) {
+        public TypedValue Execute(Tree<U> parameters) {
             return Execute(TypedValue.Void, parameters);
         }
 
-        public object Parse(Type type, TypedValue instance, Tree<U> parameters) {
-            object result = null;
+        public TypedValue Parse(Type type, TypedValue instance, Tree<U> parameters) {
+            TypedValue result = TypedValue.Void;
             Do<ParseOperator<U>>(o => o.TryParse(this, type, instance, parameters, ref result));
             return result;
         }
 
-        public object Parse(Type type, Tree<U> parameters) {
+        public TypedValue Parse(Type type, Tree<U> parameters) {
             return Parse(type, TypedValue.Void, parameters);
         }
 
-        public object Parse(Type type, U input) {
+        public TypedValue Parse(Type type, U input) {
             return Parse(type, new TreeLeaf<U>(input));
         }
 
         public T ParseTree<T>(Tree<U> input) {
-            return (T) Parse(typeof (T), input);
+            return (T) Parse(typeof (T), input).Value;
         }
 
         public T Parse<T>(U input) {
-            return (T) Parse(typeof (T), input);
+            return (T) Parse(typeof (T), input).Value;
         }
 
-        public object ParseString(Type type, string input) {
+        public TypedValue ParseString(Type type, string input) {
             return Parse(type, Compose(new TypedValue(input, typeof(string))));
         }
 
         public T ParseString<T>(string input) {
-            return (T) ParseString(typeof (T), input);
+            return (T) ParseString(typeof (T), input).Value;
         }
 
         public TypedValue Create(string membername) {
@@ -123,10 +123,6 @@ namespace fitnesse.mtee.engine {
             TypedValue result = TypedValue.Void;
             Do<RuntimeOperator<U>>(o => o.TryCreate(this, memberName, parameters, ref result));
             return result;
-        }
-
-        public TypedValue Invoke(object instance, string memberName, Tree<U> parameters) {
-            return Invoke(new TypedValue(instance), memberName, parameters);
         }
 
         public TypedValue Invoke(TypedValue instance, string memberName, Tree<U> parameters) {

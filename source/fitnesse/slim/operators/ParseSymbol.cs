@@ -13,7 +13,7 @@ namespace fitnesse.slim.operators {
     public class ParseSymbol: ParseOperator<string> {
         private static readonly Regex symbolPattern = new Regex("(\\$[a-zA-Z]\\w*)");
 
-        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref object result) {
+        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
             string decodedInput = ReplaceSymbols(parameters.Value, processor);
             if (parameters.Value == decodedInput) return false;
             result = processor.Parse(type, decodedInput);

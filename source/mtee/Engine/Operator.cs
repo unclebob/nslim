@@ -18,11 +18,11 @@ namespace fitnesse.mtee.engine {
     }
 
     public interface ExecuteOperator<T>: Operator {
-        bool TryExecute(Processor<T> processor, TypedValue instance, Tree<T> parameters, ref object result);
+        bool TryExecute(Processor<T> processor, TypedValue instance, Tree<T> parameters, ref TypedValue result);
     }
 
     public interface ParseOperator<T>: Operator {
-        bool TryParse(Processor<T> processor, Type type, TypedValue instance, Tree<T> parameters, ref object result);
+        bool TryParse(Processor<T> processor, Type type, TypedValue instance, Tree<T> parameters, ref TypedValue result);
     }
 
     public interface RuntimeOperator<T>: Operator {

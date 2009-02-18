@@ -13,13 +13,13 @@ namespace fitnesse.slim.operators {
         private const string ExceptionResult = "__EXCEPTION__:{0}";
         private readonly IdentifierName identifier;
 
-        public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref object result) {
+        public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
             if (!identifier.IsEmpty && (parameters.Branches.Count < 2 || !identifier.Matches(parameters.Branches[1].Value))) return false;
             try {
-                result = ExecuteOperation(processor, parameters);
+                result = new TypedValue(ExecuteOperation(processor, parameters));
             }
             catch (Exception e) {
-                result = Result(parameters, string.Format(ExceptionResult, e));
+                result = new TypedValue(Result(parameters, string.Format(ExceptionResult, e)));
             }
             return true;
         }
@@ -56,7 +56,7 @@ namespace fitnesse.slim.operators {
 
         protected static TypedValue InvokeMember(Processor<string> processor, Tree<string> parameters, int memberIndex) {
             object target = processor.Load(new SavedInstance(parameters.Branches[memberIndex].Value)).Instance;
-            return processor.Invoke(target, parameters.Branches[memberIndex + 1].Value, ParameterTree(parameters, memberIndex + 2));
+            return processor.Invoke(new TypedValue(target), parameters.Branches[memberIndex + 1].Value, ParameterTree(parameters, memberIndex + 2));
         }
     }
 }

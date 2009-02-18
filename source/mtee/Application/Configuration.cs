@@ -45,7 +45,7 @@ namespace fitnesse.mtee.application {
 
         private void LoadNode(string typeName, XmlNode methodNode) {
             try {
-                new Processor<string>().Invoke(GetItem(typeName), methodNode.Name, NodeParameters(methodNode));
+                new Processor<string>().Invoke(new TypedValue(GetItem(typeName)), methodNode.Name, NodeParameters(methodNode));
             }
             catch (TargetInvocationException e) {
                 throw e.InnerException;

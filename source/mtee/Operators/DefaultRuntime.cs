@@ -31,7 +31,7 @@ namespace fitnesse.mtee.operators {
             var parameterList = new List<object>();
             int i = 0;
             foreach (Tree<T> parameter in parameters.Branches) {
-                parameterList.Add(processor.Parse(member.GetParameterType(i), parameter));
+                parameterList.Add(processor.Parse(member.GetParameterType(i), parameter).Value);
                 i++;
             }
             return parameterList.ToArray();

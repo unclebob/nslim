@@ -41,9 +41,9 @@ namespace fitnesse.unitTest.slim {
         }
 
         private object Parse(ParseOperator<string> parseOperator, Type type, Tree<string> parameters) {
-            object result = null;
+            TypedValue result = TypedValue.Void;
             Assert.IsTrue(parseOperator.TryParse(processor, type, TypedValue.Void, parameters, ref result));
-            return result;
+            return result.Value;
         }
     }
 }

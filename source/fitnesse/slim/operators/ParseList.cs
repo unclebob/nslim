@@ -11,13 +11,13 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
     public class ParseList: ParseOperator<string> { // todo: handle any IList type
-        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref object result) {
+        public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof (List<>)) return false;
             var list = (IList)Activator.CreateInstance(type);
             foreach (Tree<string> branch in parameters.Branches) {
-                list.Add(processor.Parse(type.GetGenericArguments()[0], branch));
+                list.Add(processor.Parse(type.GetGenericArguments()[0], branch).Value);
             }
-            result = list;
+            result = new TypedValue(list);
             return true;
         }
     }

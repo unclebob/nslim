@@ -32,7 +32,7 @@ namespace fitnesse.unitTest.slim {
             var configuration = new Configuration();
             configuration.LoadXml("<config><fitnesse.slim.Service><addOperator>fitnesse.unitTest.slim.SampleOperator</addOperator></fitnesse.slim.Service></config>");
             var statement = new TreeList<string>().AddBranchValue("step").AddBranchValue("sampleCommand");
-            var result = (Tree<string>)configuration.GetItem<Service>().Execute(statement);
+            var result = (Tree<string>)configuration.GetItem<Service>().Execute(statement).Value;
             Assert.AreEqual("sampleResult", result.Branches[1].Value);
         }
 
@@ -44,8 +44,8 @@ namespace fitnesse.unitTest.slim {
         }
 
         private class ParseUpperCase: ParseOperator<string> {
-            public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref object result) {
-                result = parameters.Value.ToUpper();
+            public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
+                result = new TypedValue(parameters.Value.ToUpper());
                 return true;
             }
         }

@@ -20,21 +20,21 @@ namespace fitnesse.unitTest.operators {
         }
 
         [Test] public void StringIsParsed() {
-            object result = null;
+            TypedValue result = TypedValue.Void;
             parse.TryParse(processor, typeof (string), TypedValue.Void, new TreeLeaf<string>("stuff"), ref result);
-            Assert.AreEqual("stuff", result);
+            Assert.AreEqual("stuff", result.Value);
         }
 
         [Test] public void DateIsParsed() {
-            object result = null;
+            TypedValue result = TypedValue.Void;
             parse.TryParse(processor, typeof(DateTime), TypedValue.Void, new TreeLeaf<string>("03 Jan 2008"), ref result);
-            Assert.AreEqual(new DateTime(2008, 1, 3), result);
+            Assert.AreEqual(new DateTime(2008, 1, 3), result.Value);
         }
 
         [Test] public void ClassIsParsed() {
-            object result = null;
+            TypedValue result = TypedValue.Void;
             parse.TryParse(processor, typeof(SampleClass), TypedValue.Void, new TreeLeaf<string>("stuff"), ref result);
-            Assert.IsTrue(result is SampleClass);
+            Assert.IsTrue(result.Value is SampleClass);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void DefaultOperatorIsFound() {
             processor.AddOperator(defaultTest);
-            object result = processor.Execute(new TreeList<string>());
+            object result = processor.Execute(new TreeList<string>()).Value;
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
@@ -41,7 +41,7 @@ namespace fitnesse.unitTest.engine {
             processor.AddOperator(defaultTest);
             processor.AddOperator(specificTestA);
             processor.AddOperator(specificTestB);
-            object result = processor.Execute(new TreeLeaf<string>("A"));
+            object result = processor.Execute(new TreeLeaf<string>("A")).Value;
             Assert.AreEqual("executeA", result.ToString());
         }
 
@@ -51,13 +51,13 @@ namespace fitnesse.unitTest.engine {
         }
 
         [Test] public void MethodIsInvoked() {
-            var instance = new SampleClass();
+            var instance = new TypedValue(new SampleClass());
             TypedValue result = processor.Invoke(instance, "methodnoparms", new TreeList<string>());
             Assert.AreEqual("samplereturn", result.Value);
         }
 
         [Test] public void MethodWithParameterIsInvoked() {
-            var instance = new SampleClass();
+            var instance = new TypedValue(new SampleClass());
             TypedValue result = processor.Invoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
             Assert.AreEqual("samplestringparm0", result.Value);
         }
@@ -65,10 +65,10 @@ namespace fitnesse.unitTest.engine {
         [Test] public void OperatorIsRemoved() {
             processor.AddOperator(defaultTest);
             processor.AddOperator(specificTestA);
-            object result = processor.Execute(new TreeLeaf<string>("A"));
+            object result = processor.Execute(new TreeLeaf<string>("A")).Value;
             Assert.AreEqual("executeA", result.ToString());
             processor.RemoveOperator(specificTestA.GetType().FullName);
-            result = processor.Execute(new TreeList<string>("A"));
+            result = processor.Execute(new TreeList<string>("A")).Value;
             Assert.AreEqual("defaultexecute", result.ToString());
         }
 
@@ -85,8 +85,8 @@ namespace fitnesse.unitTest.engine {
         }
 
         private class DefaultTest: ExecuteOperator<string> {
-            public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref object result) {
-                result = "defaultexecute";
+            public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
+                result = new TypedValue("defaultexecute");
                 return true;
             }
         }
@@ -98,9 +98,9 @@ namespace fitnesse.unitTest.engine {
                 this.name = name;
             }
 
-            public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref object result) {
+            public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
                 if (parameters.Value != name) return false;
-                result = "execute" + name;
+                result = new TypedValue("execute" + name);
                 return true;
             }
         }

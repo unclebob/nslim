@@ -9,14 +9,14 @@ using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.operators {
     public class DefaultParse<T>: ParseOperator<T> { //todo: also look for constructor with string argument
-        public bool TryParse(Processor<T> processor, Type type, TypedValue instance, Tree<T> parameters, ref object result) {
+        public bool TryParse(Processor<T> processor, Type type, TypedValue instance, Tree<T> parameters, ref TypedValue result) {
             if (type.IsAssignableFrom(typeof(string)) /*&& !state.Type.Equals(typeof(DateTime))*/) {
-                result = parameters.Value.ToString();
+                result = new TypedValue(parameters.Value.ToString(), typeof(string));
             }
             else {
                 RuntimeMember parse = new RuntimeType(type).FindStatic("parse", new[] {typeof (string)});
                 if (parse != null && parse.ReturnType == type) {
-                    result = parse.Invoke(null, new object[] {parameters.Value.ToString()}).Value;
+                    result = parse.Invoke(null, new object[] {parameters.Value.ToString()});
                 }
                 else {
                     throw new InvalidOperationException(

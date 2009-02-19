@@ -45,6 +45,7 @@
     <Compile Include="Engine\Processor.cs" />
     <Compile Include="Engine\Operator.cs" />
     <Compile Include="Model\Copyable.cs" />
+    <Compile Include="Model\DomainAdapter.cs" />
     <Compile Include="Model\IdentifierName.cs" />
     <Compile Include="Model\KeyValueMemory.cs" />
     <Compile Include="Model\LanguageName.cs" />

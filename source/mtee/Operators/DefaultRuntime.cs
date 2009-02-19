@@ -16,14 +16,14 @@ namespace fitnesse.mtee.operators {
             }
             else {
                 RuntimeMember member = runtimeType.GetConstructor(parameters.Branches.Count);
-                result = member.Invoke(runtimeType.Type, GetParameterList(processor, parameters, member));
+                result = member.Invoke(GetParameterList(processor, parameters, member));
             }
             return true;
         }
 
         public bool TryInvoke(Processor<T> processor, TypedValue instance, string memberName, Tree<T> parameters, ref TypedValue result) {
-            RuntimeMember member = new RuntimeType(instance.Type).GetInstance(memberName, parameters.Branches.Count);
-            result = member.Invoke(instance.Value, GetParameterList(processor, parameters, member));
+            RuntimeMember member = RuntimeType.GetInstance(instance, memberName, parameters.Branches.Count);
+            result = member.Invoke(GetParameterList(processor, parameters, member));
             return true;
         }
 

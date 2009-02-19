@@ -16,7 +16,7 @@ namespace fitnesse.mtee.operators {
             else {
                 RuntimeMember parse = new RuntimeType(type).FindStatic("parse", new[] {typeof (string)});
                 if (parse != null && parse.ReturnType == type) {
-                    result = parse.Invoke(null, new object[] {parameters.Value.ToString()});
+                    result = parse.Invoke(new object[] {parameters.Value.ToString()});
                 }
                 else {
                     throw new InvalidOperationException(

@@ -32,10 +32,29 @@ namespace fitnesse.unitTest.operators {
 
         [Test]
         public void MethodIsInvoked() {
+            CheckInvokeMethod(new SampleClass());
+        }
+
+        [Test]
+        public void MethodIsInvokedViaDomainAdapter() {
+            CheckInvokeMethod(new SampleDomainAdapter(new SampleClass()));
+        }
+
+        private void CheckInvokeMethod(object instance) {
             var result = new TypedValue();
-            runtime.TryInvoke(processor, new TypedValue(new SampleClass()), "methodwithparms", new TreeList<string>().AddBranchValue("stuff"), ref result);
+            runtime.TryInvoke(processor, new TypedValue(instance), "methodwithparms", new TreeList<string>().AddBranchValue("stuff"), ref result);
             Assert.AreEqual(typeof (string), result.Type);
             Assert.AreEqual("samplestuff", result.Value);
+        }
+
+        private class SampleDomainAdapter: DomainAdapter {
+            private readonly SampleClass sampleClass;
+
+            public SampleDomainAdapter(SampleClass sampleClass) { this.sampleClass = sampleClass; }
+
+            public object SystemUnderTest {
+                get { return sampleClass; }
+            }
         }
     }
 }

@@ -8,25 +8,29 @@ using System.Reflection;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
-    public interface RuntimeMember {
-        TypedValue Invoke(object instance, object[] parameters);
-        bool MatchesParameterCount(int count);
-        Type GetParameterType(int index);
-        Type ReturnType { get; }
+    public abstract class RuntimeMember {
+        protected object instance;
+        protected RuntimeMember(object instance) { this.instance = instance; } 
+
+        public abstract TypedValue Invoke(object[] parameters);
+        public abstract bool MatchesParameterCount(int count);
+        public abstract Type GetParameterType(int index);
+        public abstract Type ReturnType { get; }
+
     }
 
     class MethodMember: RuntimeMember {
         private readonly MethodInfo info;
 
-        public MethodMember(MemberInfo memberInfo) { info = (MethodInfo) memberInfo; }
+        public MethodMember(MemberInfo memberInfo, object instance): base(instance) { info = (MethodInfo) memberInfo; }
 
-        public bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
+        public override bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
 
-        public Type GetParameterType(int index) {
+        public override Type GetParameterType(int index) {
             return info.GetParameters()[index].ParameterType;
         }
 
-        public TypedValue Invoke(object instance, object[] parameters) {
+        public override TypedValue Invoke(object[] parameters) {
             Type type = info.DeclaringType;
             object result = type.InvokeMember(info.Name,
                                               BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
@@ -36,21 +40,21 @@ namespace fitnesse.mtee.engine {
             return new TypedValue(result, info.ReturnType);
         }
 
-        public Type ReturnType { get { return info.ReturnType; } }
+        public override Type ReturnType { get { return info.ReturnType; } }
     }
 
     class FieldMember: RuntimeMember {
         private readonly FieldInfo info;
 
-        public FieldMember(MemberInfo memberInfo) { info = (FieldInfo) memberInfo; }
+        public FieldMember(MemberInfo memberInfo, object instance): base(instance) { info = (FieldInfo) memberInfo; }
 
-        public Type GetParameterType(int index) {
+        public override Type GetParameterType(int index) {
             return info.FieldType;
         }
 
-        public bool MatchesParameterCount(int count) { return count == 0 || count == 1; }
+        public override bool MatchesParameterCount(int count) { return count == 0 || count == 1; }
 
-        public TypedValue Invoke(object instance, object[] parameters) {
+        public override TypedValue Invoke(object[] parameters) {
             Type type = info.DeclaringType;
             object result = type.InvokeMember(info.Name,
                                               BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
@@ -61,21 +65,21 @@ namespace fitnesse.mtee.engine {
             return new TypedValue(result, parameters.Length == 0 ? info.FieldType : typeof(void));
         }
 
-        public Type ReturnType { get { return info.FieldType; } }
+        public override Type ReturnType { get { return info.FieldType; } }
     }
 
     class PropertyMember: RuntimeMember {
         private readonly PropertyInfo info;
 
-        public PropertyMember(MemberInfo memberInfo) { info = (PropertyInfo) memberInfo; }
+        public PropertyMember(MemberInfo memberInfo, object instance): base(instance) { info = (PropertyInfo) memberInfo; }
 
-        public Type GetParameterType(int index) {
+        public override Type GetParameterType(int index) {
             return info.PropertyType;
         }
 
-        public bool MatchesParameterCount(int count) { return count == 0 && info.CanRead || count == 1 && info.CanWrite; }
+        public override bool MatchesParameterCount(int count) { return count == 0 && info.CanRead || count == 1 && info.CanWrite; }
 
-        public TypedValue Invoke(object instance, object[] parameters) {
+        public override TypedValue Invoke(object[] parameters) {
             Type type = info.DeclaringType;
             object result = type.InvokeMember(info.Name,
                                               BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
@@ -86,21 +90,21 @@ namespace fitnesse.mtee.engine {
             return new TypedValue(result, parameters.Length == 0 ? info.PropertyType : typeof(void));
         }
 
-        public Type ReturnType { get { return info.PropertyType; } }
+        public override Type ReturnType { get { return info.PropertyType; } }
     }
 
     class ConstructorMember: RuntimeMember {
         private readonly ConstructorInfo info;
 
-        public ConstructorMember(MemberInfo memberInfo) { info = (ConstructorInfo) memberInfo; }
+        public ConstructorMember(MemberInfo memberInfo, object instance): base(instance) { info = (ConstructorInfo) memberInfo; }
 
-        public Type GetParameterType(int index) {
+        public override Type GetParameterType(int index) {
             return info.GetParameters()[index].ParameterType;
         }
 
-        public bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
+        public override bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
 
-        public TypedValue Invoke(object instance, object[] parameters) {
+        public override TypedValue Invoke(object[] parameters) {
             Type type = info.DeclaringType;
             object result = type.InvokeMember(info.Name,
                                      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
@@ -109,6 +113,6 @@ namespace fitnesse.mtee.engine {
             return new TypedValue(result, type);
         }
 
-        public Type ReturnType { get { return info.DeclaringType; } }
+        public override Type ReturnType { get { return info.DeclaringType; } }
     }
 }

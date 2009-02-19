@@ -16,62 +16,89 @@ namespace fitnesse.mtee.engine {
             Type = type;
         }
 
-        public RuntimeMember FindInstance(string memberName, int parameterCount) {
-            return Find(memberName, parameterCount, BindingFlags.Instance, null);
-        }
-
         public RuntimeMember FindStatic(string memberName, Type[] parameterTypes) {
-            return Find(memberName, parameterTypes.Length, BindingFlags.Static, parameterTypes);
+            return new MemberQuery(memberName, parameterTypes.Length, BindingFlags.Static, parameterTypes).Find(Type);
         }
 
-        public RuntimeMember GetInstance(string memberName, int parameterCount) {
-            RuntimeMember runtimeMember = FindInstance(memberName, parameterCount);
-            if (runtimeMember == null) throw new ArgumentException(string.Format("Member '{0}' not found for type '{1}'", memberName, Type.FullName));
+        public static RuntimeMember GetInstance(TypedValue instance, string memberName, int parameterCount) {
+            RuntimeMember runtimeMember = FindInstance(instance.Value, memberName, parameterCount);
+            if (runtimeMember == null) throw new ArgumentException(string.Format("Member '{0}' not found for type '{1}'", memberName, instance.Type.FullName));
             return runtimeMember;
         }
 
         public RuntimeMember GetConstructor(int parameterCount) {
-            RuntimeMember runtimeMember = FindInstance(".ctor", parameterCount);
+            RuntimeMember runtimeMember = FindInstance(Type, ".ctor", parameterCount);
             if (runtimeMember == null) throw new ArgumentException(string.Format("Constructor not found for type '{0}'", Type.FullName));
             return runtimeMember;
+        }
+
+        private static RuntimeMember FindInstance(object instance, string memberName, int parameterCount) {
+            return new MemberQuery(memberName, parameterCount, BindingFlags.Instance, null).Find(instance);
         }
 
         public TypedValue CreateInstance() {
             return new TypedValue(Type.Assembly.CreateInstance(Type.FullName), Type);
         }
 
-        private RuntimeMember Find(string memberName, int parameterCount, BindingFlags bindingFlags, Type[] parameterTypes) {
-            var memberMatcher = new IdentifierName(memberName);
-            foreach (MemberInfo memberInfo in Type.GetMembers(bindingFlags | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {
-                if (!memberMatcher.Matches(memberInfo.Name.Replace("_", string.Empty))) continue;
-                RuntimeMember runtimeMember = MakeMember(memberInfo);
-                if (Matches(runtimeMember, parameterCount, parameterTypes)) return runtimeMember;
+        private class MemberQuery {
+            private readonly IdentifierName memberName;
+            private readonly int parameterCount;
+            private readonly BindingFlags flags;
+            private readonly Type[] parameterTypes;
+
+            public MemberQuery(string memberName, int parameterCount, BindingFlags flags, Type[] parameterTypes) {
+                this.memberName = new IdentifierName(memberName);
+                this.parameterCount = parameterCount;
+                this.flags = flags;
+                this.parameterTypes = parameterTypes;
             }
-            return null;
-        }
 
-        private static bool Matches(RuntimeMember runtimeMember, int parameterCount, Type[] parameterTypes) {
-            if (!runtimeMember.MatchesParameterCount(parameterCount)) return false;
-            if (parameterTypes == null) return true;
-            for (int i = 0; i < parameterCount; i++) {
-                if (runtimeMember.GetParameterType(i) != parameterTypes[i]) return false;
+            public RuntimeMember Find(object instance) {
+                object target = instance;
+                while (target != null) {
+                    RuntimeMember member = FindMember(target);
+                    if (member != null) return member;
+                    var adapter = target as DomainAdapter;
+                    if (adapter == null) break;
+                    target = adapter.SystemUnderTest;
+                    if (target == adapter) break;
+                }
+                return null;
             }
-            return true;
-        }
 
+            private RuntimeMember FindMember(object instance) {
+                var targetType = instance as Type ?? instance.GetType();
+                foreach (MemberInfo memberInfo in targetType.GetMembers(flags | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {
+                    if (!memberName.Matches(memberInfo.Name.Replace("_", string.Empty))) continue;
+                    RuntimeMember runtimeMember = MakeMember(memberInfo, instance);
+                    if (Matches(runtimeMember)) return runtimeMember;
+                }
+                return null;
+            }
 
-        private static RuntimeMember MakeMember(MemberInfo memberInfo) {
-            switch (memberInfo.MemberType) {
-                case MemberTypes.Method:
-                    return new MethodMember(memberInfo);
-                case MemberTypes.Field:
-                    return new FieldMember(memberInfo);
-                case MemberTypes.Property:
-                    return new PropertyMember(memberInfo);
-                case MemberTypes.Constructor:
-                    return new ConstructorMember(memberInfo);
-                default:
-                    throw new NotImplementedException(string.Format("Member type {0} not supported", memberInfo.MemberType));
+            private bool Matches(RuntimeMember runtimeMember) {
+                if (!runtimeMember.MatchesParameterCount(parameterCount)) return false;
+                if (parameterTypes == null) return true;
+                for (int i = 0; i < parameterCount; i++) {
+                    if (runtimeMember.GetParameterType(i) != parameterTypes[i]) return false;
+                }
+                return true;
+            }
+
+            private static RuntimeMember MakeMember(MemberInfo memberInfo, object instance) {
+                switch (memberInfo.MemberType) {
+                    case MemberTypes.Method:
+                        return new MethodMember(memberInfo, instance);
+                    case MemberTypes.Field:
+                        return new FieldMember(memberInfo, instance);
+                    case MemberTypes.Property:
+                        return new PropertyMember(memberInfo, instance);
+                    case MemberTypes.Constructor:
+                        return new ConstructorMember(memberInfo, instance);
+                    default:
+                        throw new NotImplementedException(string.Format("Member type {0} not supported",
+                                                                        memberInfo.MemberType));
+                }
             }
         }
     }

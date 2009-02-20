@@ -3,6 +3,7 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
+using System;
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
 
@@ -42,6 +43,10 @@ namespace fitnesse.mtee.application {
         }
 
         private int ExecuteRunner() {
+            if (string.IsNullOrEmpty(runnerName)) {
+                Console.WriteLine("Missing runner class\n\nUsage:\n\tRunner -c configFile -r runnerClass");
+                return 1;
+            }
             var runnable = (Runnable) new BasicProcessor().Create(runnerName).Value;
             return runnable.Run(extraArguments.ToArray(), configuration);
         }

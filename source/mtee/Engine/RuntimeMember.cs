@@ -10,24 +10,30 @@ using fitnesse.mtee.model;
 namespace fitnesse.mtee.engine {
     public abstract class RuntimeMember {
         protected object instance;
-        protected RuntimeMember(object instance) { this.instance = instance; } 
+        protected readonly MemberInfo info;
+
+        protected RuntimeMember(MemberInfo info, object instance) {
+            this.instance = instance;
+            this.info = info;
+        } 
+
+        public string Name { get { return info.Name; }}
 
         public abstract TypedValue Invoke(object[] parameters);
         public abstract bool MatchesParameterCount(int count);
         public abstract Type GetParameterType(int index);
         public abstract Type ReturnType { get; }
-
     }
 
     class MethodMember: RuntimeMember {
-        private readonly MethodInfo info;
+        public MethodMember(MemberInfo memberInfo, object instance): base(memberInfo, instance) {}
 
-        public MethodMember(MemberInfo memberInfo, object instance): base(instance) { info = (MethodInfo) memberInfo; }
+        private MethodInfo Info { get { return (MethodInfo) info; } }
 
-        public override bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
+        public override bool MatchesParameterCount(int count) { return Info.GetParameters().Length == count; }
 
         public override Type GetParameterType(int index) {
-            return info.GetParameters()[index].ParameterType;
+            return Info.GetParameters()[index].ParameterType;
         }
 
         public override TypedValue Invoke(object[] parameters) {
@@ -37,19 +43,19 @@ namespace fitnesse.mtee.engine {
                                               | BindingFlags.InvokeMethod | BindingFlags.Static,
                                               null, instance, parameters);
 
-            return new TypedValue(result, info.ReturnType);
+            return new TypedValue(result, Info.ReturnType);
         }
 
-        public override Type ReturnType { get { return info.ReturnType; } }
+        public override Type ReturnType { get { return Info.ReturnType; } }
     }
 
     class FieldMember: RuntimeMember {
-        private readonly FieldInfo info;
+        public FieldMember(MemberInfo memberInfo, object instance): base(memberInfo, instance) {}
 
-        public FieldMember(MemberInfo memberInfo, object instance): base(instance) { info = (FieldInfo) memberInfo; }
+        private FieldInfo Info { get { return (FieldInfo) info; } }
 
         public override Type GetParameterType(int index) {
-            return info.FieldType;
+            return Info.FieldType;
         }
 
         public override bool MatchesParameterCount(int count) { return count == 0 || count == 1; }
@@ -62,22 +68,22 @@ namespace fitnesse.mtee.engine {
                                               | BindingFlags.Static,
                                               null, instance, parameters);
 
-            return new TypedValue(result, parameters.Length == 0 ? info.FieldType : typeof(void));
+            return new TypedValue(result, parameters.Length == 0 ? Info.FieldType : typeof(void));
         }
 
-        public override Type ReturnType { get { return info.FieldType; } }
+        public override Type ReturnType { get { return Info.FieldType; } }
     }
 
     class PropertyMember: RuntimeMember {
-        private readonly PropertyInfo info;
+        public PropertyMember(MemberInfo memberInfo, object instance): base(memberInfo, instance) {}
 
-        public PropertyMember(MemberInfo memberInfo, object instance): base(instance) { info = (PropertyInfo) memberInfo; }
+        private PropertyInfo Info { get { return (PropertyInfo) info; } }
 
         public override Type GetParameterType(int index) {
-            return info.PropertyType;
+            return Info.PropertyType;
         }
 
-        public override bool MatchesParameterCount(int count) { return count == 0 && info.CanRead || count == 1 && info.CanWrite; }
+        public override bool MatchesParameterCount(int count) { return count == 0 && Info.CanRead || count == 1 && Info.CanWrite; }
 
         public override TypedValue Invoke(object[] parameters) {
             Type type = info.DeclaringType;
@@ -87,22 +93,22 @@ namespace fitnesse.mtee.engine {
                                               | BindingFlags.Static,
                                               null, instance, parameters);
 
-            return new TypedValue(result, parameters.Length == 0 ? info.PropertyType : typeof(void));
+            return new TypedValue(result, parameters.Length == 0 ? Info.PropertyType : typeof(void));
         }
 
-        public override Type ReturnType { get { return info.PropertyType; } }
+        public override Type ReturnType { get { return Info.PropertyType; } }
     }
 
     class ConstructorMember: RuntimeMember {
-        private readonly ConstructorInfo info;
+        public ConstructorMember(MemberInfo memberInfo, object instance): base(memberInfo, instance) {}
 
-        public ConstructorMember(MemberInfo memberInfo, object instance): base(instance) { info = (ConstructorInfo) memberInfo; }
+        private ConstructorInfo Info { get { return (ConstructorInfo) info; } }
 
         public override Type GetParameterType(int index) {
-            return info.GetParameters()[index].ParameterType;
+            return Info.GetParameters()[index].ParameterType;
         }
 
-        public override bool MatchesParameterCount(int count) { return info.GetParameters().Length == count; }
+        public override bool MatchesParameterCount(int count) { return Info.GetParameters().Length == count; }
 
         public override TypedValue Invoke(object[] parameters) {
             Type type = info.DeclaringType;

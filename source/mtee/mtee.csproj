@@ -44,6 +44,7 @@
     <Compile Include="Engine\RuntimeType.cs" />
     <Compile Include="Engine\Processor.cs" />
     <Compile Include="Engine\Operator.cs" />
+    <Compile Include="exception\ParseException.cs" />
     <Compile Include="Model\Copyable.cs" />
     <Compile Include="Model\DomainAdapter.cs" />
     <Compile Include="Model\IdentifierName.cs" />
@@ -67,6 +68,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)*" "$(SolutionDir)build\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetPath)*" "$(SolutionDir)build\$(ConfigurationName)\" /I /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

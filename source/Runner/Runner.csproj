@@ -56,6 +56,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)*" "$(SolutionDir)build\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetPath)*" "$(SolutionDir)build\$(ConfigurationName)\" /I /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

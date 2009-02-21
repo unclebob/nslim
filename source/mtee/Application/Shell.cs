@@ -19,6 +19,10 @@ namespace fitnesse.mtee.application {
 
         public int Run(string[] commandLineArguments) {
             ParseArguments(commandLineArguments);
+            if (!ValidateArguments()) {
+                Console.WriteLine("\nUsage:\n\tRunner -r runnerClass [ -c configFile ] ...");
+                return 1;
+            }
             return ExecuteRunner();
         }
 
@@ -42,11 +46,15 @@ namespace fitnesse.mtee.application {
             }
         }
 
-        private int ExecuteRunner() {
+        private bool ValidateArguments() {
             if (string.IsNullOrEmpty(runnerName)) {
-                Console.WriteLine("Missing runner class\n\nUsage:\n\tRunner -c configFile -r runnerClass");
-                return 1;
+                Console.WriteLine("Missing runner class");
+                return false;
             }
+            return true;
+        }
+
+        private int ExecuteRunner() {
             var runnable = (Runnable) new BasicProcessor().Create(runnerName).Value;
             return runnable.Run(extraArguments.ToArray(), configuration);
         }

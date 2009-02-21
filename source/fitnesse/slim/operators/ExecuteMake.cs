@@ -14,7 +14,7 @@ namespace fitnesse.slim.operators {
         protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {
             processor.Store(new SavedInstance(
                 parameters.Branches[2].Value,
-                processor.Create(parameters.Branches[3].Value, ParameterTree(parameters, 4))));
+                processor.Create(parameters.Branches[3].Value, ParameterTree(parameters, 4)).Value));
             return DefaultResult(parameters);
         }
 

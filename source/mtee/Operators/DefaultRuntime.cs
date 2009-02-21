@@ -18,24 +18,24 @@ namespace fitnesse.mtee.operators {
             }
             else {
                 RuntimeMember member = runtimeType.GetConstructor(parameters.Branches.Count);
-                result = member.Invoke(GetParameterList(processor, parameters, member));
+                result = member.Invoke(GetParameterList(processor, TypedValue.Void, parameters, member));
             }
             return true;
         }
 
         public bool TryInvoke(Processor<T> processor, TypedValue instance, string memberName, Tree<T> parameters, ref TypedValue result) {
             RuntimeMember member = RuntimeType.GetInstance(instance, memberName, parameters.Branches.Count);
-            result = member.Invoke(GetParameterList(processor, parameters, member));
+            result = member.Invoke(GetParameterList(processor, instance, parameters, member));
             return true;
         }
 
-        private static object[] GetParameterList(Processor<T> processor, Tree<T> parameters, RuntimeMember member) {
+        private static object[] GetParameterList(Processor<T> processor, TypedValue instance, Tree<T> parameters, RuntimeMember member) {
             var parameterList = new List<object>();
             int i = 0;
             foreach (Tree<T> parameter in parameters.Branches) {
                 TypedValue parameterValue;
                 try {
-                    parameterValue = processor.Parse(member.GetParameterType(i), parameter);
+                    parameterValue = processor.Parse(member.GetParameterType(i), instance, parameter);
                 }
                 catch (Exception e) {
                     throw new ParseException<T>(string.Format("Parse parameter {0} for '{1}' failed.", i+1, member.Name), parameter.Value, e);

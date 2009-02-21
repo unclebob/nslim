@@ -5,6 +5,7 @@
 
 using System;
 using System.Reflection;
+using fitnesse.mtee.exception;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
@@ -22,13 +23,15 @@ namespace fitnesse.mtee.engine {
 
         public static RuntimeMember GetInstance(TypedValue instance, string memberName, int parameterCount) {
             RuntimeMember runtimeMember = FindInstance(instance.Value, memberName, parameterCount);
-            if (runtimeMember == null) throw new ArgumentException(string.Format("Member '{0}' not found for type '{1}'", memberName, instance.Type.FullName));
+            if (runtimeMember == null) throw new MemberException(
+                    string.Format("Member '{0}' with {1} parameter(s) not found for type '{2}'.", memberName, parameterCount, instance.Type.FullName));
             return runtimeMember;
         }
 
         public RuntimeMember GetConstructor(int parameterCount) {
             RuntimeMember runtimeMember = FindInstance(Type, ".ctor", parameterCount);
-            if (runtimeMember == null) throw new ArgumentException(string.Format("Constructor not found for type '{0}'", Type.FullName));
+            if (runtimeMember == null) throw new MemberException(
+                    string.Format("Constructor with {0} parameter(s) not found for type '{1}'.", parameterCount, Type.FullName));
             return runtimeMember;
         }
 

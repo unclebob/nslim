@@ -34,7 +34,7 @@ namespace fitnesse.mtee.application {
                             configuration.LoadFile(commandLineArguments[i + 1]);
                             break;
                         case "-r":
-                            runnerName = commandLineArguments[i + 1];
+                            ParseRunnerArgument(commandLineArguments[i + 1]);
                             break;
                         default:
                             extraArguments.Add(commandLineArguments[i]);
@@ -43,6 +43,14 @@ namespace fitnesse.mtee.application {
                     i++;
                 }
                 else extraArguments.Add(commandLineArguments[i]);
+            }
+        }
+
+        private void ParseRunnerArgument(string argument) {
+            string[] tokens = argument.Split(',');
+            runnerName = tokens[0];
+            if (tokens.Length > 1) {
+                configuration.GetItem<ApplicationUnderTest>().AddAssembly(tokens[1]);
             }
         }
 

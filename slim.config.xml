@@ -3,8 +3,8 @@
   <ApplicationUnderTest>
     <addAssembly>build\debug\fitnesse.dll</addAssembly>
     <addAssembly>build\debug\sample.dll</addAssembly>
-  <!-->
-     <addNamespace>My.Namespace</addNamespace>
+  <!--
+    <addNamespace>My.Namespace</addNamespace>
   -->
   </ApplicationUnderTest>
   

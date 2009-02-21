@@ -14,6 +14,7 @@ namespace fitnesse.slim.operators {
         private static readonly Regex symbolPattern = new Regex("(\\$[a-zA-Z]\\w*)");
 
         public bool TryParse(Processor<string> processor, Type type, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
+            if (string.IsNullOrEmpty(parameters.Value)) return false;
             string decodedInput = ReplaceSymbols(parameters.Value, processor);
             if (parameters.Value == decodedInput) return false;
             result = processor.Parse(type, decodedInput);

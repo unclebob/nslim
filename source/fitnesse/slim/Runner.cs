@@ -22,6 +22,16 @@ namespace fitnesse.slim {
 
         private void ParseCommandLine(string[] commandLineArguments) {
             messenger = Messenger.Make(int.Parse(commandLineArguments[commandLineArguments.Length - 1]));
+            if (commandLineArguments.Length > 1) {
+                AddAssemblies(commandLineArguments[0]);
+            }
+        }
+
+        private void AddAssemblies(string assemblyPaths) {
+            foreach (string path in assemblyPaths.Split(';')) {
+                if (path.Length == 0) continue;
+                service.ApplicationUnderTest.AddAssembly(path);
+            }
         }
 
         private void ProcessInstructions() {

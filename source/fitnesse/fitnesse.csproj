@@ -43,6 +43,7 @@
     <Compile Include="slim\Messenger.cs" />
     <Compile Include="slim\operators\ComposeBoolean.cs" />
     <Compile Include="slim\operators\ComposeDefault.cs" />
+    <Compile Include="slim\operators\ComposeException.cs" />
     <Compile Include="slim\operators\ComposeList.cs" />
     <Compile Include="slim\operators\ExecuteBase.cs" />
     <Compile Include="slim\operators\ExecuteCall.cs" />

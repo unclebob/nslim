@@ -23,15 +23,13 @@ namespace fitnesse.mtee.engine {
 
         public static RuntimeMember GetInstance(TypedValue instance, string memberName, int parameterCount) {
             RuntimeMember runtimeMember = FindInstance(instance.Value, memberName, parameterCount);
-            if (runtimeMember == null) throw new MemberException(
-                    string.Format("Member '{0}' with {1} parameter(s) not found for type '{2}'.", memberName, parameterCount, instance.Type.FullName));
+            if (runtimeMember == null) throw new MemberException(instance.Type, memberName, parameterCount);
             return runtimeMember;
         }
 
         public RuntimeMember GetConstructor(int parameterCount) {
             RuntimeMember runtimeMember = FindInstance(Type, ".ctor", parameterCount);
-            if (runtimeMember == null) throw new MemberException(
-                    string.Format("Constructor with {0} parameter(s) not found for type '{1}'.", parameterCount, Type.FullName));
+            if (runtimeMember == null) throw new ConstructorException(Type, parameterCount);
             return runtimeMember;
         }
 

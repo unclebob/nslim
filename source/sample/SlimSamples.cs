@@ -23,9 +23,6 @@ namespace fitnesse.slim.test {
         public string goToStore() {
             return (pints == 0 && (dollars > 2 || creditCard)) ? "yes" : "no";
         }
-
-        public void execute() {}
-        public void reset() {}
     }
 
     public class EmployeesHiredBefore {

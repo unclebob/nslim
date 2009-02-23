@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using fitnesse.mtee.engine;
+using fitnesse.mtee.exception;
 using fitnesse.mtee.model;
 using fitnesse.slim.operators;
 using NUnit.Framework;
@@ -59,10 +60,26 @@ namespace fitnesse.unitTest.slim {
             Assert.AreEqual("c", result.Branches[1].Branches[1].Value); 
         }
 
+        [Test] public void ExceptionIsComposed() {
+            CheckExceptionCompose(new ApplicationException("blah"), string.Empty);
+        }
+
+        [Test] public void MemberExceptionIsComposed() {
+            CheckExceptionCompose(new MemberException(typeof(string), "garbage", 0), "message<<NO_METHOD_IN_CLASS garbage System.String>> ");
+        }
+
+        [Test] public void ConstructorExceptionIsComposed() {
+            CheckExceptionCompose(new ConstructorException(typeof(string), 0), "message<<NO_CONSTRUCTOR System.String>> ");
+        }
+
         private Tree<string> Compose(ComposeOperator<string> composeOperator, object instance, Type type) {
             Tree<string> result = null;
             Assert.IsTrue(composeOperator.TryCompose(processor, new TypedValue(instance, type), ref result));
             return result;
+        }
+
+        private void CheckExceptionCompose(Exception exception, string expected) {
+            CheckCompose(new ComposeException(), exception, exception.GetType(), string.Format("__EXCEPTION__:{0}{1}", expected, exception));
         }
 
         private void CheckCompose(ComposeOperator<string> composeOperator, object instance, Type type, object expected) {

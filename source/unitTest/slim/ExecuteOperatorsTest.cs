@@ -17,6 +17,7 @@ namespace fitnesse.unitTest.slim {
         [SetUp] public void SetUp() {
             processor = new Processor<string>();
             processor.AddOperator(new ComposeDefault());
+            processor.AddOperator(new ComposeException());
             processor.AddMemory<SavedInstance>();
             processor.AddMemory<Symbol>();
         }

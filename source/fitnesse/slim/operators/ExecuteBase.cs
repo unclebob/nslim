@@ -10,7 +10,6 @@ using fitnesse.mtee.model;
 namespace fitnesse.slim.operators {
     public abstract class ExecuteBase: ExecuteOperator<string> {
         private const string defaultResult = "OK";
-        private const string ExceptionResult = "__EXCEPTION__:{0}";
         private readonly IdentifierName identifier;
 
         public bool TryExecute(Processor<string> processor, TypedValue instance, Tree<string> parameters, ref TypedValue result) {
@@ -19,7 +18,7 @@ namespace fitnesse.slim.operators {
                 result = new TypedValue(ExecuteOperation(processor, parameters));
             }
             catch (Exception e) {
-                result = new TypedValue(Result(parameters, string.Format(ExceptionResult, e)));
+                result = new TypedValue(Result(parameters, processor.Compose(e)));
             }
             return true;
         }

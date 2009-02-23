@@ -6,15 +6,13 @@
 using System;
 
 namespace fitnesse.mtee.exception {
-    public class MemberException: ApplicationException {
+    public class ConstructorException: ApplicationException {
         public Type Type { get; private set; }
-        public string MemberName { get; private set; }
         public int ParameterCount { get; private set; }
 
-        public MemberException(Type type, string memberName, int parameterCount)
-            : base(string.Format("Member '{1}' with {2} parameter(s) not found for type '{0}'.", type.FullName, memberName, parameterCount)) {
+        public ConstructorException(Type type, int parameterCount)
+            : base(string.Format("Constructor with {1} parameter(s) not found for type '{0}'.", type.FullName, parameterCount)) {
             Type = type;
-            MemberName = memberName;
             ParameterCount = parameterCount;
         }
     }

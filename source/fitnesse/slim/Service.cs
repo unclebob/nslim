@@ -21,6 +21,7 @@ namespace fitnesse.slim {
             AddOperator(new ParseList());
             AddOperator(new ParseSymbol(), 1);
             AddOperator(new ComposeDefault());
+            AddOperator(new ComposeException());
             AddOperator(new ComposeBoolean());
             AddOperator(new ComposeList());
         }

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using fitnesse.mtee.exception;
 using fitnesse.mtee.model;
 using fitnesse.mtee.operators;
 
@@ -167,7 +168,7 @@ namespace fitnesse.mtee.engine {
             foreach (T item in GetMemory<T>()) {
                 if (matchItem.Equals(item)) return item;
             }
-            throw new KeyNotFoundException();
+            throw new MemoryMissingException<T>(matchItem);
         }
 
         public bool Contains<T>(T matchItem) {

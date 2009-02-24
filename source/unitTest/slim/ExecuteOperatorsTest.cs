@@ -26,14 +26,14 @@ namespace fitnesse.unitTest.slim {
             var executeDefault = new ExecuteDefault();
             var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("garbage");
             ExecuteOperation(executeDefault, input, 2);
-            CheckForException("System.ArgumentException: Unrecognized operation 'garbage'");
+            CheckForException("message<<MALFORMED_INSTRUCTION step,garbage>>");
         }
 
         [Test] public void ExecuteMakeBadClassReturnsException() {
             var executeMake = new ExecuteMake();
             var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("make").AddBranchValue("variable").AddBranchValue("garbage");
             ExecuteOperation(executeMake, input, 2);
-            CheckForException("System.ArgumentException: Type 'garbage' not found");
+            CheckForException("message<<NO_CLASS garbage>>");
         }
 
         [Test] public void ExecuteImportAddsNamespace() {

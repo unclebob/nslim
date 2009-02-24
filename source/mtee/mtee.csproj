@@ -44,9 +44,12 @@
     <Compile Include="Engine\RuntimeType.cs" />
     <Compile Include="Engine\Processor.cs" />
     <Compile Include="Engine\Operator.cs" />
-    <Compile Include="exception\ConstructorException.cs" />
-    <Compile Include="exception\MemberException.cs" />
+    <Compile Include="exception\ConstructorMissingException.cs" />
+    <Compile Include="exception\CreateException.cs" />
+    <Compile Include="exception\MemberMissingException.cs" />
+    <Compile Include="exception\MemoryMissingException.cs" />
     <Compile Include="exception\ParseException.cs" />
+    <Compile Include="exception\TypeMissingException.cs" />
     <Compile Include="Model\Copyable.cs" />
     <Compile Include="Model\DomainAdapter.cs" />
     <Compile Include="Model\IdentifierName.cs" />

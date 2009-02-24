@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using fitnesse.mtee.engine;
 using fitnesse.mtee.exception;
 using fitnesse.mtee.model;
+using fitnesse.slim;
+using fitnesse.slim.exception;
 using fitnesse.slim.operators;
 using NUnit.Framework;
 
@@ -65,11 +67,33 @@ namespace fitnesse.unitTest.slim {
         }
 
         [Test] public void MemberExceptionIsComposed() {
-            CheckExceptionCompose(new MemberException(typeof(string), "garbage", 0), "message<<NO_METHOD_IN_CLASS garbage System.String>> ");
+            CheckExceptionCompose(new MemberMissingException(typeof(string), "garbage", 0), "message<<NO_METHOD_IN_CLASS garbage System.String>> ");
+        }
+
+        [Test] public void TypeExceptionIsComposed() {
+            CheckExceptionCompose(new TypeMissingException("garbage", "and stuff"), "message<<NO_CLASS garbage>> ");
         }
 
         [Test] public void ConstructorExceptionIsComposed() {
-            CheckExceptionCompose(new ConstructorException(typeof(string), 0), "message<<NO_CONSTRUCTOR System.String>> ");
+            CheckExceptionCompose(new ConstructorMissingException(typeof(string), 0), "message<<NO_CONSTRUCTOR System.String>> ");
+        }
+
+        [Test] public void CreateExceptionIsComposed() {
+            CheckExceptionCompose(new CreateException(typeof(string), 0, new ApplicationException("blah")), "message<<COULD_NOT_INVOKE_CONSTRUCTOR System.String>> ");
+        }
+
+        [Test] public void MemoryExceptionIsComposed() {
+            CheckExceptionCompose(new MemoryMissingException<SavedInstance>(new SavedInstance("stuff")), "message<<NO_INSTANCE stuff>> ");
+        }
+
+        [Test] public void InstructionExceptionIsComposed() {
+            CheckExceptionCompose(new InstructionException(new TreeList<string>().AddBranchValue("stuff").AddBranchValue("nonsense")),
+            "message<<MALFORMED_INSTRUCTION stuff,nonsense>> ");
+        }
+
+        [Test] public void ParseExceptionIsComposed() {
+            CheckExceptionCompose(new ParseException<string>("member", typeof(string), 0, "garbage", new ApplicationException("blah")),
+                "message<<NO_CONVERTER_FOR_ARGUMENT_NUMBER System.String>> ");
         }
 
         private Tree<string> Compose(ComposeOperator<string> composeOperator, object instance, Type type) {

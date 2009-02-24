@@ -6,18 +6,16 @@
 using System;
 
 namespace fitnesse.mtee.exception {
-    public class ParseException<T>: ApplicationException {
-        public T Subject { get; private set; }
-        public string MemberName { get; private set; }
-        public int Index { get; private set; }
+    public class MemberMissingException: ApplicationException {
         public Type Type { get; private set; }
+        public string MemberName { get; private set; }
+        public int ParameterCount { get; private set; }
 
-        public ParseException(string memberName, Type type, int index, T subject, Exception inner)
-            : base(string.Format("Parse parameter {1} for '{0}' type {2} failed.", memberName, index, type), inner) {
-            Subject = subject;
-            MemberName = memberName;
+        public MemberMissingException(Type type, string memberName, int parameterCount)
+            : base(string.Format("Member '{1}' with {2} parameter(s) not found for type '{0}'.", type.FullName, memberName, parameterCount)) {
             Type = type;
-            Index = index;
+            MemberName = memberName;
+            ParameterCount = parameterCount;
         }
     }
 }

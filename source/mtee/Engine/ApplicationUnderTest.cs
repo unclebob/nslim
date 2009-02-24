@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using fitnesse.mtee.exception;
 using fitnesse.mtee.model;
 
 namespace fitnesse.mtee.engine {
@@ -49,15 +50,14 @@ namespace fitnesse.mtee.engine {
                 type = SearchForType(typeName, cache)
                     ?? SearchForType(typeName, AssemblyTypes(assemblies))
                     ?? SearchForType(typeName, AssemblyTypes(AppDomain.CurrentDomain.GetAssemblies()));
-                if (type == null) throw new ArgumentException(TypeNotFoundMessage(typeName));
+                if (type == null) throw new TypeMissingException(typeName.MatchName, TypeNotFoundMessage());
                 UpdateCache(type);
             }
             return new RuntimeType(type);
         }
 
-        private static string TypeNotFoundMessage(NameMatcher typeName) {
+        private static string TypeNotFoundMessage() {
             var result = new StringBuilder();
-            result.AppendFormat("Type '{0}' not found in assemblies:\n", typeName.MatchName);
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) result.AppendFormat("    {0}\n", assembly.CodeBase);
             return result.ToString();
         }

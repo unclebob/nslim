@@ -3,16 +3,17 @@
 // which can be found in the file license.txt at the root of this distribution. By using this software in any fashion, you are agreeing
 // to be bound by the terms of this license. You must not remove this notice, or any other, from this software.
 
-using fitnesse.mtee.engine;
+using System;
 using fitnesse.mtee.model;
-using fitnesse.slim.exception;
 
-namespace fitnesse.slim.operators {
-    public class ExecuteDefault: ExecuteBase {
-        public ExecuteDefault(): base(string.Empty) {}
+namespace fitnesse.slim.exception
+{
+    public class InstructionException: ApplicationException {
+        public Tree<string> Instruction { get; private set; }
 
-        protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {
-            throw new InstructionException(parameters);
+        public InstructionException(Tree<string> instruction)
+            : base(string.Format("Unrecognized operation '{0}'", instruction.Branches[1].Value)) {
+            Instruction = instruction;
         }
     }
 }

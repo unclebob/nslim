@@ -6,11 +6,11 @@
 using System;
 
 namespace fitnesse.mtee.exception {
-    public class ConstructorException: ApplicationException {
+    public class ConstructorMissingException: ApplicationException {
         public Type Type { get; private set; }
         public int ParameterCount { get; private set; }
 
-        public ConstructorException(Type type, int parameterCount)
+        public ConstructorMissingException(Type type, int parameterCount)
             : base(string.Format("Constructor with {1} parameter(s) not found for type '{0}'.", type.FullName, parameterCount)) {
             Type = type;
             ParameterCount = parameterCount;

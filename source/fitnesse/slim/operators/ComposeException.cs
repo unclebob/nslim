@@ -12,7 +12,7 @@ using fitnesse.slim.exception;
 
 namespace fitnesse.slim.operators {
     public class ComposeException: ComposeOperator<string> {
-        private const string ExceptionResult = "__EXCEPTION__:{0}";
+        public const string ExceptionResult = "__EXCEPTION__:{0}";
 
         public bool TryCompose(Processor<string> processor, TypedValue instance, ref Tree<string> result) {
             if (!typeof(Exception).IsAssignableFrom(instance.Type)) return false;

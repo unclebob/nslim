@@ -69,21 +69,16 @@ namespace fitnesse.mtee.engine {
 
             private RuntimeMember FindMember(object instance) {
                 var targetType = instance as Type ?? instance.GetType();
+                return FindMemberByName(instance, targetType) ?? FindIndexerMember(instance, targetType);
+            }
+
+            private RuntimeMember FindMemberByName(object instance, Type targetType) {
                 foreach (MemberInfo memberInfo in targetType.GetMembers(flags | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {
                     if (!memberName.Matches(memberInfo.Name.Replace("_", string.Empty))) continue;
                     RuntimeMember runtimeMember = MakeMember(memberInfo, instance);
                     if (Matches(runtimeMember)) return runtimeMember;
                 }
                 return null;
-            }
-
-            private bool Matches(RuntimeMember runtimeMember) {
-                if (!runtimeMember.MatchesParameterCount(parameterCount)) return false;
-                if (parameterTypes == null) return true;
-                for (int i = 0; i < parameterCount; i++) {
-                    if (runtimeMember.GetParameterType(i) != parameterTypes[i]) return false;
-                }
-                return true;
             }
 
             private static RuntimeMember MakeMember(MemberInfo memberInfo, object instance) {
@@ -100,6 +95,27 @@ namespace fitnesse.mtee.engine {
                         throw new NotImplementedException(string.Format("Member type {0} not supported",
                                                                         memberInfo.MemberType));
                 }
+            }
+
+            private bool Matches(RuntimeMember runtimeMember) {
+                if (!runtimeMember.MatchesParameterCount(parameterCount)) return false;
+                if (parameterTypes == null) return true;
+                for (int i = 0; i < parameterCount; i++) {
+                    if (runtimeMember.GetParameterType(i) != parameterTypes[i]) return false;
+                }
+                return true;
+            }
+
+            private RuntimeMember FindIndexerMember(object instance, Type targetType) {
+                if (parameterCount != 0) return null;
+                foreach (MemberInfo memberInfo in targetType.GetMembers(flags | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {
+                    if (memberInfo.Name != "get_Item") continue;
+                    RuntimeMember indexerMember = new IndexerMember(memberInfo, instance, memberName.SourceName);
+                    if (indexerMember.MatchesParameterCount(1) && indexerMember.GetParameterType(0) == typeof(string)) {
+                        return indexerMember;
+                    }
+                }
+                return null;
             }
         }
     }

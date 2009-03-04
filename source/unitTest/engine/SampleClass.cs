@@ -24,5 +24,9 @@ namespace fitnesse.unitTest.engine {
         }
 
         public string Property { get; set; }
+
+        public string this[string input] {
+            get { return "index" + input; }
+        }
     }
 }

@@ -49,6 +49,18 @@ namespace fitnesse.mtee.engine {
         public override Type ReturnType { get { return Info.ReturnType; } }
     }
 
+    class IndexerMember: MethodMember {
+        private readonly string key;
+
+        public IndexerMember(MemberInfo memberInfo, object instance, string key): base(memberInfo, instance) {
+            this.key = key;
+        }
+
+        public override TypedValue Invoke(object[] parameters) {
+            return base.Invoke(new object[] {key});
+        }
+    }
+
     class FieldMember: RuntimeMember {
         public FieldMember(MemberInfo memberInfo, object instance): base(memberInfo, instance) {}
 

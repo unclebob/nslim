@@ -73,5 +73,13 @@ namespace fitnesse.unitTest.engine {
             Assert.AreEqual(typeof(string), result.Type);
         }
 
+        [Test] public void IndexerIsInvoked() {
+            RuntimeMember method = RuntimeType.GetInstance(new TypedValue(instance), "anything", 0);
+            Assert.IsNotNull(method);
+            TypedValue result = method.Invoke(new object[] {});
+            Assert.AreEqual("indexanything", result.Value);
+            Assert.AreEqual(typeof(string), result.Type);
+        }
+
     }
 }

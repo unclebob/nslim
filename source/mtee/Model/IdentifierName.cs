@@ -8,8 +8,10 @@ using System;
 namespace fitnesse.mtee.model {
     public class IdentifierName: NameMatcher {
         public string MatchName { get; private set; }
+        public string SourceName { get; private set; }
 
         public IdentifierName(string name) {
+            SourceName = name;
             MatchName = name.Trim();
         }
 

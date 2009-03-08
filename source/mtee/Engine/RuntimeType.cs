@@ -37,6 +37,10 @@ namespace fitnesse.mtee.engine {
             return new MemberQuery(memberName, parameterCount, BindingFlags.Instance | BindingFlags.Static, null).Find(instance);
         }
 
+        public static RuntimeMember FindInstance(object instance, string memberName, Type[] parameterTypes) {
+            return new MemberQuery(memberName, parameterTypes.Length, BindingFlags.Instance | BindingFlags.Static, parameterTypes).Find(instance);
+        }
+
         public TypedValue CreateInstance() {
             return new TypedValue(Type.Assembly.CreateInstance(Type.FullName), Type);
         }

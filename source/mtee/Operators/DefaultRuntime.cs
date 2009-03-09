@@ -42,9 +42,13 @@ namespace fitnesse.mtee.operators {
             }
         }
 
-        public bool TryInvoke(Processor<T> processor, TypedValue instance, string memberName, Tree<T> parameters, ref TypedValue result) {
-            RuntimeMember member = RuntimeType.GetInstance(instance, memberName, parameters.Branches.Count);
-            result = member.Invoke(GetParameterList(processor, instance, parameters, member));
+        public bool TryInvoke(Processor<T> processor, TypedValue instance, string memberName, Tree<T> parameters,
+                              ref TypedValue result) {
+            RuntimeMember member = RuntimeType.FindInstance(instance.Value, memberName, parameters.Branches.Count);
+            result = member != null
+                         ? member.Invoke(GetParameterList(processor, instance, parameters, member))
+                         : TypedValue.MakeInvalid(new MemberMissingException(instance.Type, memberName,
+                                                                             parameters.Branches.Count));
             return true;
         }
 

@@ -7,7 +7,7 @@ using fitnesse.mtee.engine;
 using fitnesse.mtee.model;
 
 namespace fitnesse.slim.operators {
-    class ExecuteCall: ExecuteBase {
+    public class ExecuteCall: ExecuteBase {
         public ExecuteCall() : base("call") {}
 
         protected override Tree<string> ExecuteOperation(Processor<string> processor, Tree<string> parameters) {

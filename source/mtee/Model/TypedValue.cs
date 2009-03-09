@@ -9,6 +9,8 @@ namespace fitnesse.mtee.model {
     public struct TypedValue {
         public static readonly TypedValue Void = new TypedValue(null, typeof(void));
 
+        public static TypedValue MakeInvalid(Exception exception) { return new TypedValue(exception, typeof(void)); }
+
         public object Value { get; private set; }
         public Type Type { get; private set; }
 
@@ -19,6 +21,11 @@ namespace fitnesse.mtee.model {
 
         public TypedValue(object value): this(value, value != null ? value.GetType() : typeof(object)) {}
 
-        public bool IsVoid { get { return Type == typeof (void); } }
+        public bool IsVoid { get { return Type == typeof (void) && Value == null; } }
+        public bool IsValid { get { return Type != typeof (void) || Value == null; } }
+
+        public void ThrowExceptionIfNotValid() {
+            if (!IsValid) throw (Exception) Value;
+        }
     }
 }

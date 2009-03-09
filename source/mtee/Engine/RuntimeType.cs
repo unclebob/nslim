@@ -33,7 +33,7 @@ namespace fitnesse.mtee.engine {
             return runtimeMember;
         }
 
-        private static RuntimeMember FindInstance(object instance, string memberName, int parameterCount) {
+        public static RuntimeMember FindInstance(object instance, string memberName, int parameterCount) {
             return new MemberQuery(memberName, parameterCount, BindingFlags.Instance | BindingFlags.Static, null).Find(instance);
         }
 

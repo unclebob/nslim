@@ -132,6 +132,12 @@ namespace fitnesse.mtee.engine {
             return result;
         }
 
+        public TypedValue InvokeValid(TypedValue instance, string memberName, Tree<U> parameters) {
+            TypedValue result = Invoke(instance, memberName, parameters);
+            result.ThrowExceptionIfNotValid();
+            return result;
+        }
+
         public delegate bool TryOperation<T>(T anOperator);
 
         public void Do<T>(TryOperation<T> tryOperation) where T: class, Operator {

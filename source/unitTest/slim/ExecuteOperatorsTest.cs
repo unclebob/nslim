@@ -36,6 +36,14 @@ namespace fitnesse.unitTest.slim {
             CheckForException("message<<NO_CLASS garbage>>");
         }
 
+        [Test] public void ExecuteCallBadMethodReturnsException() {
+            processor.Store(new SavedInstance("variable", new SampleClass()));
+            var executeCall = new ExecuteCall();
+            var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("call").AddBranchValue("variable").AddBranchValue("garbage");
+            ExecuteOperation(executeCall, input, 2);
+            CheckForException("message<<NO_METHOD_IN_CLASS garbage fitnesse.unitTest.slim.SampleClass>>");
+        }
+
         [Test] public void ExecuteImportAddsNamespace() {
             var executeImport = new ExecuteImport();
             var input = new TreeList<string>().AddBranchValue("step").AddBranchValue("import").AddBranchValue("fitnesse.unitTest.slim");

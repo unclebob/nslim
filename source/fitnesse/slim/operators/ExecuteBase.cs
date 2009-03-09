@@ -55,7 +55,9 @@ namespace fitnesse.slim.operators {
 
         protected static TypedValue InvokeMember(Processor<string> processor, Tree<string> parameters, int memberIndex) {
             object target = processor.Load(new SavedInstance(parameters.Branches[memberIndex].Value)).Instance;
-            return processor.Invoke(new TypedValue(target), parameters.Branches[memberIndex + 1].Value, ParameterTree(parameters, memberIndex + 2));
+            TypedValue result = processor.Invoke(new TypedValue(target), parameters.Branches[memberIndex + 1].Value, ParameterTree(parameters, memberIndex + 2));
+            result.ThrowExceptionIfNotValid();
+            return result;
         }
     }
 }

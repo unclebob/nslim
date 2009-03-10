@@ -52,13 +52,13 @@ namespace fitnesse.unitTest.engine {
 
         [Test] public void MethodIsInvoked() {
             var instance = new TypedValue(new SampleClass());
-            TypedValue result = processor.Invoke(instance, "methodnoparms", new TreeList<string>());
+            TypedValue result = processor.TryInvoke(instance, "methodnoparms", new TreeList<string>());
             Assert.AreEqual("samplereturn", result.Value);
         }
 
         [Test] public void MethodWithParameterIsInvoked() {
             var instance = new TypedValue(new SampleClass());
-            TypedValue result = processor.Invoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
+            TypedValue result = processor.TryInvoke(instance, "MethodWithParms", new TreeList<string>().AddBranchValue("stringparm0"));
             Assert.AreEqual("samplestringparm0", result.Value);
         }
 

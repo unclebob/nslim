@@ -126,14 +126,14 @@ namespace fitnesse.mtee.engine {
             return result;
         }
 
-        public TypedValue Invoke(TypedValue instance, string memberName, Tree<U> parameters) {
+        public TypedValue TryInvoke(TypedValue instance, string memberName, Tree<U> parameters) {
             var result = new TypedValue();
             Do<RuntimeOperator<U>>(o => o.TryInvoke(this, instance, memberName, parameters, ref result));
             return result;
         }
 
-        public TypedValue InvokeValid(TypedValue instance, string memberName, Tree<U> parameters) {
-            TypedValue result = Invoke(instance, memberName, parameters);
+        public TypedValue Invoke(TypedValue instance, string memberName, Tree<U> parameters) {
+            TypedValue result = TryInvoke(instance, memberName, parameters);
             result.ThrowExceptionIfNotValid();
             return result;
         }

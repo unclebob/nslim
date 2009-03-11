@@ -37,8 +37,16 @@ namespace fitnesse.mtee.engine {
             return new MemberQuery(memberName, parameterCount, BindingFlags.Instance | BindingFlags.Static, null).Find(instance);
         }
 
+        public static RuntimeMember FindDirectInstance(object instance, string memberName, int parameterCount) {
+            return new MemberQuery(memberName, parameterCount, BindingFlags.Instance | BindingFlags.Static, null).FindMember(instance);
+        }
+
         public static RuntimeMember FindInstance(object instance, string memberName, Type[] parameterTypes) {
             return new MemberQuery(memberName, parameterTypes.Length, BindingFlags.Instance | BindingFlags.Static, parameterTypes).Find(instance);
+        }
+
+        public static RuntimeMember FindDirectInstance(object instance, string memberName, Type[] parameterTypes) {
+            return new MemberQuery(memberName, parameterTypes.Length, BindingFlags.Instance | BindingFlags.Static, parameterTypes).FindMember(instance);
         }
 
         public TypedValue CreateInstance() {
@@ -71,7 +79,7 @@ namespace fitnesse.mtee.engine {
                 return null;
             }
 
-            private RuntimeMember FindMember(object instance) {
+            public RuntimeMember FindMember(object instance) {
                 var targetType = instance as Type ?? instance.GetType();
                 return FindMemberByName(instance, targetType) ?? FindIndexerMember(instance, targetType);
             }

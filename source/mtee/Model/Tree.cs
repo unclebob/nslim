@@ -19,6 +19,13 @@ namespace fitnesse.mtee.model {
         public abstract bool IsLeaf { get; }
         public abstract IList<Tree<T>> Branches { get; }
 
+        public IEnumerable<T> Leaves {
+            get {
+                if (IsLeaf) yield return Value;
+                else foreach (Tree<T> branch in Branches) foreach (T leaf in branch.Leaves) yield return leaf;
+            }
+        }
+
         public TreeWriter<T> Serialize(TreeWriter<T> serializer) {
             serializer.WritePrefix(this);
             if (!IsLeaf) {

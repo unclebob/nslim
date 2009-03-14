@@ -23,6 +23,8 @@ namespace fitnesse.mtee.model {
 
         public bool IsVoid { get { return Type == typeof (void) && Value == null; } }
         public bool IsValid { get { return Type != typeof (void) || Value == null; } }
+        public bool IsNullOrEmpty { get { return Value == null || Type == typeof(DBNull) || Value.ToString().Length == 0; } }
+        public string ValueString { get { return (IsVoid ? "void" : Value ?? "null").ToString(); } }
 
         public void ThrowExceptionIfNotValid() {
             if (!IsValid) throw (Exception) Value;
